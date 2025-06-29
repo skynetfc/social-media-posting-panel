@@ -60,26 +60,63 @@
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300 font-english" id="body-root">
-    <!-- Language and Theme Controls -->
-    <div class="fixed top-4 right-4 z-50 flex gap-2">
-        <!-- Language Toggle -->
-        <button 
-            onclick="toggleLanguage()" 
-            class="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 p-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700"
-            title="Toggle Language"
-        >
-            <span id="lang-icon">🌐</span>
-        </button>
-        
-        <!-- Theme Toggle -->
-        <button 
-            onclick="toggleTheme()" 
-            class="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 p-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700"
-            title="Toggle Theme"
-        >
-            <i id="theme-icon" class="fas fa-moon"></i>
-        </button>
+    <!-- Enhanced Header with Logo and Controls -->
+    <div class="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-3">
+                <!-- Logo Section -->
+                <div class="flex items-center">
+                    <div class="flex items-center mr-4">
+                        <!-- Palestinian Flag SVG Logo -->
+                        <svg width="32" height="24" viewBox="0 0 32 24" class="mr-3">
+                            <!-- Red stripe -->
+                            <rect x="0" y="0" width="32" height="8" fill="#CE1126"/>
+                            <!-- White stripe -->
+                            <rect x="0" y="8" width="32" height="8" fill="#FFFFFF"/>
+                            <!-- Black stripe -->
+                            <rect x="0" y="16" width="32" height="8" fill="#000000"/>
+                            <!-- Triangle -->
+                            <polygon points="0,0 0,24 16,12" fill="#007A3D"/>
+                        </svg>
+                        <div>
+                            <h1 class="text-lg font-bold text-gray-900 dark:text-white" data-translate="brand_title">
+                                Anonymous Creations
+                            </h1>
+                            <p class="text-xs text-gray-600 dark:text-gray-400" data-translate="brand_subtitle">
+                                Social Media Dashboard
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Controls Section -->
+                <div class="flex items-center gap-3">
+                    <!-- Language Toggle -->
+                    <button 
+                        onclick="toggleLanguage()" 
+                        class="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
+                        title="Toggle Language"
+                    >
+                        <span id="lang-icon" class="text-sm">🇺🇸</span>
+                        <span class="ml-2 text-sm font-medium" id="lang-text">EN</span>
+                    </button>
+                    
+                    <!-- Theme Toggle -->
+                    <button 
+                        onclick="toggleTheme()" 
+                        class="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
+                        title="Toggle Theme"
+                    >
+                        <i id="theme-icon" class="fas fa-moon text-sm"></i>
+                        <span class="ml-2 text-sm font-medium" id="theme-text">Dark</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
+    
+    <!-- Content Spacer -->
+    <div class="pt-20"></div>
 
     {% block content %}{% endblock %}
 
@@ -88,6 +125,8 @@
         const translations = {
             en: {
                 title: "Anonymous Creations",
+                brand_title: "Anonymous Creations",
+                brand_subtitle: "Social Media Dashboard",
                 dashboard: "Dashboard",
                 login: "Login",
                 logout: "Logout",
@@ -111,6 +150,7 @@
                 instagram: "Instagram",
                 youtube: "YouTube",
                 tiktok: "TikTok",
+                facebook: "Facebook",
                 no_posts: "No posts yet",
                 posting: "Posting...",
                 post_success: "Post completed successfully!",
@@ -122,6 +162,8 @@
             },
             ar: {
                 title: "إبداعات مجهولة",
+                brand_title: "إبداعات مجهولة",
+                brand_subtitle: "لوحة تحكم وسائل التواصل",
                 dashboard: "لوحة التحكم",
                 login: "تسجيل الدخول",
                 logout: "تسجيل الخروج",
@@ -145,6 +187,7 @@
                 instagram: "انستجرام",
                 youtube: "يوتيوب",
                 tiktok: "تيك توك",
+                facebook: "فيسبوك",
                 no_posts: "لا توجد منشورات بعد",
                 posting: "جارٍ النشر...",
                 post_success: "تم النشر بنجاح!",
@@ -174,19 +217,23 @@
         function updateLanguage() {
             const html = document.getElementById('html-root');
             const body = document.getElementById('body-root');
+            const langIcon = document.getElementById('lang-icon');
+            const langText = document.getElementById('lang-text');
             
             if (currentLang === 'ar') {
                 html.dir = 'rtl';
                 html.lang = 'ar';
                 body.classList.add('font-arabic');
                 body.classList.remove('font-english');
-                document.getElementById('lang-icon').textContent = 'ع';
+                if (langIcon) langIcon.textContent = '🇵🇸';
+                if (langText) langText.textContent = 'العربية';
             } else {
                 html.dir = 'ltr';
                 html.lang = 'en';
                 body.classList.add('font-english');
                 body.classList.remove('font-arabic');
-                document.getElementById('lang-icon').textContent = 'A';
+                if (langIcon) langIcon.textContent = '🇺🇸';
+                if (langText) langText.textContent = 'EN';
             }
             
             // Update all translatable elements
@@ -209,13 +256,16 @@
         function updateTheme() {
             const html = document.documentElement;
             const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
             
             if (currentTheme === 'dark') {
                 html.classList.add('dark');
-                themeIcon.className = 'fas fa-sun';
+                if (themeIcon) themeIcon.className = 'fas fa-sun text-sm';
+                if (themeText) themeText.textContent = 'Light';
             } else {
                 html.classList.remove('dark');
-                themeIcon.className = 'fas fa-moon';
+                if (themeIcon) themeIcon.className = 'fas fa-moon text-sm';
+                if (themeText) themeText.textContent = 'Dark';
             }
         }
 
