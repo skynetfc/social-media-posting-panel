@@ -1,3 +1,4 @@
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -7,10 +8,12 @@ import os
 DATABASE_URL = "sqlite:///./dashboard.db"
 print(f"Using database: {DATABASE_URL}")
 
-# Create engine
+# Create engine with proper configuration
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+    connect_args={"check_same_thread": False},
+    pool_pre_ping=True,
+    pool_recycle=300
 )
 
 # Session
@@ -24,10 +27,18 @@ def get_db():
     db = SessionLocal()
     try:
         yield db
+    except Exception as e:
+        print(f"Database error: {e}")
+        db.rollback()
+        raise
     finally:
         db.close()
 
 def init_db():
     """Initialize database"""
-    from models import User, PostLog
-    Base.metadata.create_all(bind=engine)
+    try:
+        from models import User, PostLog
+        Base.metadata.create_all(bind=engine)
+        print("Database initialized successfully")
+    except Exception as e:
+        print(f"Database initialization error: {e}")
