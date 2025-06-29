@@ -380,8 +380,34 @@ document.getElementById('postForm').addEventListener('submit', async function(e)
         if (result.success) {
             Swal.fire({
                 icon: 'success',
-                title: 'Success!',
-                text: t('post_success')
+                title: '🎉 Post Published Successfully!',
+                html: `
+                    <div class="success-animation">
+                        <div class="checkmark-container">
+                            <div class="checkmark">
+                                <div class="checkmark_stem"></div>
+                                <div class="checkmark_kick"></div>
+                            </div>
+                        </div>
+                        <p class="success-message">Your content has been shared across all selected platforms!</p>
+                    </div>
+                `,
+                showConfirmButton: true,
+                confirmButtonText: '✨ Awesome!',
+                confirmButtonColor: '#10b981',
+                background: '#f0fdf4',
+                color: '#065f46',
+                customClass: {
+                    popup: 'success-popup',
+                    title: 'success-title',
+                    confirmButton: 'success-button'
+                },
+                showClass: {
+                    popup: 'animate__animated animate__bounceIn animate__faster'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOut animate__faster'
+                }
             });
             
             // Reset form

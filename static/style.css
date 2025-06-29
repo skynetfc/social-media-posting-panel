@@ -328,6 +328,187 @@ input[type="checkbox"]:checked {
     font-family: inherit !important;
 }
 
+/* Success notification styling */
+.success-popup {
+    border: 3px solid #10b981 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 25px -5px rgba(16, 185, 129, 0.1), 0 10px 10px -5px rgba(16, 185, 129, 0.04) !important;
+}
+
+.success-title {
+    color: #065f46 !important;
+    font-weight: 700 !important;
+    font-size: 1.5rem !important;
+}
+
+.success-button {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    padding: 12px 24px !important;
+    font-size: 1rem !important;
+    box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39) !important;
+    transition: all 0.3s ease !important;
+}
+
+.success-button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px 0 rgba(16, 185, 129, 0.5) !important;
+}
+
+.success-animation {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.checkmark-container {
+    display: inline-block;
+    margin: 20px 0;
+}
+
+.checkmark {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 3;
+    stroke: #10b981;
+    stroke-miterlimit: 10;
+    margin: 20px auto;
+    box-shadow: inset 0px 0px 0px #10b981;
+    animation: fill 0.4s ease-in-out 0.4s forwards, scale 0.3s ease-in-out 0.9s both;
+    position: relative;
+}
+
+.checkmark_stem {
+    width: 3px;
+    height: 18px;
+    background-color: #10b981;
+    position: absolute;
+    left: 26px;
+    top: 26px;
+    border-radius: 2px;
+    transform-origin: bottom;
+    transform: rotate(45deg) scaleY(0);
+    animation: checkmark-stem 0.3s ease-in-out 1.2s forwards;
+}
+
+.checkmark_kick {
+    width: 12px;
+    height: 3px;
+    background-color: #10b981;
+    position: absolute;
+    left: 18px;
+    top: 32px;
+    border-radius: 2px;
+    transform-origin: bottom;
+    transform: rotate(-45deg) scaleX(0);
+    animation: checkmark-kick 0.3s ease-in-out 1.5s forwards;
+}
+
+.success-message {
+    font-size: 1.1rem;
+    color: #065f46;
+    margin: 20px 0 10px 0;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* Animations */
+@keyframes fill {
+    100% {
+        box-shadow: inset 0px 0px 0px 30px #10b981;
+    }
+}
+
+@keyframes scale {
+    0%, 100% {
+        transform: none;
+    }
+    50% {
+        transform: scale3d(1.1, 1.1, 1);
+    }
+}
+
+@keyframes checkmark-stem {
+    100% {
+        transform: rotate(45deg) scaleY(1);
+    }
+}
+
+@keyframes checkmark-kick {
+    100% {
+        transform: rotate(-45deg) scaleX(1);
+    }
+}
+
+/* Bounce animation */
+@keyframes animate__bounceIn {
+    from,
+    20%,
+    40%,
+    60%,
+    80%,
+    to {
+        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    0% {
+        opacity: 0;
+        transform: scale3d(0.3, 0.3, 0.3);
+    }
+
+    20% {
+        transform: scale3d(1.1, 1.1, 1.1);
+    }
+
+    40% {
+        transform: scale3d(0.9, 0.9, 0.9);
+    }
+
+    60% {
+        opacity: 1;
+        transform: scale3d(1.03, 1.03, 1.03);
+    }
+
+    80% {
+        transform: scale3d(0.97, 0.97, 0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale3d(1, 1, 1);
+    }
+}
+
+@keyframes animate__fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.animate__animated {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+.animate__faster {
+    animation-duration: 0.5s;
+}
+
+.animate__bounceIn {
+    animation-name: animate__bounceIn;
+}
+
+.animate__fadeOut {
+    animation-name: animate__fadeOut;
+}
+
 /* Custom button hover effects */
 .btn-primary {
     @apply bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300;
