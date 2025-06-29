@@ -408,7 +408,7 @@ document.getElementById('postForm').addEventListener('submit', async function(e)
 
                             <!-- Platform Success Cards -->
                             <div class="platform-success-grid">
-                                ${Object.keys(result.results || {}).map((platform, index) => {
+                                ` + Object.keys(result.results || {}).map((platform, index) => {
                                     const platformIcons = {
                                         telegram: '📱',
                                         instagram: '📸', 
@@ -416,20 +416,18 @@ document.getElementById('postForm').addEventListener('submit', async function(e)
                                         tiktok: '🎵',
                                         facebook: '👥'
                                     };
-                                    return `
-                                        <div class="platform-success-card" style="animation-delay: ${index * 0.2}s">
-                                            <div class="platform-icon">${platformIcons[platform] || '🌐'}</div>
-                                            <div class="platform-label">${platform.charAt(0).toUpperCase() + platform.slice(1)}</div>
+                                    return `<div class="platform-success-card" style="animation-delay: ` + (index * 0.2) + `s">
+                                            <div class="platform-icon">` + (platformIcons[platform] || '🌐') + `</div>
+                                            <div class="platform-label">` + platform.charAt(0).toUpperCase() + platform.slice(1) + `</div>
                                             <div class="success-indicator">✅</div>
-                                        </div>
-                                    `;
-                                }).join('')}
+                                        </div>`;
+                                }).join('') + `
                             </div>
 
                             <!-- Success Stats -->
                             <div class="success-metrics">
                                 <div class="metric">
-                                    <span class="metric-value">${Object.keys(result.results || {}).length}</span>
+                                    <span class="metric-value">` + Object.keys(result.results || {}).length + `</span>
                                     <span class="metric-label">Platforms</span>
                                 </div>
                                 <div class="metric">
@@ -437,7 +435,7 @@ document.getElementById('postForm').addEventListener('submit', async function(e)
                                     <span class="metric-label">Success</span>
                                 </div>
                                 <div class="metric">
-                                    <span class="metric-value">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                                    <span class="metric-value">` + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + `</span>
                                     <span class="metric-label">Posted</span>
                                 </div>
                             </div>
