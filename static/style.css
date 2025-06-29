@@ -1,0 +1,209 @@
+/* Custom styles for Anonymous Creations Dashboard */
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Smooth transitions */
+* {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, box-shadow, transform, filter, backdrop-filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+/* Focus states */
+input:focus,
+textarea:focus,
+select:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+}
+
+/* Custom checkbox styling */
+input[type="checkbox"]:checked {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-8 8-.708-.708 8-8 .708.708z'/%3e%3cpath d='m5.854 7.146-2-2-.708.708 2 2 .708-.708z'/%3e%3c/svg%3e");
+}
+
+/* Platform selection hover effects */
+.platform-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dark .platform-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* File upload area styling */
+.file-upload-area {
+    transition: all 0.3s ease;
+}
+
+.file-upload-area:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+.dark .file-upload-area:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Status indicators */
+.status-success {
+    @apply text-green-600 dark:text-green-400;
+}
+
+.status-failed {
+    @apply text-red-600 dark:text-red-400;
+}
+
+.status-pending {
+    @apply text-yellow-600 dark:text-yellow-400;
+}
+
+/* Loading spinner */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* RTL support */
+[dir="rtl"] .ml-2 {
+    margin-left: 0;
+    margin-right: 0.5rem;
+}
+
+[dir="rtl"] .mr-2 {
+    margin-right: 0;
+    margin-left: 0.5rem;
+}
+
+[dir="rtl"] .pl-4 {
+    padding-left: 0;
+    padding-right: 1rem;
+}
+
+[dir="rtl"] .pr-4 {
+    padding-right: 0;
+    padding-left: 1rem;
+}
+
+[dir="rtl"] .border-l-4 {
+    border-left-width: 0;
+    border-right-width: 4px;
+}
+
+/* Arabic text improvements */
+.font-arabic {
+    line-height: 1.8;
+}
+
+.font-arabic h1,
+.font-arabic h2,
+.font-arabic h3,
+.font-arabic h4,
+.font-arabic h5,
+.font-arabic h6 {
+    line-height: 1.4;
+}
+
+/* Mobile responsive improvements */
+@media (max-width: 640px) {
+    .fixed.top-4.right-4 {
+        top: 1rem;
+        right: 1rem;
+    }
+    
+    .max-w-7xl {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+    
+    .lg\:col-span-2,
+    .lg\:col-span-1 {
+        grid-column: span 1;
+    }
+}
+
+/* Animation for success/error messages */
+.swal2-popup {
+    font-family: inherit !important;
+}
+
+/* Custom button hover effects */
+.btn-primary {
+    @apply bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300;
+}
+
+.btn-secondary {
+    @apply bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300;
+}
+
+.btn-success {
+    @apply bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300;
+}
+
+.btn-danger {
+    @apply bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300;
+}
+
+/* Form validation styles */
+.form-error {
+    @apply border-red-300 dark:border-red-600;
+}
+
+.form-success {
+    @apply border-green-300 dark:border-green-600;
+}
+
+/* Toast notification positioning */
+.toast-container {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 9999;
+}
+
+@media (max-width: 640px) {
+    .toast-container {
+        top: 1rem;
+        right: 1rem;
+        left: 1rem;
+    }
+}

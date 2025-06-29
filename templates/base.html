@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Anonymous Creations 🇵🇸{% endblock %}</title>
+    
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+    
+    <style>
+        /* Arabic font support */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        .font-arabic {
+            font-family: 'Noto Sans Arabic', sans-serif;
+        }
+        
+        .font-english {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* RTL support */
+        [dir="rtl"] {
+            text-align: right;
+        }
+        
+        [dir="rtl"] .ltr-force {
+            direction: ltr;
+            text-align: left;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300 font-english" id="body-root">
+    <!-- Language and Theme Controls -->
+    <div class="fixed top-4 right-4 z-50 flex gap-2">
+        <!-- Language Toggle -->
+        <button 
+            onclick="toggleLanguage()" 
+            class="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 p-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700"
+            title="Toggle Language"
+        >
+            <span id="lang-icon">🌐</span>
+        </button>
+        
+        <!-- Theme Toggle -->
+        <button 
+            onclick="toggleTheme()" 
+            class="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 p-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700"
+            title="Toggle Theme"
+        >
+            <i id="theme-icon" class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    <!-- Language Translations -->
+    <script>
+        const translations = {
+            en: {
+                title: "Anonymous Creations 🇵🇸",
+                dashboard: "Dashboard",
+                login: "Login",
+                logout: "Logout",
+                username: "Username",
+                password: "Password",
+                signin: "Sign In",
+                create_post: "Create Post",
+                content: "Content",
+                select_platforms: "Select Platforms",
+                upload_media: "Upload Media",
+                schedule: "Schedule (Optional)",
+                post_now: "Post Now",
+                recent_posts: "Recent Posts",
+                status: "Status",
+                platforms: "Platforms",
+                created: "Created",
+                success: "Success",
+                failed: "Failed",
+                pending: "Pending",
+                telegram: "Telegram",
+                instagram: "Instagram",
+                youtube: "YouTube",
+                tiktok: "TikTok",
+                no_posts: "No posts yet",
+                posting: "Posting...",
+                post_success: "Post completed successfully!",
+                post_error: "Some platforms failed to post",
+                file_too_large: "File size exceeds 10MB limit",
+                invalid_file: "Invalid file type",
+                select_platform: "Please select at least one platform",
+                content_required: "Content is required"
+            },
+            ar: {
+                title: "إبداعات مجهولة 🇵🇸",
+                dashboard: "لوحة التحكم",
+                login: "تسجيل الدخول",
+                logout: "تسجيل الخروج",
+                username: "اسم المستخدم",
+                password: "كلمة المرور",
+                signin: "دخول",
+                create_post: "إنشاء منشور",
+                content: "المحتوى",
+                select_platforms: "اختر المنصات",
+                upload_media: "رفع الوسائط",
+                schedule: "الجدولة (اختياري)",
+                post_now: "انشر الآن",
+                recent_posts: "المنشورات الأخيرة",
+                status: "الحالة",
+                platforms: "المنصات",
+                created: "تم الإنشاء",
+                success: "نجح",
+                failed: "فشل",
+                pending: "قيد الانتظار",
+                telegram: "تيليجرام",
+                instagram: "انستجرام",
+                youtube: "يوتيوب",
+                tiktok: "تيك توك",
+                no_posts: "لا توجد منشورات بعد",
+                posting: "جارٍ النشر...",
+                post_success: "تم النشر بنجاح!",
+                post_error: "فشل النشر في بعض المنصات",
+                file_too_large: "حجم الملف يتجاوز 10 ميجابايت",
+                invalid_file: "نوع الملف غير صالح",
+                select_platform: "يرجى اختيار منصة واحدة على الأقل",
+                content_required: "المحتوى مطلوب"
+            }
+        };
+
+        let currentLang = localStorage.getItem('language') || 'en';
+        let currentTheme = localStorage.getItem('theme') || 'light';
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('language', currentLang);
+            updateLanguage();
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            updateTheme();
+        }
+
+        function updateLanguage() {
+            const html = document.getElementById('html-root');
+            const body = document.getElementById('body-root');
+            
+            if (currentLang === 'ar') {
+                html.dir = 'rtl';
+                html.lang = 'ar';
+                body.classList.add('font-arabic');
+                body.classList.remove('font-english');
+                document.getElementById('lang-icon').textContent = 'ع';
+            } else {
+                html.dir = 'ltr';
+                html.lang = 'en';
+                body.classList.add('font-english');
+                body.classList.remove('font-arabic');
+                document.getElementById('lang-icon').textContent = 'A';
+            }
+            
+            // Update all translatable elements
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[currentLang][key]) {
+                    element.textContent = translations[currentLang][key];
+                }
+            });
+            
+            // Update placeholders
+            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-translate-placeholder');
+                if (translations[currentLang][key]) {
+                    element.placeholder = translations[currentLang][key];
+                }
+            });
+        }
+
+        function updateTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (currentTheme === 'dark') {
+                html.classList.add('dark');
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                html.classList.remove('dark');
+                themeIcon.className = 'fas fa-moon';
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLanguage();
+            updateTheme();
+        });
+
+        // Utility function to get translation
+        function t(key) {
+            return translations[currentLang][key] || key;
+        }
+    </script>
+
+    <!-- Custom JavaScript -->
+    <script src="/static/script.js"></script>
+</body>
+</html>
