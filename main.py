@@ -25,13 +25,14 @@ from social_platforms import SocialMediaManager
 
 app = FastAPI(title="Anonymous Creations Dashboard")
 
-# Add session middleware with proper cookie settings
+# Add session middleware with improved cookie settings for browser compatibility
 app.add_middleware(
     SessionMiddleware,
     secret_key=os.getenv("SECRET_KEY", "your-secret-key-change-this"),
     max_age=1800,  # 30 minutes
     same_site="lax",
-    https_only=False
+    https_only=False,
+    session_cookie="session"
 )
 
 # Add CORS middleware for development
@@ -64,16 +65,37 @@ ALLOWED_EXTENSIONS = {
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
 def get_current_user(request: Request, db: Session = Depends(get_db)):
-    """Get current user from session"""
+    """Get current user from session with fallback authentication"""
     try:
+        # Primary authentication: session
         user_id = request.session.get("user_id")
-        if not user_id:
-            return None
+        if user_id:
+            user = db.query(User).filter(User.id == user_id).first()
+            if user:
+                return user
         
-        user = db.query(User).filter(User.id == user_id).first()
-        return user
+        # Fallback authentication: backup cookie
+        backup_cookie = request.cookies.get("user_session")
+        if backup_cookie and ":" in backup_cookie:
+            try:
+                cookie_user_id, cookie_username = backup_cookie.split(":", 1)
+                user = db.query(User).filter(
+                    User.id == int(cookie_user_id),
+                    User.username == cookie_username
+                ).first()
+                if user:
+                    # Restore session
+                    request.session["user_id"] = user.id
+                    request.session["username"] = user.username
+                    request.session["authenticated"] = True
+                    return user
+            except (ValueError, TypeError):
+                pass
+                
+        print(f"Authentication failed - Session: {request.session}, Cookie: {backup_cookie}")
+        return None
     except Exception as e:
-        print(f"Session error: {e}")
+        print(f"Authentication error: {e}")
         return None
 
 def require_auth(request: Request, db: Session = Depends(get_db)):
@@ -160,15 +182,30 @@ async def login(
             }
         )
     
-    # Set session
+    # Set session with additional security
     request.session["user_id"] = user.id
-    return RedirectResponse(url="/dashboard", status_code=302)
+    request.session["username"] = user.username
+    request.session["authenticated"] = True
+    
+    response = RedirectResponse(url="/dashboard", status_code=302)
+    # Also set a backup cookie for reliability
+    response.set_cookie(
+        key="user_session", 
+        value=f"{user.id}:{user.username}", 
+        max_age=1800,
+        httponly=True,
+        samesite="lax"
+    )
+    return response
 
 @app.get("/logout")
 async def logout(request: Request):
     """Handle logout"""
     request.session.clear()
-    return RedirectResponse(url="/login", status_code=302)
+    response = RedirectResponse(url="/login", status_code=302)
+    # Clear backup cookie
+    response.delete_cookie("user_session")
+    return response
 
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard(
