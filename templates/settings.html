@@ -244,26 +244,56 @@
                                         <p class="text-sm text-gray-600 dark:text-gray-400">Pages and Profile posting</p>
                                     </div>
                                 </div>
-                                <span class="px-2 py-1 text-xs rounded-full bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
+                                <span id="facebook-status" class="px-2 py-1 text-xs rounded-full bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
                                     Not Configured
                                 </span>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Access Token</label>
-                                    <input type="password" placeholder="Enter Facebook Access Token" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white">
+                                    <input 
+                                        id="facebook-token" 
+                                        type="password" 
+                                        placeholder="Enter Facebook Access Token" 
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white"
+                                    >
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        Get from Facebook Developers → Graph API Explorer
+                                    </p>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Page ID (Optional)</label>
-                                    <input type="text" placeholder="Enter Page ID for page posting" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Page ID (Optional for Page Posting)</label>
+                                    <input 
+                                        id="facebook-page-id" 
+                                        type="text" 
+                                        placeholder="Enter Page ID for page posting (leave empty for personal profile)" 
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white"
+                                    >
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        Find in Page Settings → Page Info → Page ID
+                                    </p>
+                                </div>
+                                <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md">
+                                    <h5 class="font-medium text-gray-900 dark:text-white mb-2">Required Permissions:</h5>
+                                    <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                        <li>• pages_manage_posts (for page posting)</li>
+                                        <li>• pages_read_engagement</li>
+                                        <li>• publish_to_groups (for personal profile)</li>
+                                    </ul>
                                 </div>
                             </div>
                             <div class="mt-4 flex justify-between items-center">
-                                <button class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">
+                                <button 
+                                    onclick="showFacebookHelp()" 
+                                    class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm"
+                                >
                                     <i class="fas fa-question-circle mr-1"></i>
-                                    Facebook Developer Setup
+                                    Setup Guide
                                 </button>
-                                <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-300">
+                                <button 
+                                    onclick="testFacebookConnection()" 
+                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-300"
+                                >
                                     Test Connection
                                 </button>
                             </div>
@@ -440,5 +470,82 @@ function showSection(sectionName) {
 document.addEventListener('DOMContentLoaded', function() {
     showSection('platforms');
 });
+
+// Facebook Testing and Configuration
+async function testFacebookConnection() {
+    const token = document.getElementById('facebook-token').value;
+    const pageId = document.getElementById('facebook-page-id').value;
+    const statusElement = document.getElementById('facebook-status');
+    
+    if (!token) {
+        showToast('Please enter Facebook Access Token', 'error');
+        return;
+    }
+    
+    try {
+        // Test token validity
+        const testUrl = `https://graph.facebook.com/me?access_token=${token}`;
+        const response = await fetch(testUrl);
+        const data = await response.json();
+        
+        if (response.ok && data.id) {
+            statusElement.className = 'px-2 py-1 text-xs rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200';
+            statusElement.textContent = 'Connected';
+            
+            showToast(`Connected as: ${data.name}`, 'success');
+            
+            // Test page access if page ID provided
+            if (pageId) {
+                const pageUrl = `https://graph.facebook.com/${pageId}?access_token=${token}`;
+                const pageResponse = await fetch(pageUrl);
+                const pageData = await pageResponse.json();
+                
+                if (pageResponse.ok) {
+                    showToast(`Page verified: ${pageData.name}`, 'success');
+                } else {
+                    showToast('Page ID invalid or no access', 'warning');
+                }
+            }
+        } else {
+            statusElement.className = 'px-2 py-1 text-xs rounded-full bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
+            statusElement.textContent = 'Error';
+            showToast(data.error?.message || 'Invalid token', 'error');
+        }
+    } catch (error) {
+        statusElement.className = 'px-2 py-1 text-xs rounded-full bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
+        statusElement.textContent = 'Error';
+        showToast('Connection test failed', 'error');
+    }
+}
+
+function showFacebookHelp() {
+    Swal.fire({
+        title: 'Facebook Setup Guide',
+        html: `
+            <div class="text-left">
+                <h4 class="font-bold mb-2">Step 1: Create Facebook App</h4>
+                <p class="mb-3">1. Go to <a href="https://developers.facebook.com" target="_blank" class="text-blue-600">Facebook Developers</a></p>
+                <p class="mb-3">2. Create a new app → Business → Next</p>
+                
+                <h4 class="font-bold mb-2">Step 2: Get Access Token</h4>
+                <p class="mb-3">1. Go to Graph API Explorer</p>
+                <p class="mb-3">2. Select your app</p>
+                <p class="mb-3">3. Add permissions: pages_manage_posts, pages_read_engagement</p>
+                <p class="mb-3">4. Generate token and copy it</p>
+                
+                <h4 class="font-bold mb-2">Step 3: Find Page ID (Optional)</h4>
+                <p class="mb-3">1. Go to your Facebook Page</p>
+                <p class="mb-3">2. Settings → Page Info → Page ID</p>
+                
+                <div class="bg-yellow-50 p-3 rounded mt-4">
+                    <p class="text-sm"><strong>Note:</strong> Leave Page ID empty to post to personal profile instead of page</p>
+                </div>
+            </div>
+        `,
+        width: 600,
+        showCloseButton: true,
+        confirmButtonText: 'Got it!'
+    });
+}
 </script>
 {% endblock %}

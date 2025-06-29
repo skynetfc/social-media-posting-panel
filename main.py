@@ -221,14 +221,33 @@ async def dashboard(
 ):
     """Dashboard page"""
     # Get recent posts
-    recent_posts = db.query(PostLog).order_by(PostLog.created_at.desc()).limit(10).all()
+    recent_posts = db.query(PostLog).filter(PostLog.user_id == user.id).order_by(PostLog.created_at.desc()).limit(10).all()
+    
+    # Calculate statistics
+    total_posts = db.query(PostLog).filter(PostLog.user_id == user.id).count()
+    successful_posts = db.query(PostLog).filter(
+        PostLog.user_id == user.id, 
+        PostLog.status == "completed"
+    ).count()
+    failed_posts = db.query(PostLog).filter(
+        PostLog.user_id == user.id, 
+        PostLog.status == "failed"
+    ).count()
+    pending_posts = db.query(PostLog).filter(
+        PostLog.user_id == user.id, 
+        PostLog.status == "pending"
+    ).count()
     
     return templates.TemplateResponse(
         "dashboard.html", 
         {
             "request": request, 
             "user": user,
-            "recent_posts": recent_posts
+            "recent_posts": recent_posts,
+            "total_posts": total_posts,
+            "successful_posts": successful_posts,
+            "failed_posts": failed_posts,
+            "pending_posts": pending_posts
         }
     )
 
