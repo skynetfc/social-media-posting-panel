@@ -24,3 +24,7 @@ author = "agent"
 task = "shell.exec"
 args = "pip install fastapi uvicorn sqlalchemy bcrypt pyjwt python-multipart requests aiohttp jinja2 python-dotenv && python main.py"
 waitForPort = 5000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
