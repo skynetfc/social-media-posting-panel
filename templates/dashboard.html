@@ -1,5 +1,6 @@
+
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en" dir="ltr" id="html-root">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
     <script>
         tailwind.config = {
@@ -16,28 +17,135 @@
                 extend: {
                     fontFamily: {
                         'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'arabic': ['Noto Sans Arabic', 'sans-serif']
                     }
                 }
             }
         }
     </script>
+    <style>
+        .font-arabic {
+            font-family: 'Noto Sans Arabic', sans-serif;
+        }
+        
+        .font-english {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        [dir="rtl"] {
+            text-align: right;
+        }
+        
+        [dir="rtl"] .ltr-force {
+            direction: ltr;
+            text-align: left;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 font-sans">
+<body class="bg-gray-50 dark:bg-gray-900 font-english transition-colors duration-300" id="body-root">
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <!-- Header -->
+        <!-- Enhanced Header with Navigation -->
         <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center py-4">
+                    <!-- Logo and Brand -->
                     <div class="flex items-center">
-                        <h1 class="text-2xl md:text-2xl font-bold text-gray-900 dark:text-white">
-                            Anonymous Creations
-                        </h1>
+                        <div class="flex items-center mr-6">
+                            <!-- Palestinian Flag SVG Logo -->
+                            <svg width="32" height="24" viewBox="0 0 32 24" class="mr-3">
+                                <rect x="0" y="0" width="32" height="8" fill="#CE1126"/>
+                                <rect x="0" y="8" width="32" height="8" fill="#FFFFFF"/>
+                                <rect x="0" y="16" width="32" height="8" fill="#000000"/>
+                                <polygon points="0,0 0,24 16,12" fill="#007A3D"/>
+                            </svg>
+                            <div>
+                                <h1 class="text-xl font-bold text-gray-900 dark:text-white" data-translate="brand_title">
+                                    Anonymous Creations
+                                </h1>
+                                <p class="text-xs text-gray-600 dark:text-gray-400" data-translate="brand_subtitle">
+                                    Social Media Dashboard
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">Welcome, {{ user.username }}</span>
-                        <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
-                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+
+                    <!-- Navigation Menu -->
+                    <nav class="hidden md:flex items-center space-x-6">
+                        <a href="/dashboard" class="flex items-center px-3 py-2 text-blue-600 bg-blue-50 dark:bg-blue-900 dark:text-blue-400 rounded-lg font-medium transition-colors duration-200">
+                            <i class="fas fa-home mr-2"></i>
+                            <span data-translate="dashboard">Dashboard</span>
                         </a>
+                        <a href="/logs" class="flex items-center px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                            <i class="fas fa-chart-line mr-2"></i>
+                            <span data-translate="analytics">Analytics</span>
+                        </a>
+                        <a href="/settings" class="flex items-center px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                            <i class="fas fa-cog mr-2"></i>
+                            <span data-translate="settings">Settings</span>
+                        </a>
+                    </nav>
+
+                    <!-- Controls Section -->
+                    <div class="flex items-center gap-3">
+                        <!-- Language Toggle -->
+                        <button 
+                            onclick="toggleLanguage()" 
+                            class="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
+                            title="Toggle Language"
+                        >
+                            <span id="lang-icon" class="text-sm">🇺🇸</span>
+                            <span class="ml-2 text-sm font-medium" id="lang-text">EN</span>
+                        </button>
+                        
+                        <!-- Theme Toggle -->
+                        <button 
+                            onclick="toggleTheme()" 
+                            class="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
+                            title="Toggle Theme"
+                        >
+                            <i id="theme-icon" class="fas fa-moon text-sm"></i>
+                            <span class="ml-2 text-sm font-medium" id="theme-text" data-translate="dark">Dark</span>
+                        </button>
+
+                        <!-- User Menu -->
+                        <div class="flex items-center space-x-3 border-l border-gray-300 dark:border-gray-600 pl-3">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">
+                                <span data-translate="welcome">Welcome</span>, {{ user.username }}
+                            </span>
+                            <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                                <i class="fas fa-sign-out-alt mr-2"></i>
+                                <span data-translate="logout">Logout</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+
+                <!-- Mobile Navigation -->
+                <div id="mobile-menu" class="md:hidden hidden border-t border-gray-200 dark:border-gray-700 pt-4 pb-4">
+                    <div class="flex flex-col space-y-2">
+                        <a href="/dashboard" class="flex items-center px-3 py-2 text-blue-600 bg-blue-50 dark:bg-blue-900 dark:text-blue-400 rounded-lg">
+                            <i class="fas fa-home mr-2"></i>
+                            <span data-translate="dashboard">Dashboard</span>
+                        </a>
+                        <a href="/logs" class="flex items-center px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                            <i class="fas fa-chart-line mr-2"></i>
+                            <span data-translate="analytics">Analytics</span>
+                        </a>
+                        <a href="/settings" class="flex items-center px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                            <i class="fas fa-cog mr-2"></i>
+                            <span data-translate="settings">Settings</span>
+                        </a>
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
+                            <a href="/logout" class="flex items-center px-3 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg">
+                                <i class="fas fa-sign-out-alt mr-2"></i>
+                                <span data-translate="logout">Logout</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -53,7 +161,7 @@
                             <i class="fas fa-paper-plane text-blue-600 dark:text-blue-400"></i>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Posts</p>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400" data-translate="total_posts">Total Posts</p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ total_posts }}</p>
                         </div>
                     </div>
@@ -65,7 +173,7 @@
                             <i class="fas fa-check-circle text-green-600 dark:text-green-400"></i>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Successful</p>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400" data-translate="successful">Successful</p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ successful_posts }}</p>
                         </div>
                     </div>
@@ -77,7 +185,7 @@
                             <i class="fas fa-times-circle text-red-600 dark:text-red-400"></i>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Failed</p>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400" data-translate="failed">Failed</p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ failed_posts }}</p>
                         </div>
                     </div>
@@ -89,7 +197,7 @@
                             <i class="fas fa-clock text-yellow-600 dark:text-yellow-400"></i>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Pending</p>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400" data-translate="pending">Pending</p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ pending_posts }}</p>
                         </div>
                     </div>
@@ -100,33 +208,35 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
                 <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                     <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-                        <i class="fas fa-plus-circle mr-2 text-blue-600"></i>Create Post
+                        <i class="fas fa-plus-circle mr-2 text-blue-600"></i>
+                        <span data-translate="create_post">Create Post</span>
                     </h2>
                 </div>
 
                 <form id="postForm" class="p-6 space-y-6" enctype="multipart/form-data">
                     <!-- Content -->
                     <div>
-                        <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Content</label>
+                        <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="content">Content</label>
                         <textarea 
                             id="content" 
                             name="content" 
                             rows="4" 
                             required
                             class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
+                            data-translate-placeholder="content_placeholder"
                             placeholder="What's on your mind? Share your thoughts with the world..."
                         ></textarea>
                     </div>
 
                     <!-- Platform Selection -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Select Platforms</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3" data-translate="select_platforms">Select Platforms</label>
                         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                             <div class="platform-card relative">
                                 <input type="checkbox" id="telegram" name="platforms" value="telegram" class="sr-only">
                                 <label for="telegram" class="flex items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800">
                                     <i class="fab fa-telegram text-blue-500 text-xl mr-3"></i>
-                                    <span class="text-gray-900 dark:text-white font-medium">Telegram</span>
+                                    <span class="text-gray-900 dark:text-white font-medium" data-translate="telegram">Telegram</span>
                                     <i class="fas fa-check absolute top-2 right-2 text-green-500 opacity-0 platform-check"></i>
                                 </label>
                             </div>
@@ -135,7 +245,7 @@
                                 <input type="checkbox" id="instagram" name="platforms" value="instagram" class="sr-only">
                                 <label for="instagram" class="flex items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-pink-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800">
                                     <i class="fab fa-instagram text-pink-500 text-xl mr-3"></i>
-                                    <span class="text-gray-900 dark:text-white font-medium">Instagram</span>
+                                    <span class="text-gray-900 dark:text-white font-medium" data-translate="instagram">Instagram</span>
                                     <i class="fas fa-check absolute top-2 right-2 text-green-500 opacity-0 platform-check"></i>
                                 </label>
                             </div>
@@ -144,7 +254,7 @@
                                 <input type="checkbox" id="youtube" name="platforms" value="youtube" class="sr-only">
                                 <label for="youtube" class="flex items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-red-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800">
                                     <i class="fab fa-youtube text-red-500 text-xl mr-3"></i>
-                                    <span class="text-gray-900 dark:text-white font-medium">YouTube</span>
+                                    <span class="text-gray-900 dark:text-white font-medium" data-translate="youtube">YouTube</span>
                                     <i class="fas fa-check absolute top-2 right-2 text-green-500 opacity-0 platform-check"></i>
                                 </label>
                             </div>
@@ -153,7 +263,7 @@
                                 <input type="checkbox" id="tiktok" name="platforms" value="tiktok" class="sr-only">
                                 <label for="tiktok" class="flex items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800">
                                     <i class="fab fa-tiktok text-gray-900 dark:text-white text-xl mr-3"></i>
-                                    <span class="text-gray-900 dark:text-white font-medium">TikTok</span>
+                                    <span class="text-gray-900 dark:text-white font-medium" data-translate="tiktok">TikTok</span>
                                     <i class="fas fa-check absolute top-2 right-2 text-green-500 opacity-0 platform-check"></i>
                                 </label>
                             </div>
@@ -162,7 +272,7 @@
                                 <input type="checkbox" id="facebook" name="platforms" value="facebook" class="sr-only">
                                 <label for="facebook" class="flex items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800">
                                     <i class="fab fa-facebook text-blue-600 text-xl mr-3"></i>
-                                    <span class="text-gray-900 dark:text-white font-medium">Facebook</span>
+                                    <span class="text-gray-900 dark:text-white font-medium" data-translate="facebook">Facebook</span>
                                     <i class="fas fa-check absolute top-2 right-2 text-green-500 opacity-0 platform-check"></i>
                                 </label>
                             </div>
@@ -171,14 +281,14 @@
 
                     <!-- File Upload -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Upload Media</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3" data-translate="upload_media">Upload Media</label>
                         <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                             <input type="file" id="media" name="media" accept="image/*,video/*" class="hidden">
                             <label for="media" class="cursor-pointer">
                                 <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 dark:text-gray-500 mb-4"></i>
-                                <p class="text-lg font-medium text-gray-700 dark:text-gray-300">Upload a file</p>
-                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">or drag and drop</p>
-                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">Images or Videos up to 10MB</p>
+                                <p class="text-lg font-medium text-gray-700 dark:text-gray-300" data-translate="upload_file">Upload a file</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2" data-translate="drag_drop">or drag and drop</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-2" data-translate="file_limit">Images or Videos up to 10MB</p>
                             </label>
                         </div>
                         <div id="filePreview" class="hidden mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
@@ -196,7 +306,7 @@
 
                     <!-- Schedule (Optional) -->
                     <div>
-                        <label for="schedule_time" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Schedule (Optional)</label>
+                        <label for="schedule_time" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="schedule">Schedule (Optional)</label>
                         <input 
                             type="datetime-local" 
                             id="schedule_time" 
@@ -213,7 +323,7 @@
                             class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center"
                         >
                             <i class="fas fa-paper-plane mr-2"></i>
-                            <span id="submitText">Post Now</span>
+                            <span id="submitText" data-translate="post_now">Post Now</span>
                             <i id="submitSpinner" class="fas fa-spinner fa-spin ml-2 hidden"></i>
                         </button>
                     </div>
@@ -224,7 +334,8 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                 <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                     <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-                        <i class="fas fa-history mr-2 text-green-600"></i>Recent Posts
+                        <i class="fas fa-history mr-2 text-green-600"></i>
+                        <span data-translate="recent_posts">Recent Posts</span>
                     </h2>
                 </div>
 
@@ -248,15 +359,15 @@
                                     <div class="ml-4">
                                         {% if post.status == 'completed' %}
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                                                <i class="fas fa-check-circle mr-1"></i>Success
+                                                <i class="fas fa-check-circle mr-1"></i><span data-translate="success">Success</span>
                                             </span>
                                         {% elif post.status == 'failed' %}
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
-                                                <i class="fas fa-times-circle mr-1"></i>Failed
+                                                <i class="fas fa-times-circle mr-1"></i><span data-translate="failed">Failed</span>
                                             </span>
                                         {% else %}
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
-                                                <i class="fas fa-clock mr-1"></i>Pending
+                                                <i class="fas fa-clock mr-1"></i><span data-translate="pending">Pending</span>
                                             </span>
                                         {% endif %}
                                     </div>
@@ -267,8 +378,8 @@
                     {% else %}
                         <div class="text-center py-8">
                             <i class="fas fa-inbox text-4xl text-gray-400 dark:text-gray-500 mb-4"></i>
-                            <p class="text-gray-500 dark:text-gray-400">No recent posts found</p>
-                            <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Start creating content to see your posts here</p>
+                            <p class="text-gray-500 dark:text-gray-400" data-translate="no_posts">No recent posts found</p>
+                            <p class="text-sm text-gray-400 dark:text-gray-500 mt-1" data-translate="start_creating">Start creating content to see your posts here</p>
                         </div>
                     {% endif %}
                 </div>
@@ -276,9 +387,172 @@
         </div>
     </div>
 
+    <!-- Language Translations -->
     <script>
-        // Platform selection functionality
+        const translations = {
+            en: {
+                brand_title: "Anonymous Creations",
+                brand_subtitle: "Social Media Dashboard",
+                dashboard: "Dashboard",
+                analytics: "Analytics",
+                settings: "Settings",
+                welcome: "Welcome",
+                logout: "Logout",
+                dark: "Dark",
+                light: "Light",
+                total_posts: "Total Posts",
+                successful: "Successful",
+                failed: "Failed",
+                pending: "Pending",
+                create_post: "Create Post",
+                content: "Content",
+                content_placeholder: "What's on your mind? Share your thoughts with the world...",
+                select_platforms: "Select Platforms",
+                telegram: "Telegram",
+                instagram: "Instagram",
+                youtube: "YouTube",
+                tiktok: "TikTok",
+                facebook: "Facebook",
+                upload_media: "Upload Media",
+                upload_file: "Upload a file",
+                drag_drop: "or drag and drop",
+                file_limit: "Images or Videos up to 10MB",
+                schedule: "Schedule (Optional)",
+                post_now: "Post Now",
+                recent_posts: "Recent Posts",
+                success: "Success",
+                no_posts: "No recent posts found",
+                start_creating: "Start creating content to see your posts here",
+                posting: "Posting..."
+            },
+            ar: {
+                brand_title: "إبداعات مجهولة",
+                brand_subtitle: "لوحة تحكم وسائل التواصل",
+                dashboard: "لوحة التحكم",
+                analytics: "التحليلات",
+                settings: "الإعدادات",
+                welcome: "مرحباً",
+                logout: "تسجيل الخروج",
+                dark: "مظلم",
+                light: "فاتح",
+                total_posts: "إجمالي المنشورات",
+                successful: "نجح",
+                failed: "فشل",
+                pending: "قيد الانتظار",
+                create_post: "إنشاء منشور",
+                content: "المحتوى",
+                content_placeholder: "ما الذي تفكر به؟ شارك أفكارك مع العالم...",
+                select_platforms: "اختر المنصات",
+                telegram: "تيليجرام",
+                instagram: "انستجرام",
+                youtube: "يوتيوب",
+                tiktok: "تيك توك",
+                facebook: "فيسبوك",
+                upload_media: "رفع الوسائط",
+                upload_file: "رفع ملف",
+                drag_drop: "أو اسحب وأفلت",
+                file_limit: "صور أو فيديوهات حتى 10 ميجابايت",
+                schedule: "الجدولة (اختياري)",
+                post_now: "انشر الآن",
+                recent_posts: "المنشورات الأخيرة",
+                success: "نجح",
+                no_posts: "لا توجد منشورات حديثة",
+                start_creating: "ابدأ في إنشاء المحتوى لرؤية منشوراتك هنا",
+                posting: "جارٍ النشر..."
+            }
+        };
+
+        let currentLang = localStorage.getItem('language') || 'en';
+        let currentTheme = localStorage.getItem('theme') || 'light';
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('language', currentLang);
+            updateLanguage();
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            updateTheme();
+        }
+
+        function updateLanguage() {
+            const html = document.getElementById('html-root');
+            const body = document.getElementById('body-root');
+            const langIcon = document.getElementById('lang-icon');
+            const langText = document.getElementById('lang-text');
+            
+            if (currentLang === 'ar') {
+                html.dir = 'rtl';
+                html.lang = 'ar';
+                body.classList.add('font-arabic');
+                body.classList.remove('font-english');
+                if (langIcon) langIcon.textContent = '🇵🇸';
+                if (langText) langText.textContent = 'العربية';
+            } else {
+                html.dir = 'ltr';
+                html.lang = 'en';
+                body.classList.add('font-english');
+                body.classList.remove('font-arabic');
+                if (langIcon) langIcon.textContent = '🇺🇸';
+                if (langText) langText.textContent = 'EN';
+            }
+            
+            // Update all translatable elements
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[currentLang][key]) {
+                    element.textContent = translations[currentLang][key];
+                }
+            });
+            
+            // Update placeholders
+            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-translate-placeholder');
+                if (translations[currentLang][key]) {
+                    element.placeholder = translations[currentLang][key];
+                }
+            });
+        }
+
+        function updateTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            if (currentTheme === 'dark') {
+                html.classList.add('dark');
+                if (themeIcon) themeIcon.className = 'fas fa-sun text-sm';
+                if (themeText) {
+                    themeText.textContent = translations[currentLang]['light'] || 'Light';
+                    themeText.setAttribute('data-translate', 'light');
+                }
+            } else {
+                html.classList.remove('dark');
+                if (themeIcon) themeIcon.className = 'fas fa-moon text-sm';
+                if (themeText) {
+                    themeText.textContent = translations[currentLang]['dark'] || 'Dark';
+                    themeText.setAttribute('data-translate', 'dark');
+                }
+            }
+        }
+
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        // Utility function to get translation
+        function t(key) {
+            return translations[currentLang][key] || key;
+        }
+
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
+            updateLanguage();
+            updateTheme();
+
             console.log('Anonymous Creations Dashboard initialized');
 
             // Platform selection
@@ -350,7 +624,7 @@
 
                 // Update button state
                 submitBtn.disabled = true;
-                submitText.textContent = 'Posting...';
+                submitText.textContent = t('posting');
                 submitSpinner.classList.remove('hidden');
 
                 try {
@@ -388,7 +662,7 @@
                 } finally {
                     // Reset button state
                     submitBtn.disabled = false;
-                    submitText.textContent = 'Post Now';
+                    submitText.textContent = t('post_now');
                     submitSpinner.classList.add('hidden');
                 }
             });
