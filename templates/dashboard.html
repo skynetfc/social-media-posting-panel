@@ -125,14 +125,6 @@
                                         <span class="text-gray-700 dark:text-gray-300 font-medium" data-translate="facebook">Facebook</span>
                                     </div>
                                 </label>
-                                
-                                <label class="platform-card flex items-center p-3 md:p-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-300 touch-target">
-                                    <input type="checkbox" name="platforms" value="facebook" class="h-5 w-5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
-                                    <div class="ml-3 flex items-center">
-                                        <i class="fab fa-facebook text-blue-600 mr-2 text-lg"></i>
-                                        <span class="text-gray-700 dark:text-gray-300 font-medium" data-translate="facebook">Facebook</span>
-                                    </div>
-                                </label>
                             </div>
                         </div>
 
@@ -402,11 +394,28 @@ document.getElementById('postForm').addEventListener('submit', async function(e)
             }, 2000);
             
         } else {
+            const successCount = Object.values(result.results).filter(r => r.success).length;
+            const totalCount = Object.keys(result.results).length;
+            
             Swal.fire({
-                icon: 'warning',
-                title: 'Partial Success',
+                icon: successCount > 0 ? 'warning' : 'error',
+                title: successCount > 0 ? `Partial Success (${successCount}/${totalCount})` : 'Posting Failed',
                 text: result.message,
-                footer: `<div class="text-left mt-4"><strong>Platform Results:</strong><br>${Object.entries(result.results).map(([platform, res]) => `${platform}: ${res.success ? '✅' : '❌'} ${res.message}`).join('<br>')}</div>`
+                html: `
+                    <div class="text-left mt-4">
+                        <strong>Platform Results:</strong><br>
+                        ${Object.entries(result.results).map(([platform, res]) => 
+                            `<div class="flex items-center justify-between py-1">
+                                <span class="capitalize">${platform}:</span>
+                                <span class="${res.success ? 'text-green-600' : 'text-red-600'}">${res.success ? '✅ Success' : '❌ Failed'}</span>
+                            </div>
+                            ${!res.success ? `<div class="text-xs text-gray-500 mb-2">${res.message}</div>` : ''}`
+                        ).join('')}
+                    </div>
+                `,
+                showConfirmButton: true,
+                confirmButtonText: 'OK',
+                width: '400px'
             });
         }
         
