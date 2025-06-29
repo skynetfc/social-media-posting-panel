@@ -25,10 +25,13 @@ from social_platforms import SocialMediaManager
 
 app = FastAPI(title="Anonymous Creations Dashboard")
 
-# Add session middleware
+# Add session middleware with proper cookie settings
 app.add_middleware(
     SessionMiddleware,
-    secret_key=os.getenv("SECRET_KEY", "your-secret-key-change-this")
+    secret_key=os.getenv("SECRET_KEY", "your-secret-key-change-this"),
+    max_age=1800,  # 30 minutes
+    same_site="lax",
+    https_only=False
 )
 
 # Add CORS middleware for development
