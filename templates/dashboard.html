@@ -1,828 +1,399 @@
-{% extends "base.html" %}
-
-{% block title %}Dashboard - Anonymous Creations{% endblock %}
-
-{% block content %}
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="header-nav flex justify-between items-center py-4">
-                <div class="flex items-center">
-                    <h1 class="header-title text-2xl md:text-2xl font-bold text-gray-900 dark:text-white" data-translate="title">
-                        Anonymous Creations
-                    </h1>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Anonymous Creations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 font-sans">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <!-- Header -->
+        <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center">
+                        <h1 class="text-2xl md:text-2xl font-bold text-gray-900 dark:text-white">
+                            Anonymous Creations
+                        </h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Welcome, {{ user.username }}</span>
+                        <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    </div>
                 </div>
-                <div class="header-actions flex items-center space-x-4">
-                    <nav class="nav-menu hidden md:flex space-x-4">
-                        <a href="/dashboard" class="text-primary-600 hover:text-primary-700 font-medium touch-target">
-                            Dashboard
-                        </a>
-                        <a href="/logs" class="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 touch-target">
-                            Analytics
-                        </a>
-                        <a href="/settings" class="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 touch-target">
-                            Settings
-                        </a>
-                    </nav>
-                    <span class="text-gray-600 dark:text-gray-400 text-sm md:text-base">
-                        Welcome, {{ user.username }}
-                    </span>
-                    <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg transition-colors duration-300 touch-target" data-translate="logout">
-                        Logout
-                    </a>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900">
+                            <i class="fas fa-paper-plane text-blue-600 dark:text-blue-400"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Posts</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ total_posts }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 dark:bg-green-900">
+                            <i class="fas fa-check-circle text-green-600 dark:text-green-400"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Successful</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ successful_posts }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-red-100 dark:bg-red-900">
+                            <i class="fas fa-times-circle text-red-600 dark:text-red-400"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Failed</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ failed_posts }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-yellow-100 dark:bg-yellow-900">
+                            <i class="fas fa-clock text-yellow-600 dark:text-yellow-400"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Pending</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ pending_posts }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Mobile Navigation -->
-            <div class="md:hidden border-t border-gray-200 dark:border-gray-700 py-2">
-                <nav class="flex justify-center space-x-6">
-                    <a href="/dashboard" class="text-primary-600 hover:text-primary-700 font-medium py-2 px-3 touch-target">
-                        <i class="fas fa-home mr-1"></i>
-                        Dashboard
-                    </a>
-                    <a href="/logs" class="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 py-2 px-3 touch-target">
-                        <i class="fas fa-chart-bar mr-1"></i>
-                        Analytics
-                    </a>
-                    <a href="/settings" class="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 py-2 px-3 touch-target">
-                        <i class="fas fa-cog mr-1"></i>
-                        Settings
-                    </a>
-                </nav>
-            </div>
-        </div>
-    </header>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Main Form -->
-            <div class="lg:col-span-2">
-                <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6" data-translate="create_post">
-                        Create Post
+            <!-- Create Post Section -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+                        <i class="fas fa-plus-circle mr-2 text-blue-600"></i>Create Post
                     </h2>
-
-                    <form id="postForm" class="space-y-6">
-                        <!-- Content -->
-                        <div>
-                            <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="content">
-                                Content
-                            </label>
-                            <textarea 
-                                id="content" 
-                                name="content" 
-                                rows="4" 
-                                required
-                                data-translate-placeholder="content"
-                                placeholder="Write your post content..."
-                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white transition-colors duration-300"
-                                oninput="updateCharacterCount()"
-                            ></textarea>
-                             <div id="charCounter" class="text-gray-500 text-sm">0/2200</div>
-                            <button type="button" onclick="enhanceContent()" class="mt-2 bg-primary-100 hover:bg-primary-200 text-primary-700 font-medium py-2 px-4 rounded-lg transition-colors duration-300">
-                                Enhance Content
-                            </button>
-                            <button type="button" onclick="showPostingAnalytics()" class="mt-2 bg-green-100 hover:bg-green-200 text-green-700 font-medium py-2 px-4 rounded-lg transition-colors duration-300">
-                                Preview Analytics
-                            </button>
-                        </div>
-
-                        <!-- Platforms -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3" data-translate="select_platforms">
-                                Select Platforms
-                            </label>
-                            <div class="platform-grid grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                                <label class="platform-card flex items-center p-3 md:p-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-300 touch-target">
-                                    <input type="checkbox" name="platforms" value="telegram" class="h-5 w-5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
-                                    <div class="ml-3 flex items-center">
-                                        <i class="fab fa-telegram text-blue-500 mr-2 text-lg"></i>
-                                        <span class="text-gray-700 dark:text-gray-300 font-medium" data-translate="telegram">Telegram</span>
-                                    </div>
-                                </label>
-
-                                <label class="platform-card flex items-center p-3 md:p-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-300 touch-target">
-                                    <input type="checkbox" name="platforms" value="instagram" class="h-5 w-5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
-                                    <div class="ml-3 flex items-center">
-                                        <i class="fab fa-instagram text-pink-500 mr-2 text-lg"></i>
-                                        <span class="text-gray-700 dark:text-gray-300 font-medium" data-translate="instagram">Instagram</span>
-                                    </div>
-                                </label>
-
-                                <label class="platform-card flex items-center p-3 md:p-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-300 touch-target">
-                                    <input type="checkbox" name="platforms" value="youtube" class="h-5 w-5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
-                                    <div class="ml-3 flex items-center">
-                                        <i class="fab fa-youtube text-red-500 mr-2 text-lg"></i>
-                                        <span class="text-gray-700 dark:text-gray-300 font-medium" data-translate="youtube">YouTube</span>
-                                    </div>
-                                </label>
-
-                                <label class="platform-card flex items-center p-3 md:p-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-300 touch-target">
-                                    <input type="checkbox" name="platforms" value="tiktok" class="h-5 w-5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
-                                    <div class="ml-3 flex items-center">
-                                        <i class="fab fa-tiktok text-black dark:text-white mr-2 text-lg"></i>
-                                        <span class="text-gray-700 dark:text-gray-300 font-medium" data-translate="tiktok">TikTok</span>
-                                    </div>
-                                </label>
-
-                                <label class="platform-card flex items-center p-3 md:p-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-300 touch-target">
-                                    <input type="checkbox" name="platforms" value="facebook" class="h-5 w-5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
-                                    <div class="ml-3 flex items-center">
-                                        <i class="fab fa-facebook text-blue-600 mr-2 text-lg"></i>
-                                        <span class="text-gray-700 dark:text-gray-300 font-medium" data-translate="facebook">Facebook</span>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- File Upload -->
-                        <div>
-                            <label for="file" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="upload_media">
-                                Upload Media (Optional)
-                            </label>
-                            <div class="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg hover:border-primary-400 dark:hover:border-primary-500 transition-colors duration-300">
-                                <div class="space-y-2 text-center">
-                                    <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl"></i>
-                                    <div class="flex text-sm text-gray-600 dark:text-gray-400">
-                                        <label for="file" class="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
-                                            <span>Upload a file</span>
-                                            <input id="file" name="file" type="file" class="sr-only" accept="image/*,video/*">
-                                        </label>
-                                        <p class="pl-1">or drag and drop</p>
-                                    </div>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">
-                                        Images or videos up to 10MB
-                                    </p>
-                                </div>
-                            </div>
-                            <div id="filePreview" class="mt-4 hidden">
-                                <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <div class="flex items-center">
-                                        <i class="fas fa-file mr-2 text-gray-500"></i>
-                                        <span id="fileName" class="text-sm text-gray-700 dark:text-gray-300"></span>
-                                    </div>
-                                    <button type="button" onclick="clearFile()" class="text-red-500 hover:text-red-700">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Schedule -->
-                        <div>
-                            <label for="schedule_time" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="schedule">
-                                Schedule (Optional)
-                            </label>
-                            <input 
-                                type="datetime-local" 
-                                id="schedule_time" 
-                                name="schedule_time"
-                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white transition-colors duration-300"
-                            >
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button 
-                            type="submit"
-                            id="submitBtn"
-                            class="w-full bg-primary-500 hover:bg-primary-600 disabled:bg-gray-400 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-                            data-translate="post_now"
-                        >
-                            Post Now
-                        </button>
-                    </form>
                 </div>
+
+                <form id="postForm" class="p-6 space-y-6" enctype="multipart/form-data">
+                    <!-- Content -->
+                    <div>
+                        <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Content</label>
+                        <textarea 
+                            id="content" 
+                            name="content" 
+                            rows="4" 
+                            required
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
+                            placeholder="What's on your mind? Share your thoughts with the world..."
+                        ></textarea>
+                    </div>
+
+                    <!-- Platform Selection -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Select Platforms</label>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                            <div class="platform-card relative">
+                                <input type="checkbox" id="telegram" name="platforms" value="telegram" class="sr-only">
+                                <label for="telegram" class="flex items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800">
+                                    <i class="fab fa-telegram text-blue-500 text-xl mr-3"></i>
+                                    <span class="text-gray-900 dark:text-white font-medium">Telegram</span>
+                                    <i class="fas fa-check absolute top-2 right-2 text-green-500 opacity-0 platform-check"></i>
+                                </label>
+                            </div>
+
+                            <div class="platform-card relative">
+                                <input type="checkbox" id="instagram" name="platforms" value="instagram" class="sr-only">
+                                <label for="instagram" class="flex items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-pink-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800">
+                                    <i class="fab fa-instagram text-pink-500 text-xl mr-3"></i>
+                                    <span class="text-gray-900 dark:text-white font-medium">Instagram</span>
+                                    <i class="fas fa-check absolute top-2 right-2 text-green-500 opacity-0 platform-check"></i>
+                                </label>
+                            </div>
+
+                            <div class="platform-card relative">
+                                <input type="checkbox" id="youtube" name="platforms" value="youtube" class="sr-only">
+                                <label for="youtube" class="flex items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-red-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800">
+                                    <i class="fab fa-youtube text-red-500 text-xl mr-3"></i>
+                                    <span class="text-gray-900 dark:text-white font-medium">YouTube</span>
+                                    <i class="fas fa-check absolute top-2 right-2 text-green-500 opacity-0 platform-check"></i>
+                                </label>
+                            </div>
+
+                            <div class="platform-card relative">
+                                <input type="checkbox" id="tiktok" name="platforms" value="tiktok" class="sr-only">
+                                <label for="tiktok" class="flex items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800">
+                                    <i class="fab fa-tiktok text-gray-900 dark:text-white text-xl mr-3"></i>
+                                    <span class="text-gray-900 dark:text-white font-medium">TikTok</span>
+                                    <i class="fas fa-check absolute top-2 right-2 text-green-500 opacity-0 platform-check"></i>
+                                </label>
+                            </div>
+
+                            <div class="platform-card relative">
+                                <input type="checkbox" id="facebook" name="platforms" value="facebook" class="sr-only">
+                                <label for="facebook" class="flex items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800">
+                                    <i class="fab fa-facebook text-blue-600 text-xl mr-3"></i>
+                                    <span class="text-gray-900 dark:text-white font-medium">Facebook</span>
+                                    <i class="fas fa-check absolute top-2 right-2 text-green-500 opacity-0 platform-check"></i>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File Upload -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Upload Media</label>
+                        <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                            <input type="file" id="media" name="media" accept="image/*,video/*" class="hidden">
+                            <label for="media" class="cursor-pointer">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 dark:text-gray-500 mb-4"></i>
+                                <p class="text-lg font-medium text-gray-700 dark:text-gray-300">Upload a file</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">or drag and drop</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">Images or Videos up to 10MB</p>
+                            </label>
+                        </div>
+                        <div id="filePreview" class="hidden mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <i class="fas fa-file text-blue-600 dark:text-blue-400 mr-2"></i>
+                                    <span id="fileName" class="text-sm font-medium text-blue-900 dark:text-blue-300"></span>
+                                </div>
+                                <button type="button" id="removeFile" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Schedule (Optional) -->
+                    <div>
+                        <label for="schedule_time" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Schedule (Optional)</label>
+                        <input 
+                            type="datetime-local" 
+                            id="schedule_time" 
+                            name="schedule_time"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        >
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end">
+                        <button 
+                            type="submit" 
+                            id="submitBtn"
+                            class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center"
+                        >
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            <span id="submitText">Post Now</span>
+                            <i id="submitSpinner" class="fas fa-spinner fa-spin ml-2 hidden"></i>
+                        </button>
+                    </div>
+                </form>
             </div>
 
-            <!-- Enhanced Statistics & Recent Posts Sidebar -->
-            <div class="lg:col-span-1">
-                <!-- Statistics Overview -->
-                <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700 mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                        <i class="fas fa-chart-pie mr-2 text-primary-600"></i>
-                        Statistics Overview
-                    </h3>
-                    <div class="grid grid-cols-2 md:grid-cols-1 gap-4">
-                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4 text-center">
-                            <div class="text-3xl font-bold text-primary-600 dark:text-primary-400">{{ total_posts }}</div>
-                            <div class="text-sm text-gray-700 dark:text-gray-300 font-medium">Total Posts</div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">All time</div>
-                        </div>
-                        <div class="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-4 text-center">
-                            <div class="text-3xl font-bold text-green-600 dark:text-green-400">{{ successful_posts }}</div>
-                            <div class="text-sm text-gray-700 dark:text-gray-300 font-medium">Successful</div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                {% if total_posts > 0 %}{{ (successful_posts / total_posts * 100)|round|int }}% success rate{% else %}0% success rate{% endif %}
-                            </div>
-                        </div>
-                        <div class="bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 rounded-lg p-4 text-center">
-                            <div class="text-3xl font-bold text-red-600 dark:text-red-400">{{ failed_posts }}</div>
-                            <div class="text-sm text-gray-700 dark:text-gray-300 font-medium">Failed</div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Need attention</div>
-                        </div>
-                        <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 rounded-lg p-4 text-center">
-                            <div class="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{{ pending_posts }}</div>
-                            <div class="text-sm text-gray-700 dark:text-gray-300 font-medium">Pending</div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">In progress</div>
-                        </div>
-                    </div>
+            <!-- Recent Posts -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+                        <i class="fas fa-history mr-2 text-green-600"></i>Recent Posts
+                    </h2>
                 </div>
 
-                <!-- Platform Status -->
-                <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700 mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                        <i class="fas fa-network-wired mr-2 text-primary-600"></i>
-                        Platform Status
-                    </h3>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                            <div class="flex items-center">
-                                <i class="fab fa-telegram text-blue-500 mr-3 text-lg"></i>
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Telegram</span>
-                            </div>
-                            <span class="px-2 py-1 text-xs rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300">
-                                Not Configured
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                            <div class="flex items-center">
-                                <i class="fab fa-instagram text-pink-500 mr-3 text-lg"></i>
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Instagram</span>
-                            </div>
-                            <span class="px-2 py-1 text-xs rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300">
-                                Not Configured
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                            <div class="flex items-center">
-                                <i class="fab fa-youtube text-red-500 mr-3 text-lg"></i>
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">YouTube</span>
-                            </div>
-                            <span class="px-2 py-1 text-xs rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300">
-                                Not Configured
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                            <div class="flex items-center">
-                                <i class="fab fa-tiktok text-gray-900 dark:text-white mr-3 text-lg"></i>
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">TikTok</span>
-                            </div>
-                            <span class="px-2 py-1 text-xs rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300">
-                                Not Configured
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                            <div class="flex items-center">
-                                <i class="fab fa-facebook text-blue-600 mr-3 text-lg"></i>
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Facebook</span>
-                            </div>
-                            <span class="px-2 py-1 text-xs rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300">
-                                Not Configured
-                            </span>
-                        </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                        <a href="/settings" class="w-full bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors duration-300 flex items-center justify-center">
-                            <i class="fas fa-cog mr-2"></i>
-                            Configure Platforms
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Recent Posts -->
-                <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4" data-translate="recent_posts">
-                        Recent Posts
-                    </h3>
-
-                    <div class="space-y-4" id="recentPosts">
-                        {% if recent_posts %}
+                <div class="p-6">
+                    {% if recent_posts %}
+                        <div class="space-y-4">
                             {% for post in recent_posts %}
-                            <div class="border-l-4 {% if post.status == 'completed' %}border-green-400{% elif post.status == 'failed' %}border-red-400{% else %}border-yellow-400{% endif %} pl-4 py-2">
-                                <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
-                                    {{ post.content[:100] }}{% if post.content|length > 100 %}...{% endif %}
-                                </p>
-                                <div class="flex items-center justify-between mt-2">
-                                    <span class="text-xs {% if post.status == 'completed' %}text-green-600 dark:text-green-400{% elif post.status == 'failed' %}text-red-600 dark:text-red-400{% else %}text-yellow-600 dark:text-yellow-400{% endif %}">
-                                        {% if post.status == 'completed' %}✅ Success{% elif post.status == 'failed' %}❌ Failed{% else %}⏳ Pending{% endif %}
-                                    </span>
-                                    <span class="text-xs text-gray-500 dark:text-gray-400">
-                                        {{ post.created_at.strftime('%m/%d %H:%M') }}
-                                    </span>
-                                </div>
-                                <div class="flex flex-wrap gap-1 mt-1">
-                                    {% for platform in post.platforms.split(',') %}
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
-                                        {% if platform == 'telegram' %}
-                                            <i class="fab fa-telegram mr-1"></i>
-                                        {% elif platform == 'instagram' %}
-                                            <i class="fab fa-instagram mr-1"></i>
-                                        {% elif platform == 'youtube' %}
-                                            <i class="fab fa-youtube mr-1"></i>
-                                        {% elif platform == 'tiktok' %}
-                                            <i class="fab fa-tiktok mr-1"></i>
-                                        {% elif platform == 'facebook' %}
-                                            <i class="fab fa-facebook mr-1"></i>
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <p class="text-gray-900 dark:text-white line-clamp-2">{{ post.content }}</p>
+                                        <div class="flex items-center mt-2 space-x-4">
+                                            <span class="text-sm text-gray-500 dark:text-gray-400">
+                                                <i class="fas fa-calendar mr-1"></i>{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                            </span>
+                                            <span class="text-sm text-gray-500 dark:text-gray-400">
+                                                <i class="fas fa-share-alt mr-1"></i>{{ post.platforms }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        {% if post.status == 'completed' %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                                <i class="fas fa-check-circle mr-1"></i>Success
+                                            </span>
+                                        {% elif post.status == 'failed' %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                                <i class="fas fa-times-circle mr-1"></i>Failed
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                                                <i class="fas fa-clock mr-1"></i>Pending
+                                            </span>
                                         {% endif %}
-                                        {{ platform|title }}
-                                    </span>
-                                    {% endfor %}
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
-                        {% else %}
-                            <p class="text-gray-500 dark:text-gray-400 text-center py-8" data-translate="no_posts">
-                                No posts yet
-                            </p>
-                        {% endif %}
-                    </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <i class="fas fa-inbox text-4xl text-gray-400 dark:text-gray-500 mb-4"></i>
+                            <p class="text-gray-500 dark:text-gray-400">No recent posts found</p>
+                            <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Start creating content to see your posts here</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-// Translation function fallback
-function t(key) {
-    const translations = {
-        'content_required': 'Content is required',
-        'select_platform': 'Please select at least one platform',
-        'posting': 'Posting...',
-        'post_now': 'Post Now',
-        'file_too_large': 'File size exceeds 10MB limit'
-    };
-    return translations[key] || key;
-}
+    <script>
+        // Platform selection functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Anonymous Creations Dashboard initialized');
 
-// Professional AI-powered content suggestions
-let aiSuggestions = [
-    "🚀 Exciting news coming your way! Stay tuned for something amazing...",
-    "💡 Innovation starts with a single idea. What's yours today?",
-    "🌟 Behind every successful venture is a story worth sharing.",
-    "🎯 Success isn't just about reaching goals, it's about the journey.",
-    "✨ Transform your passion into purpose. The world needs what you offer."
-];
+            // Platform selection
+            const platformCheckboxes = document.querySelectorAll('input[name="platforms"]');
+            platformCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const label = this.nextElementSibling;
+                    const check = label.querySelector('.platform-check');
 
-// Content enhancement features
-function enhanceContent() {
-    const content = document.getElementById('content').value;
-    if (content.length < 10) {
-        showContentSuggestions();
-        return;
-    }
+                    if (this.checked) {
+                        label.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+                        label.classList.remove('border-gray-200', 'dark:border-gray-600');
+                        check.classList.remove('opacity-0');
+                    } else {
+                        label.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+                        label.classList.add('border-gray-200', 'dark:border-gray-600');
+                        check.classList.add('opacity-0');
+                    }
+                });
+            });
 
-    // Simulate AI content enhancement
-    const enhancedContent = content + " 🚀✨ #Success #Innovation #Growth";
-    document.getElementById('content').value = enhancedContent;
+            // File upload functionality
+            const fileInput = document.getElementById('media');
+            const filePreview = document.getElementById('filePreview');
+            const fileName = document.getElementById('fileName');
+            const removeFile = document.getElementById('removeFile');
 
-    Swal.fire({
-        icon: 'success',
-        title: '✨ Content Enhanced!',
-        text: 'Added engagement-boosting elements to your post!',
-        timer: 2000,
-        showConfirmButton: false
-    });
-}
-
-function showContentSuggestions() {
-    const randomSuggestions = aiSuggestions.sort(() => 0.5 - Math.random()).slice(0, 3);
-
-    Swal.fire({
-        title: '💡 AI Content Suggestions',
-        html: `
-            <div class="text-left space-y-3">
-                ${randomSuggestions.map((suggestion, index) => `
-                    <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer suggestion-item" 
-                         onclick="selectSuggestion('${suggestion.replace(/'/g, "\\'")}')">
-                        <div class="font-medium text-sm text-gray-800">${suggestion}</div>
-                    </div>
-                `).join('')}
-            </div>
-            <div class="mt-4 text-xs text-gray-500">Click any suggestion to use it as your content</div>
-        `,
-        showConfirmButton: false,
-        showCancelButton: true,
-        cancelButtonText: 'Close',
-        width: '500px'
-    });
-}
-
-function selectSuggestion(suggestion) {
-    document.getElementById('content').value = suggestion;
-    Swal.close();
-    Swal.fire({
-        icon: 'success',
-        title: 'Content Added!',
-        timer: 1500,
-        showConfirmButton: false
-    });
-}
-
-// Character counter and optimization
-function updateCharacterCount() {
-    const content = document.getElementById('content').value;
-    const charCount = content.length;
-
-    // Update counter if exists
-    const counter = document.getElementById('charCounter');
-    if (counter) {
-        counter.textContent = `${charCount}/2200`;
-
-        // Color coding
-        if (charCount > 2000) {
-            counter.className = 'text-red-500 text-sm font-medium';
-        } else if (charCount > 1500) {
-            counter.className = 'text-yellow-500 text-sm font-medium';
-        } else {
-            counter.className = 'text-gray-500 text-sm';
-        }
-    }
-}
-
-// Professional posting analytics
-function showPostingAnalytics() {
-    const platforms = Array.from(document.querySelectorAll('input[name="platforms"]:checked')).map(el => el.value);
-    const currentHour = new Date().getHours();
-
-    let bestTime = "Current time is good!";
-    if (currentHour < 9 || currentHour > 21) {
-        bestTime = "Consider posting between 9 AM - 9 PM for better engagement";
-    }
-
-    const reachEstimate = platforms.length * 150; // Simulate reach calculation
-
-    Swal.fire({
-        title: '📊 Post Analytics Preview',
-        html: `
-            <div class="text-left space-y-4">
-                <div class="bg-blue-50 p-4 rounded-lg">
-                    <h4 class="font-semibold text-blue-800 mb-2">📈 Estimated Reach</h4>
-                    <p class="text-blue-700">${reachEstimate}+ users across ${platforms.length} platform(s)</p>
-                </div>
-
-                <div class="bg-green-50 p-4 rounded-lg">
-                    <h4 class="font-semibold text-green-800 mb-2">⏰ Timing Analysis</h4>
-                    <p class="text-green-700">${bestTime}</p>
-                </div>
-
-                <div class="bg-purple-50 p-4 rounded-lg">
-                    <h4 class="font-semibold text-purple-800 mb-2">🎯 Engagement Score</h4>
-                    <p class="text-purple-700">High potential - optimal content length detected</p>
-                </div>
-            </div>
-        `,
-        showConfirmButton: true,
-        confirmButtonText: 'Proceed with Post',
-        showCancelButton: true,
-        cancelButtonText: 'Optimize First',
-        confirmButtonColor: '#10b981'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            document.getElementById('postForm').dispatchEvent(new Event('submit'));
-        }
-    });
-}
-
-// Enhanced form submission with advanced success notification
-document.getElementById('postForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    const submitBtn = document.getElementById('submitBtn');
-    const formData = new FormData(this);
-
-    // Advanced validation
-    const content = formData.get('content');
-    const platforms = formData.getAll('platforms');
-
-    if (!content.trim()) {
-        Swal.fire({
-            icon: 'error',
-            title: '⚠️ Content Required',
-            text: 'Please enter content for your post',
-            showCancelButton: true,
-            confirmButtonText: '💡 Get AI Suggestions',
-            cancelButtonText: '✍️ Write Manually',
-            confirmButtonColor: '#3b82f6',
-            cancelButtonColor: '#6b7280'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                showContentSuggestions();
-            }
-        });
-        return;
-    }
-
-    if (platforms.length === 0) {
-        Swal.fire({
-            icon: 'warning',
-            title: '📱 Select Platforms',
-            text: 'Choose at least one platform to publish your content',
-            confirmButtonText: 'Got it!',
-            confirmButtonColor: '#f59e0b'
-        });
-        return;
-    }
-
-    // Professional loading state
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-rocket fa-spin mr-2"></i>Publishing...';
-
-    // Advanced loading notification with progress simulation
-    let progressValue = 0;
-    const progressInterval = setInterval(() => {
-        progressValue += Math.random() * 15;
-        if (progressValue > 90) progressValue = 90;
-        
-        const progressBar = document.querySelector('.swal2-progress-bar');
-        if (progressBar) {
-            progressBar.style.width = progressValue + '%';
-        }
-    }, 200);
-
-    Swal.fire({
-        title: '🚀 Publishing Your Content',
-        html: `
-            <div class="pro-loading-container">
-                <div class="success-animation-wrapper">
-                    <div class="success-circle-animation">
-                        <div class="success-ripple ripple-1"></div>
-                        <div class="success-ripple ripple-2"></div>
-                        <div class="success-ripple ripple-3"></div>
-                        <div class="text-4xl">⚡</div>
-                    </div>
-                </div>
-                
-                <div class="space-y-4">
-                    <p class="text-lg font-medium text-gray-700">Optimizing content for each platform...</p>
-                    <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                        <div class="swal2-progress-bar bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500 ease-out" style="width: 10%"></div>
-                    </div>
-                    <div class="text-sm text-gray-500">Connecting to \${platforms.length} platform\${platforms.length > 1 ? 's' : ''}...</div>
-                </div>
-                
-                <div class="flex justify-center gap-2 mt-4">
-                    \${platforms.map(platform => {
-                        const icons = {telegram: '📱', instagram: '📸', youtube: '🎥', tiktok: '🎵', facebook: '👥'};
-                        return \`<div class="platform-loading-icon animate-pulse">
-                            <span class="text-2xl">\${icons[platform] || '🌐'}</span>
-                        </div>\`;
-                    }).join('')}
-                </div>
-            </div>
-        `,
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        customClass: {
-            popup: 'pro-loading-popup'
-        }
-    });
-
-    try {
-        const response = await fetch('/post', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-        clearInterval(progressInterval);
-
-        if (result.success) {
-            // Professional success celebration with enhanced animations
-            const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const platformCount = Object.keys(result.results || {}).length;
-            const successfulPlatforms = Object.entries(result.results || {}).filter(([_, res]) => res.success);
-
-            Swal.fire({
-                title: '',
-                html: `
-                    <div class="pro-success-container">
-                        <div class="success-animation-wrapper">
-                            <div class="success-circle-animation">
-                                <div class="success-ripple ripple-1"></div>
-                                <div class="success-ripple ripple-2"></div>
-                                <div class="success-ripple ripple-3"></div>
-                                <div class="success-checkmark">
-                                    <svg width="60" height="60" viewBox="0 0 60 60">
-                                        <circle cx="30" cy="30" r="25" fill="none" stroke="#10b981" stroke-width="3" class="circle-draw" stroke-dasharray="157" stroke-dashoffset="157"/>
-                                        <path d="M20 30 L27 37 L40 24" fill="none" stroke="#10b981" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="check-draw"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        <h2 class="text-2xl font-bold text-gray-800 mb-2">🎉 Post Published Successfully!</h2>
-                        <p class="text-gray-600 mb-6">Your content is now live and reaching your audience!</p>
-
-                        <div class="success-metrics">
-                            <div class="metric">
-                                <span class="metric-value">\${platformCount}</span>
-                                <span class="metric-label">Platforms</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-value">100%</span>
-                                <span class="metric-label">Success Rate</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-value">\${currentTime}</span>
-                                <span class="metric-label">Published</span>
-                            </div>
-                        </div>
-
-                        <div class="platform-success-grid">
-                            \${successfulPlatforms.map(([platform, res], index) => {
-                                const icons = {'telegram': '📱', 'instagram': '📸', 'youtube': '🎥', 'tiktok': '🎵', 'facebook': '👥'};
-                                return \`
-                                    <div class="platform-success-card" style="animation-delay: \${index * 0.1}s">
-                                        <div class="platform-icon">\${icons[platform] || '🌐'}</div>
-                                        <div class="platform-label">\${platform.charAt(0).toUpperCase() + platform.slice(1)}</div>
-                                        <div class="success-indicator">✅</div>
-                                    </div>
-                                \`;
-                            }).join('')}
-                        </div>
-
-                        <div class="success-message-final">
-                            🚀 Your content is now engaging with your audience across all selected platforms!
-                        </div>
-                    </div>
-                `,
-                showConfirmButton: true,
-                confirmButtonText: '✨ Create Another Post',
-                showCancelButton: true,
-                cancelButtonText: '📊 View Analytics',
-                confirmButtonColor: '#10b981',
-                cancelButtonColor: '#3b82f6',
-                customClass: {
-                    popup: 'pro-success-popup',
-                    confirmButton: 'pro-success-button',
-                    cancelButton: 'pro-success-button'
-                },
-                width: '650px'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Reset form for another post
-                    this.reset();
-                    clearFile();
-                    clearDraft();
-                    updateCharacterCount();
-                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    // Redirect to analytics
-                    window.location.href = '/logs';
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    fileName.textContent = file.name;
+                    filePreview.classList.remove('hidden');
                 }
             });
 
-            // Auto refresh dashboard after delay
-            setTimeout(() => {
-                if (Swal.isVisible()) {
-                    Swal.close();
+            removeFile.addEventListener('click', function() {
+                fileInput.value = '';
+                filePreview.classList.add('hidden');
+            });
+
+            // Form submission
+            const postForm = document.getElementById('postForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            const submitSpinner = document.getElementById('submitSpinner');
+
+            postForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+                const selectedPlatforms = Array.from(document.querySelectorAll('input[name="platforms"]:checked')).map(cb => cb.value);
+
+                if (selectedPlatforms.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No Platform Selected',
+                        text: 'Please select at least one platform to post to.',
+                        background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                        color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                    });
+                    return;
                 }
-                window.location.reload();
-            }, 10000);
 
-        } else {
-            // Enhanced error handling
-            const successCount = Object.values(result.results || {}).filter(r => r.success).length;
-            const totalCount = Object.keys(result.results || {}).length;
+                // Clear existing platform values and add selected ones
+                formData.delete('platforms');
+                selectedPlatforms.forEach(platform => {
+                    formData.append('platforms', platform);
+                });
 
-            Swal.fire({
-                icon: successCount > 0 ? 'warning' : 'error',
-                title: successCount > 0 ? `⚠️ Partial Success (${successCount}/${totalCount})` : '❌ Publishing Failed',
-                html: `
-                    <div class="text-left space-y-4">
-                        <p class="text-gray-700 mb-4 font-medium">${result.message}</p>
+                // Update button state
+                submitBtn.disabled = true;
+                submitText.textContent = 'Posting...';
+                submitSpinner.classList.remove('hidden');
 
-                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-5 rounded-xl border">
-                            <h4 class="font-bold mb-4 text-gray-800 flex items-center">
-                                <i class="fas fa-list-check mr-2 text-blue-600"></i>
-                                Platform Results:
-                            </h4>
-                            <div class="space-y-3">
-                                \${Object.entries(result.results || {}).map(([platform, res]) => \`
-                                    <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border-l-4 \${res.success ? 'border-green-400' : 'border-red-400'}">
-                                        <div class="flex items-center">
-                                            <span class="text-lg mr-3">\${{'telegram': '📱', 'instagram': '📸', 'youtube': '🎥', 'tiktok': '🎵', 'facebook': '👥'}[platform] || '🌐'}</span>
-                                            <span class="capitalize font-semibold text-gray-700">\${platform}</span>
-                                        </div>
-                                        <span class="px-3 py-1 rounded-full text-sm font-medium \${res.success ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}">
-                                            \${res.success ? '✅ Success' : '❌ Failed'}
-                                        </span>
-                                    </div>
-                                    \${!res.success ? \`<div class="text-sm text-red-600 mt-2 ml-8 bg-red-50 p-2 rounded border-l-2 border-red-200">\${res.message || 'Unknown error occurred'}</div>\` : ''}
-                                \`).join('')}
-                            </div>
-                        </div>
+                try {
+                    const response = await fetch('/post', {
+                        method: 'POST',
+                        body: formData
+                    });
 
-                        \${successCount > 0 ? \`
-                            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                                <p class="text-green-800 font-medium">
-                                    ✅ Successfully published to \${successCount} platform\${successCount > 1 ? 's' : ''}!
-                                </p>
-                            </div>
-                        \` : ''}
-                    </div>
-                `,
-                showConfirmButton: true,
-                confirmButtonText: successCount > 0 ? '🔄 Retry Failed' : '🔄 Try Again',
-                showCancelButton: true,
-                cancelButtonText: '✏️ Edit Content',
-                confirmButtonColor: successCount > 0 ? '#f59e0b' : '#ef4444',
-                cancelButtonColor: '#6b7280',
-                width: '600px'
+                    const result = await response.json();
+
+                    if (result.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Post Published Successfully!',
+                            text: 'Your content has been published to the selected platforms.',
+                            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000',
+                            confirmButtonColor: '#3b82f6'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        throw new Error(result.message || 'Failed to publish post');
+                    }
+                } catch (error) {
+                    console.error('Post submission error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Publishing Failed',
+                        text: error.message || 'Failed to publish content. Please check your connection and try again.',
+                        background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                        color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000',
+                        confirmButtonColor: '#ef4444'
+                    });
+                } finally {
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    submitText.textContent = 'Post Now';
+                    submitSpinner.classList.add('hidden');
+                }
             });
-        }
-
-    } catch (error) {
-        clearInterval(progressInterval);
-        
-        Swal.fire({
-            icon: 'error',
-            title: '🔌 Connection Error',
-            html: `
-                <div class="text-center space-y-4">
-                    <div class="text-6xl">⚠️</div>
-                    <p class="text-gray-700 font-medium">Failed to publish content. Please check your connection and try again.</p>
-                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-                        <p class="text-red-800 text-sm">\${error.message || 'Network error occurred'}</p>
-                    </div>
-                </div>
-            `,
-            showConfirmButton: true,
-            confirmButtonText: '🔄 Retry',
-            confirmButtonColor: '#ef4444'
         });
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-rocket mr-2"></i>Post Now';
-    }
-});
-
-// Handle file upload
-document.getElementById('file').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        // Check file size
-        if (file.size > 10 * 1024 * 1024) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: t('file_too_large')
-            });
-            this.value = '';
-            return;
-        }
-
-        // Show preview
-        document.getElementById('fileName').textContent = file.name;
-        document.getElementById('filePreview').classList.remove('hidden');
-    }
-});
-
-function clearFile() {
-    document.getElementById('file').value = '';
-    document.getElementById('filePreview').classList.add('hidden');
-}
-
-// Drag and drop functionality
-const dropZone = document.querySelector('.border-dashed');
-const fileInput = document.getElementById('file');
-
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropZone.addEventListener(eventName, preventDefaults, false);
-});
-
-function preventDefaults(e) {
-    e.preventDefault();
-    e.stopPropagation();
-}
-
-['dragenter', 'dragover'].forEach(eventName => {
-    dropZone.addEventListener(eventName, highlight, false);
-});
-
-['dragleave', 'drop'].forEach(eventName => {
-    dropZone.addEventListener(eventName, unhighlight, false);
-});
-
-function highlight(e) {
-    dropZone.classList.add('border-primary-400', 'bg-primary-50', 'dark:bg-primary-900');
-}
-
-function unhighlight(e) {
-    dropZone.classList.remove('border-primary-400', 'bg-primary-50', 'dark:bg-primary-900');
-}
-
-dropZone.addEventListener('drop', handleDrop, false);
-
-function handleDrop(e) {
-    const dt = e.dataTransfer;
-    const files = dt.files;
-
-    if (files.length > 0) {
-        fileInput.files = files;
-        fileInput.dispatchEvent(new Event('change'));
-    }
-}
-</script>
+    </script>
+</body>
+</html>
 {% endblock %}
