@@ -40,27 +40,29 @@
     </header>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="settings-nav grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             <!-- Settings Navigation -->
             <div class="lg:col-span-1">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 lg:p-6">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Settings</h3>
-                    <nav class="space-y-2">
-                        <button onclick="showSection('platforms')" class="settings-nav-btn w-full text-left px-3 py-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300" data-section="platforms">
+                    <nav class="grid grid-cols-2 lg:grid-cols-1 gap-2">
+                        <button onclick="showSection('platforms')" class="settings-nav-btn touch-target w-full text-left px-3 py-3 lg:py-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300 text-sm lg:text-base" data-section="platforms">
                             <i class="fas fa-share-alt mr-2"></i>
-                            Platform Settings
+                            <span class="hidden sm:inline">Platform Settings</span>
+                            <span class="sm:hidden">Platforms</span>
                         </button>
-                        <button onclick="showSection('security')" class="settings-nav-btn w-full text-left px-3 py-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300" data-section="security">
+                        <button onclick="showSection('security')" class="settings-nav-btn touch-target w-full text-left px-3 py-3 lg:py-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300 text-sm lg:text-base" data-section="security">
                             <i class="fas fa-shield-alt mr-2"></i>
                             Security
                         </button>
-                        <button onclick="showSection('preferences')" class="settings-nav-btn w-full text-left px-3 py-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300" data-section="preferences">
+                        <button onclick="showSection('preferences')" class="settings-nav-btn touch-target w-full text-left px-3 py-3 lg:py-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300 text-sm lg:text-base" data-section="preferences">
                             <i class="fas fa-cogs mr-2"></i>
                             Preferences
                         </button>
-                        <button onclick="showSection('api')" class="settings-nav-btn w-full text-left px-3 py-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300" data-section="api">
+                        <button onclick="showSection('api')" class="settings-nav-btn touch-target w-full text-left px-3 py-3 lg:py-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300 text-sm lg:text-base" data-section="api">
                             <i class="fas fa-code mr-2"></i>
-                            API Configuration
+                            <span class="hidden sm:inline">API Configuration</span>
+                            <span class="sm:hidden">API</span>
                         </button>
                     </nav>
                 </div>

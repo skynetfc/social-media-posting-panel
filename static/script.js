@@ -333,5 +333,114 @@ window.addEventListener('unhandledrejection', function(e) {
     // In production, you might want to send this to an error reporting service
 });
 
-// Initialize app
+// Mobile-specific enhancements
+function initMobileFeatures() {
+    // Prevent iOS zoom on input focus
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+        const inputs = document.querySelectorAll('input[type="text"], input[type="password"], input[type="email"], textarea');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                document.querySelector('meta[name="viewport"]').setAttribute('content', 
+                    'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+            });
+            input.addEventListener('blur', function() {
+                document.querySelector('meta[name="viewport"]').setAttribute('content', 
+                    'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+            });
+        });
+    }
+
+    // Enhanced touch feedback for buttons
+    const touchTargets = document.querySelectorAll('.touch-target, button, .btn');
+    touchTargets.forEach(target => {
+        target.addEventListener('touchstart', function() {
+            this.style.opacity = '0.7';
+        });
+        target.addEventListener('touchend', function() {
+            setTimeout(() => {
+                this.style.opacity = '1';
+            }, 100);
+        });
+    });
+
+    // Mobile navigation handling
+    function handleMobileNav() {
+        const mobileNav = document.querySelector('.md\\:hidden nav');
+        if (mobileNav && window.innerWidth < 768) {
+            mobileNav.style.display = 'flex';
+        }
+    }
+
+    // Handle orientation change
+    window.addEventListener('orientationchange', function() {
+        setTimeout(() => {
+            handleMobileNav();
+            // Refresh viewport
+            const viewport = document.querySelector('meta[name="viewport"]');
+            viewport.setAttribute('content', viewport.getAttribute('content'));
+        }, 100);
+    });
+
+    // Smooth scrolling for mobile
+    if ('scrollBehavior' in document.documentElement.style) {
+        document.documentElement.style.scrollBehavior = 'smooth';
+    }
+}
+
+// Responsive table handling
+function makeTablesResponsive() {
+    const tables = document.querySelectorAll('table');
+    tables.forEach(table => {
+        if (!table.parentElement.classList.contains('table-container')) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'table-container overflow-x-auto';
+            table.parentNode.insertBefore(wrapper, table);
+            wrapper.appendChild(table);
+            table.classList.add('table-responsive');
+        }
+    });
+}
+
+// Enhanced mobile modal handling
+function enhanceMobileModals() {
+    const modals = document.querySelectorAll('[id*="Modal"]');
+    modals.forEach(modal => {
+        const content = modal.querySelector('div');
+        if (content && window.innerWidth < 768) {
+            content.classList.add('modal-content');
+        }
+    });
+}
+
+// Mobile-friendly file upload
+function enhanceFileUpload() {
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(input => {
+        const wrapper = input.closest('.border-dashed');
+        if (wrapper) {
+            wrapper.addEventListener('click', () => {
+                input.click();
+            });
+            
+            // Improve mobile drag and drop feedback
+            wrapper.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('border-primary-400', 'bg-primary-50');
+            });
+            
+            wrapper.addEventListener('dragleave', function() {
+                this.classList.remove('border-primary-400', 'bg-primary-50');
+            });
+        }
+    });
+}
+
+// Initialize app with mobile features
+document.addEventListener('DOMContentLoaded', function() {
+    initMobileFeatures();
+    makeTablesResponsive();
+    enhanceMobileModals();
+    enhanceFileUpload();
+});
+
 console.log('Anonymous Creations Dashboard initialized');
