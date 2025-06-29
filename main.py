@@ -121,9 +121,9 @@ async def startup_event():
     db.close()
 
 @app.get("/", response_class=HTMLResponse)
-async def root(request: Request):
+async def root(request: Request, db: Session = Depends(get_db)):
     """Redirect to dashboard or login"""
-    user = get_current_user(request)
+    user = get_current_user(request, db)
     if user:
         return RedirectResponse(url="/dashboard", status_code=302)
     return RedirectResponse(url="/login", status_code=302)

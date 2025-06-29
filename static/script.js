@@ -334,4 +334,4 @@ window.addEventListener('unhandledrejection', function(e) {
 });
 
 // Initialize app
-console.log('Anonymous Creations Dashboard initialized 🇵🇸');
+console.log('Anonymous Creations Dashboard initialized');

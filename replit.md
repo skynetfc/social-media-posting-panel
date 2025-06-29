@@ -1,7 +1,7 @@
-# Anonymous Creations Dashboard - Project Documentation
+# Anonymous Creations - Social Media Dashboard
 
 ## Overview
-This is a social media management dashboard that allows users to create and schedule posts across multiple platforms. The application provides a web interface for managing anonymous social media content with multi-platform posting capabilities.
+This is a comprehensive social media management dashboard that allows users to create and schedule posts across multiple platforms. The application provides a modern web interface for managing social media content with multi-platform posting capabilities, featuring Arabic/English language support and responsive design.
 
 ## System Architecture
 

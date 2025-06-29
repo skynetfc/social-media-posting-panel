@@ -3,8 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-# Database URL - Use PostgreSQL from environment
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./dashboard.db")
+# Database URL - Use SQLite for reliability
+DATABASE_URL = "sqlite:///./dashboard.db"
 print(f"Using database: {DATABASE_URL}")
 
 # Create engine
