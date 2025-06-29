@@ -385,67 +385,62 @@ document.getElementById('postForm').addEventListener('submit', async function(e)
                 audio.play().catch(() => {});
             } catch (e) {}
 
+            // Create platform cards HTML
+            const platformIcons = {
+                telegram: '📱',
+                instagram: '📸', 
+                youtube: '🎥',
+                tiktok: '🎵',
+                facebook: '👥'
+            };
+            
+            const platformCards = Object.keys(result.results || {}).map((platform, index) => {
+                return '<div class="platform-success-card" style="animation-delay: ' + (index * 0.2) + 's">' +
+                       '<div class="platform-icon">' + (platformIcons[platform] || '🌐') + '</div>' +
+                       '<div class="platform-label">' + platform.charAt(0).toUpperCase() + platform.slice(1) + '</div>' +
+                       '<div class="success-indicator">✅</div>' +
+                       '</div>';
+            }).join('');
+            
+            const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const platformCount = Object.keys(result.results || {}).length;
+
             Swal.fire({
                 icon: 'success',
                 title: '🎉 Epic Success!',
-                html: `
-                    <div class="pro-success-container">
-                        <div class="success-animation-wrapper">
-                            <!-- Animated Success Icon -->
-                            <div class="success-circle-animation">
-                                <div class="success-ripple ripple-1"></div>
-                                <div class="success-ripple ripple-2"></div>
-                                <div class="success-ripple ripple-3"></div>
-                                <div class="success-checkmark">
-                                    <svg width="60" height="60" viewBox="0 0 100 100">
-                                        <circle cx="50" cy="50" r="40" fill="none" stroke="#10b981" stroke-width="5" 
-                                                stroke-dasharray="251" stroke-dashoffset="251" class="circle-draw"/>
-                                        <path d="M30 50l10 10 25-25" fill="none" stroke="#10b981" stroke-width="5" 
-                                              stroke-linecap="round" stroke-linejoin="round" class="check-draw"/>
-                                    </svg>
-                                </div>
-                            </div>
-
-                            <!-- Platform Success Cards -->
-                            <div class="platform-success-grid">
-                                ` + Object.keys(result.results || {}).map((platform, index) => {
-                                    const platformIcons = {
-                                        telegram: '📱',
-                                        instagram: '📸', 
-                                        youtube: '🎥',
-                                        tiktok: '🎵',
-                                        facebook: '👥'
-                                    };
-                                    return `<div class="platform-success-card" style="animation-delay: ` + (index * 0.2) + `s">
-                                            <div class="platform-icon">` + (platformIcons[platform] || '🌐') + `</div>
-                                            <div class="platform-label">` + platform.charAt(0).toUpperCase() + platform.slice(1) + `</div>
-                                            <div class="success-indicator">✅</div>
-                                        </div>`;
-                                }).join('') + `
-                            </div>
-
-                            <!-- Success Stats -->
-                            <div class="success-metrics">
-                                <div class="metric">
-                                    <span class="metric-value">` + Object.keys(result.results || {}).length + `</span>
-                                    <span class="metric-label">Platforms</span>
-                                </div>
-                                <div class="metric">
-                                    <span class="metric-value">100%</span>
-                                    <span class="metric-label">Success</span>
-                                </div>
-                                <div class="metric">
-                                    <span class="metric-value">` + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + `</span>
-                                    <span class="metric-label">Posted</span>
-                                </div>
-                            </div>
-
-                            <p class="success-message-final">
-                                🚀 Your content is now live and reaching your audience!
-                            </p>
-                        </div>
-                    </div>
-                `,
+                html: '<div class="pro-success-container">' +
+                      '<div class="success-animation-wrapper">' +
+                      '<div class="success-circle-animation">' +
+                      '<div class="success-ripple ripple-1"></div>' +
+                      '<div class="success-ripple ripple-2"></div>' +
+                      '<div class="success-ripple ripple-3"></div>' +
+                      '<div class="success-checkmark">' +
+                      '<svg width="60" height="60" viewBox="0 0 100 100">' +
+                      '<circle cx="50" cy="50" r="40" fill="none" stroke="#10b981" stroke-width="5" stroke-dasharray="251" stroke-dashoffset="251" class="circle-draw"/>' +
+                      '<path d="M30 50l10 10 25-25" fill="none" stroke="#10b981" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" class="check-draw"/>' +
+                      '</svg>' +
+                      '</div>' +
+                      '</div>' +
+                      '<div class="platform-success-grid">' +
+                      platformCards +
+                      '</div>' +
+                      '<div class="success-metrics">' +
+                      '<div class="metric">' +
+                      '<span class="metric-value">' + platformCount + '</span>' +
+                      '<span class="metric-label">Platforms</span>' +
+                      '</div>' +
+                      '<div class="metric">' +
+                      '<span class="metric-value">100%</span>' +
+                      '<span class="metric-label">Success</span>' +
+                      '</div>' +
+                      '<div class="metric">' +
+                      '<span class="metric-value">' + currentTime + '</span>' +
+                      '<span class="metric-label">Posted</span>' +
+                      '</div>' +
+                      '</div>' +
+                      '<p class="success-message-final">🚀 Your content is now live and reaching your audience!</p>' +
+                      '</div>' +
+                      '</div>',
                 showConfirmButton: true,
                 confirmButtonText: '✨ Create Another Post',
                 confirmButtonColor: '#10b981',
