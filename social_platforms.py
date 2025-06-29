@@ -18,6 +18,8 @@ class SocialMediaManager:
         self.youtube_channel_id = os.getenv("YOUTUBE_CHANNEL_ID")
         self.tiktok_access_token = os.getenv("TIKTOK_ACCESS_TOKEN")
         self.tiktok_open_id = os.getenv("TIKTOK_OPEN_ID")
+        self.facebook_access_token = os.getenv("FACEBOOK_ACCESS_TOKEN")
+        self.facebook_page_id = os.getenv("FACEBOOK_PAGE_ID")
     
     async def post_to_telegram(self, content: str, file_path: Optional[str] = None, file_type: Optional[str] = None) -> Tuple[bool, str]:
         """Post to Telegram"""
@@ -153,3 +155,59 @@ class SocialMediaManager:
             
         except Exception as e:
             return False, f"TikTok posting failed: {str(e)}"
+    
+    async def post_to_facebook(self, content: str, file_path: Optional[str] = None, file_type: Optional[str] = None) -> Tuple[bool, str]:
+        """Post to Facebook Pages and Personal Profile"""
+        if not self.facebook_access_token:
+            return False, "Facebook access token not configured"
+        
+        try:
+            # Post to Facebook Page if page_id is configured
+            if self.facebook_page_id:
+                page_url = f"https://graph.facebook.com/{self.facebook_page_id}/feed"
+                page_data = {
+                    "message": content,
+                    "access_token": self.facebook_access_token
+                }
+                
+                # Add photo/video if file is provided
+                if file_path and file_type:
+                    if file_type == "image":
+                        page_url = f"https://graph.facebook.com/{self.facebook_page_id}/photos"
+                        page_data["caption"] = content
+                        # In production, upload the actual file
+                        page_data["url"] = f"https://yourdomain.com/{file_path}"
+                    elif file_type == "video":
+                        page_url = f"https://graph.facebook.com/{self.facebook_page_id}/videos"
+                        page_data["description"] = content
+                        page_data["file_url"] = f"https://yourdomain.com/{file_path}"
+                
+                async with aiohttp.ClientSession() as session:
+                    async with session.post(page_url, data=page_data) as response:
+                        if response.status == 200:
+                            result = await response.json()
+                            post_id = result.get("id", "unknown")
+                            return True, f"Successfully posted to Facebook Page (ID: {post_id})"
+                        else:
+                            error_text = await response.text()
+                            return False, f"Facebook Page posting failed: {error_text}"
+            else:
+                # Post to personal profile
+                profile_url = "https://graph.facebook.com/me/feed"
+                profile_data = {
+                    "message": content,
+                    "access_token": self.facebook_access_token
+                }
+                
+                async with aiohttp.ClientSession() as session:
+                    async with session.post(profile_url, data=profile_data) as response:
+                        if response.status == 200:
+                            result = await response.json()
+                            post_id = result.get("id", "unknown")
+                            return True, f"Successfully posted to Facebook Profile (ID: {post_id})"
+                        else:
+                            error_text = await response.text()
+                            return False, f"Facebook Profile posting failed: {error_text}"
+                            
+        except Exception as e:
+            return False, f"Facebook posting failed: {str(e)}"

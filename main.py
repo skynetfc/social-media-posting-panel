@@ -28,11 +28,10 @@ app = FastAPI(title="Anonymous Creations Dashboard")
 # Add session middleware with improved cookie settings for browser compatibility
 app.add_middleware(
     SessionMiddleware,
-    secret_key=os.getenv("SECRET_KEY", "your-secret-key-change-this"),
+    secret_key=os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production"),
     max_age=1800,  # 30 minutes
     same_site="lax",
-    https_only=False,
-    session_cookie="session"
+    https_only=False
 )
 
 # Add CORS middleware for development
@@ -65,34 +64,39 @@ ALLOWED_EXTENSIONS = {
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
 def get_current_user(request: Request, db: Session = Depends(get_db)):
-    """Get current user from session with fallback authentication"""
+    """Get current user from session with enhanced reliability"""
     try:
         # Primary authentication: session
         user_id = request.session.get("user_id")
         if user_id:
-            user = db.query(User).filter(User.id == user_id).first()
-            if user:
-                return user
+            try:
+                user = db.query(User).filter(User.id == user_id).first()
+                if user:
+                    return user
+            except Exception:
+                pass
         
         # Fallback authentication: backup cookie
         backup_cookie = request.cookies.get("user_session")
         if backup_cookie and ":" in backup_cookie:
             try:
-                cookie_user_id, cookie_username = backup_cookie.split(":", 1)
-                user = db.query(User).filter(
-                    User.id == int(cookie_user_id),
-                    User.username == cookie_username
-                ).first()
-                if user:
-                    # Restore session
-                    request.session["user_id"] = user.id
-                    request.session["username"] = user.username
-                    request.session["authenticated"] = True
-                    return user
-            except (ValueError, TypeError):
+                parts = backup_cookie.split(":", 1)
+                if len(parts) == 2:
+                    cookie_user_id, cookie_username = parts
+                    user = db.query(User).filter(
+                        User.id == int(cookie_user_id),
+                        User.username == cookie_username
+                    ).first()
+                    if user:
+                        # Restore session data
+                        request.session.clear()
+                        request.session["user_id"] = user.id
+                        request.session["username"] = user.username
+                        request.session["authenticated"] = True
+                        return user
+            except (ValueError, TypeError, AttributeError):
                 pass
                 
-        print(f"Authentication failed - Session: {request.session}, Cookie: {backup_cookie}")
         return None
     except Exception as e:
         print(f"Authentication error: {e}")
@@ -188,13 +192,15 @@ async def login(
     request.session["authenticated"] = True
     
     response = RedirectResponse(url="/dashboard", status_code=302)
-    # Also set a backup cookie for reliability
+    # Also set a backup cookie for reliability with proper path
     response.set_cookie(
         key="user_session", 
         value=f"{user.id}:{user.username}", 
         max_age=1800,
         httponly=True,
-        samesite="lax"
+        samesite="lax",
+        path="/",
+        secure=False
     )
     return response
 
@@ -239,7 +245,7 @@ async def create_post(
     """Create and post content to selected platforms"""
     
     # Validate platforms
-    valid_platforms = ['telegram', 'instagram', 'youtube', 'tiktok']
+    valid_platforms = ['telegram', 'instagram', 'youtube', 'tiktok', 'facebook']
     platforms = [p for p in platforms if p in valid_platforms]
     
     if not platforms:
@@ -297,6 +303,8 @@ async def create_post(
                 success, message = await social_manager.post_to_youtube(content, file_path, file_type)
             elif platform == 'tiktok':
                 success, message = await social_manager.post_to_tiktok(content, file_path, file_type)
+            elif platform == 'facebook':
+                success, message = await social_manager.post_to_facebook(content, file_path, file_type)
             else:
                 success, message = False, "Unsupported platform"
             
