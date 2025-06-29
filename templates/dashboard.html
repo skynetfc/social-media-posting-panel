@@ -378,35 +378,125 @@ document.getElementById('postForm').addEventListener('submit', async function(e)
         const result = await response.json();
         
         if (result.success) {
+            // Play success sound effect
+            try {
+                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAAAAQAA1gAAAGoAAAEAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+D3vmELBSF+zPLOdycFKnvN8N6TNwgXZLfp2qJKEgs8ldjvuGMcBj2b3/LJcCQFLnXF9t2WQgoUXLDk7q5WFBBBK9B4oi0';
+                audio.volume = 0.3;
+                audio.play().catch(() => {});
+            } catch (e) {}
+
             Swal.fire({
-                icon: 'success',
-                title: '🎉 Post Published Successfully!',
+                icon: false,
+                title: false,
                 html: `
-                    <div class="success-animation">
-                        <div class="checkmark-container">
-                            <div class="checkmark">
-                                <div class="checkmark_stem"></div>
-                                <div class="checkmark_kick"></div>
+                    <div class="advanced-success-container">
+                        <!-- Animated Background Particles -->
+                        <div class="particles-bg">
+                            <div class="particle particle-1"></div>
+                            <div class="particle particle-2"></div>
+                            <div class="particle particle-3"></div>
+                            <div class="particle particle-4"></div>
+                            <div class="particle particle-5"></div>
+                        </div>
+                        
+                        <!-- Main Success Icon with Advanced Animation -->
+                        <div class="success-icon-container">
+                            <div class="success-ring ring-1"></div>
+                            <div class="success-ring ring-2"></div>
+                            <div class="success-ring ring-3"></div>
+                            <div class="success-icon">
+                                <svg width="80" height="80" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="#10b981" stroke-width="4" 
+                                            stroke-dasharray="283" stroke-dashoffset="283" class="success-circle"/>
+                                    <path d="M25 50l15 15 30-30" fill="none" stroke="#ffffff" stroke-width="6" 
+                                          stroke-linecap="round" stroke-linejoin="round" class="success-check"/>
+                                </svg>
                             </div>
                         </div>
-                        <p class="success-message">Your content has been shared across all selected platforms!</p>
+                        
+                        <!-- Title with Gradient Text -->
+                        <h2 class="success-title-pro">
+                            <span class="title-gradient">Mission Accomplished!</span>
+                        </h2>
+                        
+                        <!-- Success Stats -->
+                        <div class="success-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">${Object.keys(result.results || {}).length}</div>
+                                <div class="stat-label">Platforms</div>
+                            </div>
+                            <div class="stat-divider"></div>
+                            <div class="stat-item">
+                                <div class="stat-number">100%</div>
+                                <div class="stat-label">Success Rate</div>
+                            </div>
+                            <div class="stat-divider"></div>
+                            <div class="stat-item">
+                                <div class="stat-number">${new Date().toLocaleTimeString()}</div>
+                                <div class="stat-label">Posted At</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Success Message -->
+                        <p class="success-message-pro">
+                            Your content has been successfully published across all selected platforms! 
+                            Your audience is now engaging with your latest creation.
+                        </p>
+                        
+                        <!-- Platform Badges with Animation -->
+                        <div class="platform-success-badges">
+                            ${Object.keys(result.results || {}).map((platform, index) => `
+                                <div class="platform-badge" style="animation-delay: ${index * 0.1}s">
+                                    <i class="fab fa-${platform} platform-icon"></i>
+                                    <span class="platform-name">${platform.charAt(0).toUpperCase() + platform.slice(1)}</span>
+                                    <div class="success-pulse"></div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <!-- Floating Celebration Elements -->
+                        <div class="celebration-elements">
+                            <div class="confetti confetti-1">🎉</div>
+                            <div class="confetti confetti-2">✨</div>
+                            <div class="confetti confetti-3">🚀</div>
+                            <div class="confetti confetti-4">💫</div>
+                            <div class="confetti confetti-5">🎊</div>
+                        </div>
                     </div>
                 `,
                 showConfirmButton: true,
-                confirmButtonText: '✨ Awesome!',
-                confirmButtonColor: '#10b981',
-                background: '#f0fdf4',
-                color: '#065f46',
+                confirmButtonText: '🚀 Continue Creating',
+                showCancelButton: true,
+                cancelButtonText: '📊 View Analytics',
+                confirmButtonColor: 'transparent',
+                cancelButtonColor: 'transparent',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: '#ffffff',
                 customClass: {
-                    popup: 'success-popup',
-                    title: 'success-title',
-                    confirmButton: 'success-button'
+                    popup: 'advanced-success-popup',
+                    confirmButton: 'advanced-success-button primary',
+                    cancelButton: 'advanced-success-button secondary'
                 },
                 showClass: {
-                    popup: 'animate__animated animate__bounceIn animate__faster'
+                    popup: 'animate__animated animate__zoomIn animate__faster'
                 },
                 hideClass: {
-                    popup: 'animate__animated animate__fadeOut animate__faster'
+                    popup: 'animate__animated animate__zoomOut animate__faster'
+                },
+                backdrop: `
+                    rgba(0,0,0,0.8)
+                    url("data:image/svg+xml,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3e%3cdefs%3e%3cpattern id='confetti' x='0' y='0' width='20' height='20' patternUnits='userSpaceOnUse'%3e%3ccircle cx='10' cy='10' r='2' fill='%23ffffff' opacity='0.1'/%3e%3c/pattern%3e%3c/defs%3e%3crect width='100' height='100' fill='url(%23confetti)'/%3e%3c/svg%3e")
+                    center/400px
+                    no-repeat
+                `,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                width: '500px',
+                padding: '0'
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.cancel) {
+                    // Redirect to analytics
+                    window.location.href = '/logs';
                 }
             });
             
