@@ -416,13 +416,13 @@ document.getElementById('postForm').addEventListener('submit', async function(e)
                                         tiktok: '🎵',
                                         facebook: '👥'
                                     };
-                                    return \`
-                                        <div class="platform-success-card" style="animation-delay: \${index * 0.2}s">
-                                            <div class="platform-icon">\${platformIcons[platform] || '🌐'}</div>
-                                            <div class="platform-label">\${platform.charAt(0).toUpperCase() + platform.slice(1)}</div>
+                                    return `
+                                        <div class="platform-success-card" style="animation-delay: ${index * 0.2}s">
+                                            <div class="platform-icon">${platformIcons[platform] || '🌐'}</div>
+                                            <div class="platform-label">${platform.charAt(0).toUpperCase() + platform.slice(1)}</div>
                                             <div class="success-indicator">✅</div>
                                         </div>
-                                    \`;
+                                    `;
                                 }).join('')}
                             </div>
 
