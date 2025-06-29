@@ -467,9 +467,10 @@ document.getElementById('postForm').addEventListener('submit', async function(e)
                 }
             });
             
-            // Reset form
+            // Reset form and clear draft
             this.reset();
             clearFile();
+            clearDraft(); // Clear the saved draft
             
             // Refresh recent posts (simple reload for now)
             setTimeout(() => {

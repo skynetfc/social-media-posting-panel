@@ -238,7 +238,7 @@ const DRAFT_KEY = 'post_draft';
 
 function saveDraft() {
     const contentEl = document.getElementById('content');
-    if (contentEl && contentEl.value.trim()) {
+    if (contentEl && contentEl.value.trim() && contentEl.value.trim().length > 5) {
         const draft = {
             content: contentEl.value,
             timestamp: Date.now()
@@ -249,11 +249,14 @@ function saveDraft() {
 
 function loadDraft() {
     const draft = getStorage(DRAFT_KEY);
-    if (draft && draft.content) {
+    if (draft && draft.content && draft.content.trim()) {
         const contentEl = document.getElementById('content');
-        if (contentEl && !contentEl.value) {
-            contentEl.value = draft.content;
-            showToast('Draft loaded', 'info');
+        if (contentEl && !contentEl.value.trim()) {
+            // Only load draft if it's substantial content (more than just whitespace)
+            if (draft.content.trim().length > 5) {
+                contentEl.value = draft.content;
+                showToast('Draft loaded', 'info');
+            }
         }
     }
 }
