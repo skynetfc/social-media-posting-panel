@@ -482,11 +482,28 @@ button:active {
     font-family: inherit !important;
 }
 
-/* Professional Success Notification Styles */
+/* Enhanced Professional Success Notification Styles */
 .pro-success-popup {
     border-radius: 20px !important;
     box-shadow: 0 25px 50px -12px rgba(16, 185, 129, 0.25) !important;
     border: 2px solid #10b981 !important;
+    background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%) !important;
+}
+
+.pro-loading-popup {
+    border-radius: 16px !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+}
+
+.pro-loading-container {
+    padding: 20px 10px;
+}
+
+.platform-loading-icon {
+    padding: 8px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 50%;
+    margin: 0 5px;
 }
 
 .pro-success-button {
