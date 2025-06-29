@@ -5,7 +5,7 @@ channel = "stable-24_05"
 packages = ["cargo", "libiconv", "rustc"]
 
 [workflows]
-runButton = "Project"
+runButton = "Start Dashboard"
 
 [[workflows.workflow]]
 name = "Project"
@@ -24,6 +24,15 @@ author = "agent"
 task = "shell.exec"
 args = "pip install fastapi uvicorn sqlalchemy bcrypt pyjwt python-multipart requests aiohttp jinja2 python-dotenv && python main.py"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Start Dashboard"
+author = 37061879
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"
 
 [[ports]]
 localPort = 5000

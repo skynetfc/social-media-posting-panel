@@ -336,6 +336,18 @@
 </div>
 
 <script>
+// Translation function fallback
+function t(key) {
+    const translations = {
+        'content_required': 'Content is required',
+        'select_platform': 'Please select at least one platform',
+        'posting': 'Posting...',
+        'post_now': 'Post Now',
+        'file_too_large': 'File size exceeds 10MB limit'
+    };
+    return translations[key] || key;
+}
+
 // Handle form submission
 document.getElementById('postForm').addEventListener('submit', async function(e) {
     e.preventDefault();
