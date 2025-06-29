@@ -336,61 +336,8 @@ async def create_post(
             overall_success = False
     
     # Update post log
-    @app.post("/post")
-async def create_post(
-    content: str = Form(...),
-    platforms: List[str] = Form(...),
-    file: UploadFile = File(None),
-    schedule_time: str = Form(None),
-    current_user: User = Depends(get_current_user)
-):
-    # Create post log entry
-    post_log = Post(
-        user_id=current_user.id,
-        content=content,
-        platforms=",".join(platforms),
-        status="pending",
-        created_at=datetime.utcnow()
-    )
-    db.add(post_log)
-    db.commit()
-    db.refresh(post_log)
-    
-    # Handle file upload
-    file_path = None
-    if file and file.filename:
-        file_path = await save_upload_file(file)
-    
-    # Post to platforms
-    results = {}
-    overall_success = True
-    
-    for platform in platforms:
-        try:
-            if platform == "telegram":
-                result = await post_to_telegram(content, file_path)
-            elif platform == "instagram":
-                result = await post_to_instagram(content, file_path)
-            elif platform == "youtube":
-                result = await post_to_youtube(content, file_path)
-            elif platform == "tiktok":
-                result = await post_to_tiktok(content, file_path)
-            elif platform == "facebook":
-                result = await post_to_facebook(content, file_path)
-            else:
-                result = {"success": False, "message": f"Platform {platform} not supported"}
-            
-            results[platform] = result
-            if not result.get("success", False):
-                overall_success = False
-                
-        except Exception as e:
-            results[platform] = {"success": False, "message": str(e)}
-            overall_success = False
-    
-    # Update post log
     post_log.status = "completed" if overall_success else "failed"
-    post_log.results = str(results)
+    post_log.results = json.dumps(results)
     post_log.completed_at = datetime.utcnow()
     db.commit()
     
@@ -401,55 +348,7 @@ async def create_post(
         "post_id": post_log.id
     })
 
-async def save_upload_file(file: UploadFile) -> str:
-    """Save uploaded file and return path"""
-    import uuid
-    import os
-    
-    # Create uploads directory if it doesn't exist
-    os.makedirs("uploads", exist_ok=True)
-    
-    # Generate unique filename
-    file_extension = file.filename.split('.')[-1] if '.' in file.filename else ''
-    unique_filename = f"{uuid.uuid4()}.{file_extension}"
-    file_path = f"uploads/{unique_filename}"
-    
-    # Save file
-    with open(file_path, "wb") as buffer:
-        content = await file.read()
-        buffer.write(content)
-    
-    return file_path
 
-async def post_to_telegram(content: str, file_path: str = None) -> dict:
-    """Post to Telegram - Mock implementation"""
-    import asyncio
-    await asyncio.sleep(0.5)  # Simulate API call
-    return {"success": True, "message": "Posted to Telegram", "post_id": "tg_123"}
-
-async def post_to_instagram(content: str, file_path: str = None) -> dict:
-    """Post to Instagram - Mock implementation"""
-    import asyncio
-    await asyncio.sleep(0.7)  # Simulate API call
-    return {"success": True, "message": "Posted to Instagram", "post_id": "ig_456"}
-
-async def post_to_youtube(content: str, file_path: str = None) -> dict:
-    """Post to YouTube - Mock implementation"""
-    import asyncio
-    await asyncio.sleep(1.0)  # Simulate API call
-    return {"success": True, "message": "Posted to YouTube", "post_id": "yt_789"}
-
-async def post_to_tiktok(content: str, file_path: str = None) -> dict:
-    """Post to TikTok - Mock implementation"""
-    import asyncio
-    await asyncio.sleep(0.8)  # Simulate API call
-    return {"success": True, "message": "Posted to TikTok", "post_id": "tt_101"}
-
-async def post_to_facebook(content: str, file_path: str = None) -> dict:
-    """Post to Facebook - Mock implementation"""
-    import asyncio
-    await asyncio.sleep(0.6)  # Simulate API call
-    return {"success": True, "message": "Posted to Facebook", "post_id": "fb_202"}
 
 @app.get("/logs", response_class=HTMLResponse)
 async def logs_page(
