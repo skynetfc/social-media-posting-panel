@@ -559,15 +559,15 @@ document.getElementById('postForm').addEventListener('submit', async function(e)
                     <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                         <div class="swal2-progress-bar bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500 ease-out" style="width: 10%"></div>
                     </div>
-                    <div class="text-sm text-gray-500">Connecting to ${platforms.length} platform${platforms.length > 1 ? 's' : ''}...</div>
+                    <div class="text-sm text-gray-500">Connecting to \${platforms.length} platform\${platforms.length > 1 ? 's' : ''}...</div>
                 </div>
                 
                 <div class="flex justify-center gap-2 mt-4">
-                    ${platforms.map(platform => {
+                    \${platforms.map(platform => {
                         const icons = {telegram: '📱', instagram: '📸', youtube: '🎥', tiktok: '🎵', facebook: '👥'};
-                        return `<div class="platform-loading-icon animate-pulse">
-                            <span class="text-2xl">${icons[platform] || '🌐'}</span>
-                        </div>`;
+                        return \`<div class="platform-loading-icon animate-pulse">
+                            <span class="text-2xl">\${icons[platform] || '🌐'}</span>
+                        </div>\`;
                     }).join('')}
                 </div>
             </div>
@@ -617,7 +617,7 @@ document.getElementById('postForm').addEventListener('submit', async function(e)
 
                         <div class="success-metrics">
                             <div class="metric">
-                                <span class="metric-value">${platformCount}</span>
+                                <span class="metric-value">\${platformCount}</span>
                                 <span class="metric-label">Platforms</span>
                             </div>
                             <div class="metric">
@@ -625,21 +625,21 @@ document.getElementById('postForm').addEventListener('submit', async function(e)
                                 <span class="metric-label">Success Rate</span>
                             </div>
                             <div class="metric">
-                                <span class="metric-value">${currentTime}</span>
+                                <span class="metric-value">\${currentTime}</span>
                                 <span class="metric-label">Published</span>
                             </div>
                         </div>
 
                         <div class="platform-success-grid">
-                            ${successfulPlatforms.map(([platform, res], index) => {
+                            \${successfulPlatforms.map(([platform, res], index) => {
                                 const icons = {'telegram': '📱', 'instagram': '📸', 'youtube': '🎥', 'tiktok': '🎵', 'facebook': '👥'};
-                                return `
-                                    <div class="platform-success-card" style="animation-delay: ${index * 0.1}s">
-                                        <div class="platform-icon">${icons[platform] || '🌐'}</div>
-                                        <div class="platform-label">${platform.charAt(0).toUpperCase() + platform.slice(1)}</div>
+                                return \`
+                                    <div class="platform-success-card" style="animation-delay: \${index * 0.1}s">
+                                        <div class="platform-icon">\${icons[platform] || '🌐'}</div>
+                                        <div class="platform-label">\${platform.charAt(0).toUpperCase() + platform.slice(1)}</div>
                                         <div class="success-indicator">✅</div>
                                     </div>
-                                `;
+                                \`;
                             }).join('')}
                         </div>
 
@@ -699,28 +699,28 @@ document.getElementById('postForm').addEventListener('submit', async function(e)
                                 Platform Results:
                             </h4>
                             <div class="space-y-3">
-                                ${Object.entries(result.results || {}).map(([platform, res]) => `
-                                    <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border-l-4 ${res.success ? 'border-green-400' : 'border-red-400'}">
+                                \${Object.entries(result.results || {}).map(([platform, res]) => \`
+                                    <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border-l-4 \${res.success ? 'border-green-400' : 'border-red-400'}">
                                         <div class="flex items-center">
-                                            <span class="text-lg mr-3">${{'telegram': '📱', 'instagram': '📸', 'youtube': '🎥', 'tiktok': '🎵', 'facebook': '👥'}[platform] || '🌐'}</span>
-                                            <span class="capitalize font-semibold text-gray-700">${platform}</span>
+                                            <span class="text-lg mr-3">\${{'telegram': '📱', 'instagram': '📸', 'youtube': '🎥', 'tiktok': '🎵', 'facebook': '👥'}[platform] || '🌐'}</span>
+                                            <span class="capitalize font-semibold text-gray-700">\${platform}</span>
                                         </div>
-                                        <span class="px-3 py-1 rounded-full text-sm font-medium ${res.success ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}">
-                                            ${res.success ? '✅ Success' : '❌ Failed'}
+                                        <span class="px-3 py-1 rounded-full text-sm font-medium \${res.success ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}">
+                                            \${res.success ? '✅ Success' : '❌ Failed'}
                                         </span>
                                     </div>
-                                    ${!res.success ? `<div class="text-sm text-red-600 mt-2 ml-8 bg-red-50 p-2 rounded border-l-2 border-red-200">${res.message || 'Unknown error occurred'}</div>` : ''}
-                                `).join('')}
+                                    \${!res.success ? \`<div class="text-sm text-red-600 mt-2 ml-8 bg-red-50 p-2 rounded border-l-2 border-red-200">\${res.message || 'Unknown error occurred'}</div>\` : ''}
+                                \`).join('')}
                             </div>
                         </div>
 
-                        ${successCount > 0 ? `
+                        \${successCount > 0 ? \`
                             <div class="bg-green-50 border border-green-200 rounded-lg p-4">
                                 <p class="text-green-800 font-medium">
-                                    ✅ Successfully published to ${successCount} platform${successCount > 1 ? 's' : ''}!
+                                    ✅ Successfully published to \${successCount} platform\${successCount > 1 ? 's' : ''}!
                                 </p>
                             </div>
-                        ` : ''}
+                        \` : ''}
                     </div>
                 `,
                 showConfirmButton: true,
@@ -744,7 +744,7 @@ document.getElementById('postForm').addEventListener('submit', async function(e)
                     <div class="text-6xl">⚠️</div>
                     <p class="text-gray-700 font-medium">Failed to publish content. Please check your connection and try again.</p>
                     <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-                        <p class="text-red-800 text-sm">${error.message || 'Network error occurred'}</p>
+                        <p class="text-red-800 text-sm">\${error.message || 'Network error occurred'}</p>
                     </div>
                 </div>
             `,
