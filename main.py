@@ -305,6 +305,7 @@ async def create_post(
         # Post to platforms
         results = {}
         overall_success = True
+        media_info = f" with {file_type}" if file_path and file_type else ""
         
         for platform in platforms:
             try:
@@ -320,6 +321,10 @@ async def create_post(
                     success, message = await social_manager.post_to_facebook(content, file_path, file_type)
                 else:
                     success, message = False, "Unsupported platform"
+                
+                # Add media info to success messages
+                if success and file_path:
+                    message = message + f" (included {file_type})"
                 
                 results[platform] = {"success": success, "message": message}
                 if not success:
@@ -357,7 +362,7 @@ async def logs_page(
 ):
     """Logs page"""
     try:
-        logs = db.query(PostLog).order_by(PostLog.created_at.desc()).all()
+        logs = db.query(PostLog).filter(PostLog.user_id == user.id).order_by(PostLog.created_at.desc()).all()
         
         return templates.TemplateResponse(
             "logs.html",

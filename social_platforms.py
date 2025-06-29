@@ -23,10 +23,15 @@ class SocialMediaManager:
     
     async def post_to_telegram(self, content: str, file_path: Optional[str] = None, file_type: Optional[str] = None) -> Tuple[bool, str]:
         """Post to Telegram"""
-        if not self.telegram_token or not self.telegram_chat_id:
-            # For testing purposes, simulate successful post
+        # Use @GetzyForex channel
+        channel_username = "@GetzyForex"
+        
+        if not self.telegram_token:
+            # For testing purposes with real channel posting
             await asyncio.sleep(1)  # Simulate API call delay
-            return True, "✅ Posted successfully to Telegram (Test Mode)"
+            if file_path and file_type:
+                return True, f"✅ Posted successfully to {channel_username} with {file_type} (Test Mode)"
+            return True, f"✅ Posted successfully to {channel_username} (Test Mode)"
         
         try:
             url = f"https://api.telegram.org/bot{self.telegram_token}"
@@ -38,8 +43,9 @@ class SocialMediaManager:
                     with open(file_path, 'rb') as photo:
                         files = {'photo': photo}
                         data = {
-                            'chat_id': self.telegram_chat_id,
-                            'caption': content
+                            'chat_id': channel_username,
+                            'caption': content,
+                            'parse_mode': 'HTML'
                         }
                         response = requests.post(endpoint, files=files, data=data)
                 elif file_type == "video":
@@ -47,8 +53,9 @@ class SocialMediaManager:
                     with open(file_path, 'rb') as video:
                         files = {'video': video}
                         data = {
-                            'chat_id': self.telegram_chat_id,
-                            'caption': content
+                            'chat_id': channel_username,
+                            'caption': content,
+                            'parse_mode': 'HTML'
                         }
                         response = requests.post(endpoint, files=files, data=data)
                 else:
@@ -57,13 +64,14 @@ class SocialMediaManager:
                 # Send text only
                 endpoint = f"{url}/sendMessage"
                 data = {
-                    'chat_id': self.telegram_chat_id,
-                    'text': content
+                    'chat_id': channel_username,
+                    'text': content,
+                    'parse_mode': 'HTML'
                 }
                 response = requests.post(endpoint, json=data)
             
             if response.status_code == 200:
-                return True, "Posted successfully to Telegram"
+                return True, f"Posted successfully to {channel_username}"
             else:
                 error_data = response.json()
                 return False, f"Telegram API error: {error_data.get('description', 'Unknown error')}"
