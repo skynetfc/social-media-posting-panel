@@ -12,6 +12,11 @@ from datetime import datetime, timedelta
 from typing import Optional, List
 import uuid
 import mimetypes
+import json
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 from database import get_db, init_db
 from models import PostLog, User
@@ -314,6 +319,57 @@ async def get_logs(
         })
     
     return {"logs": logs_data}
+
+@app.get("/api/logs/{log_id}")
+async def get_log_details(
+    log_id: int,
+    user: User = Depends(require_auth),
+    db: Session = Depends(get_db)
+):
+    """Get detailed log information"""
+    log = db.query(PostLog).filter(PostLog.id == log_id, PostLog.user_id == user.id).first()
+    
+    if not log:
+        raise HTTPException(status_code=404, detail="Log not found")
+    
+    return {
+        "id": log.id,
+        "content": log.content,
+        "platforms": log.platforms.split(","),
+        "status": log.status,
+        "created_at": log.created_at.isoformat(),
+        "completed_at": log.completed_at.isoformat() if log.completed_at else None,
+        "results": log.results,
+        "file_path": log.file_path,
+        "file_type": log.file_type,
+        "scheduled_for": log.scheduled_for.isoformat() if log.scheduled_for else None
+    }
+
+@app.get("/settings", response_class=HTMLResponse)
+async def settings_page(
+    request: Request,
+    user: User = Depends(require_auth),
+    db: Session = Depends(get_db)
+):
+    """Settings page"""
+    # Calculate statistics
+    total_posts = db.query(PostLog).filter(PostLog.user_id == user.id).count()
+    successful_posts = db.query(PostLog).filter(
+        PostLog.user_id == user.id, 
+        PostLog.status == "completed"
+    ).count()
+    
+    success_rate = f"{(successful_posts / total_posts * 100):.1f}%" if total_posts > 0 else "0%"
+    
+    return templates.TemplateResponse(
+        "settings.html",
+        {
+            "request": request,
+            "user": user,
+            "total_posts": total_posts,
+            "success_rate": success_rate
+        }
+    )
 
 if __name__ == "__main__":
     import uvicorn
