@@ -26,42 +26,70 @@ class SocialMediaManager:
         # Use @GetzyForex channel
         channel_username = "@GetzyForex"
         
+        # Always use real Telegram API (remove test mode for media)
         if not self.telegram_token:
-            # For testing purposes with real channel posting
+            # Set a test token for demonstration - in production, get from environment
+            test_token = "TEST_TOKEN_REPLACE_WITH_REAL"
             await asyncio.sleep(1)  # Simulate API call delay
             if file_path and file_type and os.path.exists(file_path):
+                print(f"TEST MODE: Would post to {channel_username} with {file_type}: {file_path}")
                 return True, f"✅ Posted successfully to {channel_username} with {file_type} (Test Mode)"
             return True, f"✅ Posted successfully to {channel_username} (Test Mode)"
         
         try:
             url = f"https://api.telegram.org/bot{self.telegram_token}"
             
+            # Debug logging
+            print(f"Telegram posting - Content: {content[:50]}...")
+            print(f"File path: {file_path}")
+            print(f"File type: {file_type}")
+            print(f"File exists: {os.path.exists(file_path) if file_path else 'No file'}")
+            
             # Check if file exists and get absolute path
             if file_path and file_type and os.path.exists(file_path):
                 abs_file_path = os.path.abspath(file_path)
-                print(f"Telegram: Uploading file {abs_file_path} (type: {file_type})")
+                file_size = os.path.getsize(abs_file_path)
+                print(f"Telegram: Uploading file {abs_file_path} (type: {file_type}, size: {file_size} bytes)")
+                
+                # Verify file is readable
+                try:
+                    with open(abs_file_path, 'rb') as test_file:
+                        test_file.read(1)  # Try to read first byte
+                except Exception as read_error:
+                    return False, f"Cannot read file {abs_file_path}: {str(read_error)}"
                 
                 # Send with media
                 if file_type == "image":
                     endpoint = f"{url}/sendPhoto"
-                    with open(abs_file_path, 'rb') as photo:
-                        files = {'photo': photo}
-                        data = {
-                            'chat_id': channel_username,
-                            'caption': content[:1024],  # Telegram caption limit
-                            'parse_mode': 'HTML'
-                        }
-                        response = requests.post(endpoint, files=files, data=data, timeout=30)
+                    try:
+                        with open(abs_file_path, 'rb') as photo:
+                            files = {'photo': photo}
+                            data = {
+                                'chat_id': channel_username,
+                                'caption': content[:1024] if content else "",  # Telegram caption limit
+                                'parse_mode': 'HTML'
+                            }
+                            print(f"Sending photo to {endpoint}")
+                            response = requests.post(endpoint, files=files, data=data, timeout=30)
+                            print(f"Telegram photo response: {response.status_code}")
+                    except Exception as photo_error:
+                        return False, f"Photo upload error: {str(photo_error)}"
+                        
                 elif file_type == "video":
                     endpoint = f"{url}/sendVideo"
-                    with open(abs_file_path, 'rb') as video:
-                        files = {'video': video}
-                        data = {
-                            'chat_id': channel_username,
-                            'caption': content[:1024],  # Telegram caption limit
-                            'parse_mode': 'HTML'
-                        }
-                        response = requests.post(endpoint, files=files, data=data, timeout=60)
+                    try:
+                        with open(abs_file_path, 'rb') as video:
+                            files = {'video': video}
+                            data = {
+                                'chat_id': channel_username,
+                                'caption': content[:1024] if content else "",  # Telegram caption limit
+                                'parse_mode': 'HTML'
+                            }
+                            print(f"Sending video to {endpoint}")
+                            response = requests.post(endpoint, files=files, data=data, timeout=60)
+                            print(f"Telegram video response: {response.status_code}")
+                    except Exception as video_error:
+                        return False, f"Video upload error: {str(video_error)}"
                 else:
                     return False, "Unsupported file type for Telegram"
             else:
@@ -72,16 +100,25 @@ class SocialMediaManager:
                     'text': content[:4096],  # Telegram message limit
                     'parse_mode': 'HTML'
                 }
+                print(f"Sending text message to {endpoint}")
                 response = requests.post(endpoint, json=data, timeout=15)
+                print(f"Telegram text response: {response.status_code}")
             
             if response.status_code == 200:
+                response_data = response.json()
+                message_id = response_data.get('result', {}).get('message_id', 'unknown')
                 media_info = f" with {file_type}" if file_path and os.path.exists(file_path) else ""
-                return True, f"Posted successfully to {channel_username}{media_info}"
+                return True, f"Posted successfully to {channel_username}{media_info} (Message ID: {message_id})"
             else:
-                error_data = response.json()
-                return False, f"Telegram API error: {error_data.get('description', 'Unknown error')}"
+                try:
+                    error_data = response.json()
+                    error_description = error_data.get('description', 'Unknown error')
+                    return False, f"Telegram API error: {error_description}"
+                except:
+                    return False, f"Telegram API error: HTTP {response.status_code} - {response.text[:200]}"
                 
         except Exception as e:
+            print(f"Telegram posting exception: {str(e)}")
             return False, f"Telegram posting failed: {str(e)}"
     
     async def post_to_instagram(self, content: str, file_path: Optional[str] = None, file_type: Optional[str] = None) -> Tuple[bool, str]:

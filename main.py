@@ -271,9 +271,16 @@ async def create_post(
         file_path = None
         file_type = None
         
-        if file and file.filename and file.size > 0:
+        print(f"File upload debug - File object: {file}")
+        print(f"File filename: {file.filename if file else 'No file'}")
+        print(f"File size: {file.size if file else 'No size'}")
+        
+        if file and file.filename and file.size and file.size > 0:
+            print(f"Processing file upload: {file.filename} ({file.size} bytes)")
+            
             is_valid, error_msg, detected_type = validate_file(file)
             if not is_valid:
+                print(f"File validation failed: {error_msg}")
                 return JSONResponse(
                     status_code=400,
                     content={"success": False, "message": error_msg}
@@ -285,24 +292,44 @@ async def create_post(
             file_path = f"uploads/{unique_filename}"
             file_type = detected_type
             
+            print(f"Saving file as: {file_path} (type: {file_type})")
+            
             try:
                 # Ensure uploads directory exists
                 os.makedirs("uploads", exist_ok=True)
                 
+                # Reset file pointer to beginning
+                await file.seek(0)
+                
                 # Save the file
                 with open(file_path, "wb") as buffer:
-                    shutil.copyfileobj(file.file, buffer)
+                    content = await file.read()
+                    buffer.write(content)
                 
                 # Verify file was saved
-                if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
+                if not os.path.exists(file_path):
                     raise Exception("File upload failed - file not saved properly")
+                
+                saved_size = os.path.getsize(file_path)
+                if saved_size == 0:
+                    raise Exception("File upload failed - saved file is empty")
+                
+                print(f"File saved successfully: {file_path} ({saved_size} bytes)")
                     
             except Exception as e:
                 print(f"File upload error: {e}")
+                # Clean up failed upload
+                if os.path.exists(file_path):
+                    try:
+                        os.remove(file_path)
+                    except:
+                        pass
                 return JSONResponse(
                     status_code=500,
                     content={"success": False, "message": f"File upload failed: {str(e)}"}
                 )
+        else:
+            print("No valid file provided for upload")
         
         # Create post log
         post_log = PostLog(
