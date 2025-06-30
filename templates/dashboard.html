@@ -452,8 +452,7 @@
                             </div>
 
                             <div class="platform-card relative">
-                               ```python
-<input type="checkbox" id="twitter" name="platforms" value="twitter" class="sr-only">
+                                <input type="checkbox" id="twitter" name="platforms" value="twitter" class="sr-only">
                                 <label for="twitter" class="flex items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800">
                                     <i class="fab fa-twitter text-blue-400 text-xl mr-3"></i>
                                     <span class="text-gray-900 dark:text-white font-medium" data-translate="twitter">Twitter</span>
@@ -582,6 +581,65 @@
 
                     <!-- Submit Button -->
                     <div class="flex justify-end">
+                        <!-- AI Content Assistant Section -->
+                        <div class="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900 dark:to-blue-900 rounded-lg p-4 mb-6 border border-purple-200 dark:border-purple-700">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                                <i class="fas fa-robot mr-2 text-purple-600"></i>
+                                <span data-translate="ai_assistant">AI Content Assistant</span>
+                            </h3>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <!-- Content Ideas Generator -->
+                                <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                                    <h4 class="font-medium text-gray-900 dark:text-white mb-2">
+                                        <i class="fas fa-lightbulb mr-1 text-yellow-500"></i>
+                                        <span data-translate="content_ideas">Content Ideas</span>
+                                    </h4>
+                                    <input type="text" id="topic-input" placeholder="Enter topic..." 
+                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm mb-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                    <button onclick="generateContentIdeas()" 
+                                            class="w-full bg-purple-600 hover:bg-purple-700 text-white text-sm py-2 px-3 rounded-md transition-colors duration-200">
+                                        <i class="fas fa-magic mr-1"></i>
+                                        <span data-translate="generate_ideas">Generate Ideas</span>
+                                    </button>
+                                </div>
+
+                                <!-- Hashtag Optimizer -->
+                                <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                                    <h4 class="font-medium text-gray-900 dark:text-white mb-2">
+                                        <i class="fas fa-hashtag mr-1 text-blue-500"></i>
+                                        <span data-translate="hashtag_optimizer">Hashtag Optimizer</span>
+                                    </h4>
+                                    <button onclick="optimizeHashtags()" 
+                                            class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-3 rounded-md transition-colors duration-200">
+                                        <i class="fas fa-tags mr-1"></i>
+                                        <span data-translate="optimize_hashtags">Optimize Hashtags</span>
+                                    </button>
+                                </div>
+
+                                <!-- Content Enhancer -->
+                                <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                                    <h4 class="font-medium text-gray-900 dark:text-white mb-2">
+                                        <i class="fas fa-wand-magic-sparkles mr-1 text-green-500"></i>
+                                        <span data-translate="content_enhancer">Content Enhancer</span>
+                                    </h4>
+                                    <button onclick="enhanceContent()" 
+                                            class="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2 px-3 rounded-md transition-colors duration-200">
+                                        <i class="fas fa-sparkles mr-1"></i>
+                                        <span data-translate="enhance_content">Enhance Content</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- AI Results Display -->
+                            <div id="ai-results" class="hidden bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">
+                                    <i class="fas fa-brain mr-1 text-purple-500"></i>
+                                    <span data-translate="ai_suggestions">AI Suggestions</span>
+                                </h4>
+                                <div id="ai-content" class="space-y-2"></div>
+                            </div>
+                        </div>
                         <button 
                             type="submit" 
                             id="submitBtn"
@@ -619,7 +677,6 @@
                                             Get AI-powered content suggestions to inspire your next post. Enter a topic and let our AI generate ideas for you.
                                         </p>
                                     </div>
-                                </div>
                             </div>
                             <div class="mt-3">
                                 <label for="aiTopic" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Topic/Keywords</label>
@@ -770,7 +827,15 @@
                 success: "Success",
                 no_posts: "No recent posts found",
                 start_creating: "Start creating content to see your posts here",
-                posting: "Posting..."
+                posting: "Posting...",
+                ai_assistant: 'AI Content Assistant',
+                content_ideas: 'Content Ideas',
+                generate_ideas: 'Generate Ideas',
+                hashtag_optimizer: 'Hashtag Optimizer',
+                optimize_hashtags: 'Optimize Hashtags',
+                content_enhancer: 'Content Enhancer',
+                enhance_content: 'Enhance Content',
+                ai_suggestions: 'AI Suggestions'
             },
             ar: {
                 brand_title: "إبداعات مجهولة",
@@ -815,7 +880,15 @@
                 success: "نجح",
                 no_posts: "لا توجد منشورات حديثة",
                 start_creating: "ابدأ في إنشاء المحتوى لرؤية منشوراتك هنا",
-                posting: "جارٍ النشر..."
+                posting: "جارٍ النشر...",
+                ai_assistant: 'مساعد المحتوى الذكي',
+                content_ideas: 'أفكار المحتوى',
+                generate_ideas: 'توليد الأفكار',
+                hashtag_optimizer: 'محسن الهاشتاغ',
+                optimize_hashtags: 'تحسين الهاشتاغ',
+                content_enhancer: 'محسن المحتوى',
+                enhance_content: 'تحسين المحتوى',
+                ai_suggestions: 'اقتراحات الذكاء الاصطناعي'
             },
             es: {
                 brand_title: "Creaciones Anónimas",
@@ -1625,8 +1698,7 @@
                                 const label = checkbox.nextElementSibling;
                                 const check = label.querySelector('.platform-check');
                                 label.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
-                                label.classList.add('border-gray-200', 'dark:border-gray-600');
-                                check.classList.add('opacity-0');
+                                label.classList.add('border-gray-200', 'dark:border-gray-600');                                check.classList.add('opacity-0');
                             });
                             // Refresh page to update stats
                             setTimeout(() => location.reload(), 1000);
@@ -1775,7 +1847,6 @@
                             throw new Error(data.error || 'Failed to enhance content');
                         }
                     } catch (error) {
-```python
                         Swal.fire({
                             icon: 'error',
                             title: 'Enhancement Failed',
@@ -1958,6 +2029,250 @@
                 text: `${hashtag} has been added to your content.`,
                 timer: 1500,
                 showConfirmButton: false,
+                background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+            });
+        }
+    });
+    initializeAIFeatures();
+
+        // AI Content Assistant Functions
+        async function generateContentIdeas() {
+            const topic = document.getElementById('topic-input').value.trim();
+            if (!topic) {
+                showNotification('Please enter a topic', 'warning');
+                return;
+            }
+
+            const platform = getSelectedPlatform() || 'general';
+
+            try {
+                const formData = new FormData();
+                formData.append('topic', topic);
+                formData.append('platform', platform);
+                formData.append('tone', 'professional');
+
+                const response = await fetch('/api/generate-content-ideas', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.suggestions) {
+                    displayAIResults('Content Ideas', result.suggestions, 'ideas');
+                    if (result.hashtags) {
+                        displayHashtags(result.hashtags);
+                    }
+                } else {
+                    showNotification('Failed to generate content ideas', 'error');
+                }
+            } catch (error) {
+                console.error('Content ideas error:', error);
+                showNotification('Error generating content ideas', 'error');
+            }
+        }
+
+        async function optimizeHashtags() {
+            const content = document.getElementById('content').value.trim();
+            if (!content) {
+                showNotification('Please enter some content first', 'warning');
+                return;
+            }
+
+            const platform = getSelectedPlatform() || 'general';
+
+            try {
+                const formData = new FormData();
+                formData.append('content', content);
+                formData.append('platform', platform);
+
+                const response = await fetch('/api/optimize-hashtags', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.ai_hashtags) {
+                    displayHashtagOptimization(result);
+                } else {
+                    showNotification('Failed to optimize hashtags', 'error');
+                }
+            } catch (error) {
+                console.error('Hashtag optimization error:', error);
+                showNotification('Error optimizing hashtags', 'error');
+            }
+        }
+
+        async function enhanceContent() {
+            const content = document.getElementById('content').value.trim();
+            if (!content) {
+                showNotification('Please enter some content first', 'warning');
+                return;
+            }
+
+            const platform = getSelectedPlatform() || 'general';
+
+            try {
+                const formData = new FormData();
+                formData.append('content', content);
+                formData.append('platform', platform);
+
+                const response = await fetch('/api/enhance-content', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.enhanced_content) {
+                    displayContentEnhancement(result);
+                } else {
+                    showNotification('Failed to enhance content', 'error');
+                }
+            } catch (error) {
+                console.error('Content enhancement error:', error);
+                showNotification('Error enhancing content', 'error');
+            }
+        }
+
+        function getSelectedPlatform() {
+            const checkedPlatforms = document.querySelectorAll('input[name="platforms"]:checked');
+            return checkedPlatforms.length > 0 ? checkedPlatforms[0].value : 'general';
+        }
+
+        function displayAIResults(title, suggestions, type) {
+            const resultsDiv = document.getElementById('ai-results');
+            const contentDiv = document.getElementById('ai-content');
+
+            let html = `<h5 class="font-medium text-gray-900 dark:text-white mb-2">${title}</h5>`;
+
+            if (type === 'ideas') {
+                html += '<div class="space-y-2">';
+                suggestions.forEach((suggestion, index) => {
+                    html += `
+                        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
+                            <p class="text-sm text-gray-700 dark:text-gray-300">${suggestion}</p>
+                            <button onclick="useContentIdea('${suggestion.replace(/'/g, "\\'")}', ${index})" 
+                                    class="mt-2 text-xs bg-purple-100 hover:bg-purple-200 dark:bg-purple-900 dark:hover:bg-purple-800 text-purple-700 dark:text-purple-300 px-2 py-1 rounded">
+                                Use This Idea
+                            </button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            contentDiv.innerHTML = html;
+            resultsDiv.classList.remove('hidden');
+        }
+
+        function displayHashtagOptimization(result) {
+            const resultsDiv = document.getElementById('ai-results');
+            const contentDiv = document.getElementById('ai-content');
+
+            let html = `
+                <h5 class="font-medium text-gray-900 dark:text-white mb-2">Hashtag Recommendations</h5>
+                <div class="space-y-3">
+                    <div>
+                        <h6 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">AI-Generated Hashtags:</h6>
+                        <div class="flex flex-wrap gap-1">
+            `;
+
+            result.ai_hashtags.forEach(hashtag => {
+                html += `<span onclick="addHashtag('${hashtag}')" class="cursor-pointer text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">${hashtag}</span>`;
+            });
+
+            html += `
+                        </div>
+                    </div>
+                    <div>
+                        <h6 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Trending Hashtags:</h6>
+                        <div class="flex flex-wrap gap-1">
+            `;
+
+            result.trending_hashtags.forEach(hashtag => {
+                html += `<span onclick="addHashtag('${hashtag}')" class="cursor-pointer text-xs bg-green-100 hover:bg-green-200 dark:bg-green-900 dark:hover:bg-green-800 text-green-700 dark:text-green-300 px-2 py-1 rounded">${hashtag}</span>`;
+            });
+
+            html += `
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Recommended: ${result.recommended_count} hashtags for this platform</p>
+                </div>
+            `;
+
+            contentDiv.innerHTML = html;
+            resultsDiv.classList.remove('hidden');
+        }
+
+        function displayContentEnhancement(result) {
+            const resultsDiv = document.getElementById('ai-results');
+            const contentDiv = document.getElementById('ai-content');
+
+            let html = `
+                <h5 class="font-medium text-gray-900 dark:text-white mb-2">Enhanced Content</h5>
+                <div class="space-y-3">
+                    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
+                        <h6 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Enhanced Version:</h6>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">${result.enhanced_content}</p>
+                        <button onclick="useEnhancedContent('${result.enhanced_content.replace(/'/g, "\\'")}', ${index})" 
+                                class="mt-2 text-xs bg-green-100 hover:bg-green-200 dark:bg-green-900 dark:hover:bg-green-800 text-green-700 dark:text-green-300 px-2 py-1 rounded">
+                            Use Enhanced Content
+                        </button>
+                    </div>
+            `;
+
+            if (result.suggestions && result.suggestions.length > 0) {
+                html += `
+                    <div>
+                        <h6 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Improvement Suggestions:</h6>
+                        <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                `;
+                result.suggestions.forEach(suggestion => {
+                    html += `<li>• ${suggestion}</li>`;
+                });
+                html += '</ul></div>';
+            }
+
+            html += '</div>';
+
+            contentDiv.innerHTML = html;
+            resultsDiv.classList.remove('hidden');
+        }
+
+        function useContentIdea(idea, index) {
+            document.getElementById('content').value = idea;
+            showNotification('Content idea applied!', 'success');
+        }
+
+        function useEnhancedContent(content, index) {
+            document.getElementById('content').value = content;
+            showNotification('Enhanced content applied!', 'success');
+        }
+
+        function addHashtag(hashtag) {
+            const contentField = document.getElementById('content');
+            const currentContent = contentField.value;
+
+            if (!currentContent.includes(hashtag)) {
+                contentField.value = currentContent + (currentContent ? ' ' : '') + hashtag;
+                showNotification(`Added ${hashtag}`, 'success');
+            } else {
+                showNotification(`${hashtag} already exists`, 'info');
+            }
+        }
+
+        // Utility function to show notifications
+        function showNotification(message, type = 'success') {
+            Swal.fire({
+                title: message,
+                icon: type,
+                timer: 2000,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end',
                 background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
                 color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
             });

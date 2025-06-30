@@ -988,6 +988,36 @@ def get_seo_recommendations(score: float, content: str, keywords: str, title: st
     
     return recommendations
 
+def get_trending_hashtags(platform: str = "general") -> List[str]:
+    """Get platform-specific trending hashtags"""
+    trending_by_platform = {
+        "instagram": ["#instagood", "#photooftheday", "#love", "#beautiful", "#happy", "#follow", "#fashion", "#art"],
+        "twitter": ["#trending", "#viral", "#breaking", "#news", "#follow", "#retweet", "#thread", "#discussion"],
+        "tiktok": ["#fyp", "#foryou", "#viral", "#trending", "#duet", "#challenge", "#funny", "#dance"],
+        "linkedin": ["#professional", "#career", "#business", "#networking", "#leadership", "#innovation", "#growth", "#success"],
+        "facebook": ["#community", "#family", "#friends", "#share", "#like", "#love", "#memories", "#celebration"],
+        "youtube": ["#subscribe", "#video", "#content", "#creator", "#tutorial", "#review", "#entertainment", "#education"],
+        "pinterest": ["#diy", "#inspiration", "#home", "#fashion", "#food", "#travel", "#wedding", "#design"],
+        "general": ["#content", "#social", "#digital", "#online", "#community", "#share", "#engage", "#connect"]
+    }
+    
+    return trending_by_platform.get(platform, trending_by_platform["general"])
+
+def get_optimal_hashtag_count(platform: str) -> int:
+    """Get optimal hashtag count per platform"""
+    optimal_counts = {
+        "instagram": 8,
+        "twitter": 2,
+        "tiktok": 5,
+        "linkedin": 3,
+        "facebook": 3,
+        "youtube": 5,
+        "pinterest": 10,
+        "general": 5
+    }
+    
+    return optimal_counts.get(platform, 5)
+
 @app.post("/api/update-analytics/{post_id}")
 async def update_analytics(
     post_id: int,
@@ -1112,6 +1142,43 @@ async def enhance_content_with_ai(
     except Exception as e:
         print(f"Content enhancement error: {e}")
         return JSONResponse({"error": "Failed to enhance content"}, status_code=500)
+
+@app.post("/api/generate-content-ideas")
+async def generate_content_ideas(
+    request: Request,
+    topic: str = Form(...),
+    platform: str = Form("general"),
+    tone: str = Form("professional"),
+    user: User = Depends(require_auth)
+):
+    """Generate AI-powered content ideas"""
+    try:
+        suggestions = await generate_ai_content_suggestions(topic, platform, tone)
+        return JSONResponse(suggestions)
+    except Exception as e:
+        print(f"Content ideas generation error: {e}")
+        return JSONResponse({"error": "Failed to generate content ideas"}, status_code=500)
+
+@app.post("/api/optimize-hashtags")
+async def optimize_hashtags(
+    request: Request,
+    content: str = Form(...),
+    platform: str = Form("general"),
+    user: User = Depends(require_auth)
+):
+    """Get optimized hashtag recommendations"""
+    try:
+        hashtags = await generate_ai_hashtags(content, platform)
+        trending_hashtags = get_trending_hashtags(platform)
+        
+        return JSONResponse({
+            "ai_hashtags": hashtags,
+            "trending_hashtags": trending_hashtags,
+            "recommended_count": get_optimal_hashtag_count(platform)
+        })
+    except Exception as e:
+        print(f"Hashtag optimization error: {e}")
+        return JSONResponse({"error": "Failed to optimize hashtags"}, status_code=500)
 
 if __name__ == "__main__":
     import uvicorn
