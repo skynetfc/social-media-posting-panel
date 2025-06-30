@@ -486,23 +486,33 @@
             if (currentLang === 'ar') {
                 html.dir = 'rtl';
                 html.lang = 'ar';
+                html.className = html.className.replace('font-english', '').replace('font-arabic', '') + ' font-arabic';
                 body.classList.add('font-arabic');
                 body.classList.remove('font-english');
                 if (langIcon) langIcon.textContent = '🇵🇸';
                 if (langText) langText.textContent = 'العربية';
+                
+                // Add RTL styles
+                document.documentElement.style.direction = 'rtl';
+                document.body.style.textAlign = 'right';
             } else {
                 html.dir = 'ltr';
                 html.lang = 'en';
+                html.className = html.className.replace('font-arabic', '').replace('font-english', '') + ' font-english';
                 body.classList.add('font-english');
                 body.classList.remove('font-arabic');
                 if (langIcon) langIcon.textContent = '🇺🇸';
                 if (langText) langText.textContent = 'EN';
+                
+                // Remove RTL styles
+                document.documentElement.style.direction = 'ltr';
+                document.body.style.textAlign = 'left';
             }
             
             // Update all translatable elements
             document.querySelectorAll('[data-translate]').forEach(element => {
                 const key = element.getAttribute('data-translate');
-                if (translations[currentLang][key]) {
+                if (translations[currentLang] && translations[currentLang][key]) {
                     element.textContent = translations[currentLang][key];
                 }
             });
@@ -510,10 +520,16 @@
             // Update placeholders
             document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
                 const key = element.getAttribute('data-translate-placeholder');
-                if (translations[currentLang][key]) {
+                if (translations[currentLang] && translations[currentLang][key]) {
                     element.placeholder = translations[currentLang][key];
                 }
             });
+            
+            // Update submit button text
+            const submitText = document.getElementById('submitText');
+            if (submitText) {
+                submitText.textContent = translations[currentLang]['post_now'] || 'Post Now';
+            }
         }
 
         function updateTheme() {
@@ -583,7 +599,35 @@
             fileInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
-                    fileName.textContent = file.name;
+                    // Validate file
+                    const maxSize = 10 * 1024 * 1024; // 10MB
+                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/mov', 'video/avi', 'video/mkv', 'video/webm'];
+                    
+                    if (file.size > maxSize) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'File Too Large',
+                            text: 'File size must be under 10MB',
+                            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                        });
+                        fileInput.value = '';
+                        return;
+                    }
+                    
+                    if (!allowedTypes.includes(file.type)) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid File Type',
+                            text: 'Please upload images (JPG, PNG, GIF, WebP) or videos (MP4, MOV, AVI, MKV, WebM)',
+                            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                        });
+                        fileInput.value = '';
+                        return;
+                    }
+                    
+                    fileName.textContent = `${file.name} (${formatFileSize(file.size)})`;
                     filePreview.classList.remove('hidden');
                 }
             });
@@ -592,6 +636,15 @@
                 fileInput.value = '';
                 filePreview.classList.add('hidden');
             });
+            
+            // Helper function to format file size
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
 
             // Form submission
             const postForm = document.getElementById('postForm');

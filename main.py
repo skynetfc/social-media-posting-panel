@@ -271,7 +271,7 @@ async def create_post(
         file_path = None
         file_type = None
         
-        if file and file.filename:
+        if file and file.filename and file.size > 0:
             is_valid, error_msg, detected_type = validate_file(file)
             if not is_valid:
                 return JSONResponse(
@@ -285,8 +285,24 @@ async def create_post(
             file_path = f"uploads/{unique_filename}"
             file_type = detected_type
             
-            with open(file_path, "wb") as buffer:
-                shutil.copyfileobj(file.file, buffer)
+            try:
+                # Ensure uploads directory exists
+                os.makedirs("uploads", exist_ok=True)
+                
+                # Save the file
+                with open(file_path, "wb") as buffer:
+                    shutil.copyfileobj(file.file, buffer)
+                
+                # Verify file was saved
+                if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
+                    raise Exception("File upload failed - file not saved properly")
+                    
+            except Exception as e:
+                print(f"File upload error: {e}")
+                return JSONResponse(
+                    status_code=500,
+                    content={"success": False, "message": f"File upload failed: {str(e)}"}
+                )
         
         # Create post log
         post_log = PostLog(
