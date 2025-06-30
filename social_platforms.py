@@ -525,7 +525,6 @@ class SocialMediaManager:
         except Exception as e:
             print(f"Tumblr posting error: {str(e)}")
             return False, f"Tumblr error: {str(e)}"
-```
     
     async def post_to_twitter(self, content: str, file_path: Optional[str] = None, file_type: Optional[str] = None) -> Tuple[bool, str]:
         """Post to Twitter"""
