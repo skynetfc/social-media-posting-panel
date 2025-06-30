@@ -193,69 +193,6 @@ async def login(
             }
         )
 
-@app.post("/register")
-async def register(
-    request: Request,
-    fullname: str = Form(...),
-    email: str = Form(...),
-    username: str = Form(...),
-    password: str = Form(...),
-    confirm_password: str = Form(...),
-    db: Session = Depends(get_db)
-):
-    """Handle user registration"""
-    try:
-        # Validate password confirmation
-        if password != confirm_password:
-            return templates.TemplateResponse(
-                "login.html", 
-                {
-                    "request": request, 
-                    "error": "Passwords do not match"
-                }
-            )
-        
-        # Check if username already exists
-        existing_user = db.query(User).filter(User.username == username).first()
-        if existing_user:
-            return templates.TemplateResponse(
-                "login.html", 
-                {
-                    "request": request, 
-                    "error": "Username already exists"
-                }
-            )
-        
-        # Create new user
-        hashed_password = get_password_hash(password)
-        new_user = User(
-            username=username,
-            hashed_password=hashed_password,
-            is_active=True
-        )
-        
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user)
-        
-        # Auto-login the new user
-        request.session.clear()
-        request.session["user_id"] = new_user.id
-        request.session["username"] = new_user.username
-        request.session["authenticated"] = True
-        
-        return RedirectResponse(url="/dashboard", status_code=302)
-        
-    except Exception as e:
-        print(f"Registration error: {e}")
-        return templates.TemplateResponse(
-            "login.html", 
-            {
-                "request": request, 
-                "error": "Registration failed. Please try again."
-            }
-        )
-
 @app.get("/logout")
 async def logout(request: Request):
     """Handle logout"""
@@ -320,8 +257,12 @@ async def create_post(
 ):
     """Create and post content to selected platforms"""
     try:
-        # Validate platforms
-        valid_platforms = ['telegram', 'instagram', 'youtube', 'tiktok', 'facebook']
+        # Validate platforms - expanded list
+        valid_platforms = [
+            'telegram', 'instagram', 'youtube', 'tiktok', 'facebook',
+            'twitter', 'linkedin', 'snapchat', 'pinterest', 'reddit',
+            'discord', 'whatsapp', 'threads', 'medium', 'tumblr'
+        ]
         platforms = [p for p in platforms if p in valid_platforms]
         
         if not platforms:
@@ -333,8 +274,9 @@ async def create_post(
         # Handle media upload with improved error handling
         file_path = None
         file_type = None
+        full_file_path = None
         
-        if media and media.filename and media.filename.strip() and media.size > 0:
+        if media and media.filename and media.filename.strip() and media.size and media.size > 0:
             try:
                 print(f"Processing media upload: {media.filename}, size: {media.size}")
                 
@@ -358,42 +300,49 @@ async def create_post(
                         content={"success": False, "message": f"File size ({media.size} bytes) exceeds 10MB limit"}
                     )
                 
-                # Read file content
+                # Read file content first to validate
+                media.file.seek(0)  # Reset file pointer
                 file_content = await media.read()
+                
                 if len(file_content) == 0:
                     return JSONResponse(
                         status_code=400,
                         content={"success": False, "message": "Uploaded file is empty"}
                     )
                 
-                # Generate unique filename and save
+                # Generate unique filename and full path
                 unique_filename = f"{uuid.uuid4()}.{file_ext}"
                 file_path = f"uploads/{unique_filename}"
+                full_file_path = os.path.abspath(file_path)
                 
                 # Ensure uploads directory exists
                 os.makedirs("uploads", exist_ok=True)
                 
-                # Save file
-                with open(file_path, "wb") as buffer:
+                # Save file with proper binary mode
+                with open(full_file_path, "wb") as buffer:
                     buffer.write(file_content)
                 
                 # Verify file was saved correctly
-                saved_size = os.path.getsize(file_path)
-                if not os.path.exists(file_path) or saved_size == 0:
-                    raise Exception("File save verification failed")
+                if not os.path.exists(full_file_path):
+                    raise Exception("File was not saved")
+                    
+                saved_size = os.path.getsize(full_file_path)
+                if saved_size == 0:
+                    raise Exception("Saved file is empty")
                 
-                print(f"Media saved successfully: {file_path} ({saved_size} bytes, type: {file_type})")
+                print(f"Media saved successfully: {full_file_path} ({saved_size} bytes, type: {file_type})")
                 
             except Exception as e:
                 print(f"Media upload error: {e}")
                 # Clean up any partial file
-                if file_path and os.path.exists(file_path):
+                if full_file_path and os.path.exists(full_file_path):
                     try:
-                        os.remove(file_path)
+                        os.remove(full_file_path)
                     except:
                         pass
                     file_path = None
                     file_type = None
+                    full_file_path = None
                 
                 return JSONResponse(
                     status_code=500,
@@ -418,9 +367,9 @@ async def create_post(
         
         print(f"Starting to post to platforms: {platforms}")
         print(f"Content: {content[:50]}...")
-        print(f"Media: {file_path} ({file_type})" if file_path else "No media")
+        print(f"Media: {full_file_path} ({file_type})" if full_file_path else "No media")
         
-        # Post to platforms
+        # Post to platforms with full file path
         results = {}
         overall_success = True
         
@@ -428,18 +377,12 @@ async def create_post(
             try:
                 print(f"Posting to {platform}...")
                 
-                if platform == 'telegram':
-                    success, message = await social_manager.post_to_telegram(content, file_path, file_type)
-                elif platform == 'instagram':
-                    success, message = await social_manager.post_to_instagram(content, file_path, file_type)
-                elif platform == 'youtube':
-                    success, message = await social_manager.post_to_youtube(content, file_path, file_type)
-                elif platform == 'tiktok':
-                    success, message = await social_manager.post_to_tiktok(content, file_path, file_type)
-                elif platform == 'facebook':
-                    success, message = await social_manager.post_to_facebook(content, file_path, file_type)
+                # Use the social manager method based on platform
+                if hasattr(social_manager, f'post_to_{platform}'):
+                    method = getattr(social_manager, f'post_to_{platform}')
+                    success, message = await method(content, full_file_path, file_type)
                 else:
-                    success, message = False, "Unsupported platform"
+                    success, message = False, f"Platform {platform} not implemented yet"
                 
                 print(f"{platform} result: {success} - {message}")
                 
@@ -466,7 +409,7 @@ async def create_post(
             "results": results,
             "message": "Post published successfully!" if overall_success else "Some platforms failed",
             "post_id": post_log.id,
-            "media_included": bool(file_path)
+            "media_included": bool(full_file_path)
         })
         
     except Exception as e:
