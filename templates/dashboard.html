@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" dir="ltr" id="html-root">
 <head>
@@ -27,15 +26,15 @@
         .font-arabic {
             font-family: 'Noto Sans Arabic', sans-serif;
         }
-        
+
         .font-english {
             font-family: 'Inter', sans-serif;
         }
-        
+
         [dir="rtl"] {
             text-align: right;
         }
-        
+
         [dir="rtl"] .ltr-force {
             direction: ltr;
             text-align: left;
@@ -224,7 +223,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Theme Toggle -->
                         <button 
                             onclick="toggleTheme()" 
@@ -1043,13 +1042,13 @@
             const body = document.getElementById('body-root');
             const langIcon = document.getElementById('lang-icon');
             const langText = document.getElementById('lang-text');
-            
+
             const langInfo = languageInfo[currentLang] || languageInfo['en'];
-            
+
             // Set direction and language
             html.dir = langInfo.direction;
             html.lang = currentLang;
-            
+
             // Update font classes
             if (currentLang === 'ar') {
                 html.className = html.className.replace('font-english', '').replace('font-arabic', '') + ' font-arabic';
@@ -1060,11 +1059,11 @@
                 body.classList.add('font-english');
                 body.classList.remove('font-arabic');
             }
-            
+
             // Update language indicator
             if (langIcon) langIcon.textContent = langInfo.flag;
             if (langText) langText.textContent = langInfo.name;
-            
+
             // Set text direction styles
             if (langInfo.direction === 'rtl') {
                 document.documentElement.style.direction = 'rtl';
@@ -1073,7 +1072,7 @@
                 document.documentElement.style.direction = 'ltr';
                 document.body.style.textAlign = 'left';
             }
-            
+
             // Update all translatable elements
             document.querySelectorAll('[data-translate]').forEach(element => {
                 const key = element.getAttribute('data-translate');
@@ -1081,7 +1080,7 @@
                     element.textContent = translations[currentLang][key];
                 }
             });
-            
+
             // Update placeholders
             document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
                 const key = element.getAttribute('data-translate-placeholder');
@@ -1089,7 +1088,7 @@
                     element.placeholder = translations[currentLang][key];
                 }
             });
-            
+
             // Update submit button text
             const submitText = document.getElementById('submitText');
             if (submitText) {
@@ -1101,7 +1100,7 @@
             const html = document.documentElement;
             const themeIcon = document.getElementById('theme-icon');
             const themeText = document.getElementById('theme-text');
-            
+
             if (currentTheme === 'dark') {
                 html.classList.add('dark');
                 if (themeIcon) themeIcon.className = 'fas fa-sun text-sm';
@@ -1167,19 +1166,20 @@
                     // Validate file
                     const maxSize = 10 * 1024 * 1024; // 10MB
                     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/mov', 'video/avi', 'video/mkv', 'video/webm'];
-                    
+
                     if (file.size > maxSize) {
                         Swal.fire({
                             icon: 'error',
                             title: 'File Too Large',
                             text: 'File size must be under 10MB',
-                            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                            background: document.documentElement.```text
+classList.contains('dark') ? '#1f2937' : '#ffffff',
                             color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
                         });
                         fileInput.value = '';
                         return;
                     }
-                    
+
                     if (!allowedTypes.includes(file.type)) {
                         Swal.fire({
                             icon: 'error',
@@ -1191,7 +1191,7 @@
                         fileInput.value = '';
                         return;
                     }
-                    
+
                     fileName.textContent = `${file.name} (${formatFileSize(file.size)})`;
                     filePreview.classList.remove('hidden');
                 }
@@ -1201,7 +1201,7 @@
                 fileInput.value = '';
                 filePreview.classList.add('hidden');
             });
-            
+
             // Helper function to format file size
             function formatFileSize(bytes) {
                 if (bytes === 0) return '0 Bytes';

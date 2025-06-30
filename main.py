@@ -275,10 +275,30 @@ async def create_post(
         print(f"File filename: {file.filename if file else 'No file'}")
         print(f"File size: {file.size if file else 'No size'}")
         
-        if file and file.filename and file.size and file.size > 0:
-            print(f"Processing file upload: {file.filename} ({file.size} bytes)")
+        if file and hasattr(file, 'filename') and file.filename and file.filename.strip():
+            print(f"Processing file upload: {file.filename}")
             
-            is_valid, error_msg, detected_type = validate_file(file)
+            # Read file content first
+            file_content = await file.read()
+            file_size = len(file_content)
+            
+            if file_size == 0:
+                return JSONResponse(
+                    status_code=400,
+                    content={"success": False, "message": "Uploaded file is empty"}
+                )
+            
+            print(f"File size: {file_size} bytes")
+            
+            # Create a temporary file object for validation
+            class TempFile:
+                def __init__(self, filename, size):
+                    self.filename = filename
+                    self.size = size
+            
+            temp_file = TempFile(file.filename, file_size)
+            is_valid, error_msg, detected_type = validate_file(temp_file)
+            
             if not is_valid:
                 print(f"File validation failed: {error_msg}")
                 return JSONResponse(
@@ -298,13 +318,9 @@ async def create_post(
                 # Ensure uploads directory exists
                 os.makedirs("uploads", exist_ok=True)
                 
-                # Reset file pointer to beginning
-                await file.seek(0)
-                
-                # Save the file
+                # Save the file content
                 with open(file_path, "wb") as buffer:
-                    content = await file.read()
-                    buffer.write(content)
+                    buffer.write(file_content)
                 
                 # Verify file was saved
                 if not os.path.exists(file_path):

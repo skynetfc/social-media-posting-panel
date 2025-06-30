@@ -51,7 +51,7 @@ class SocialMediaManager:
                 if file_type == "image":
                     endpoint = f"{url}/sendPhoto"
                     with open(abs_file_path, 'rb') as photo:
-                        files = {'photo': photo}
+                        files = {'photo': ('image.jpg', photo, 'image/jpeg')}
                         data = {
                             'chat_id': channel_username,
                             'caption': content[:1024] if content else "",
@@ -62,7 +62,7 @@ class SocialMediaManager:
                 elif file_type == "video":
                     endpoint = f"{url}/sendVideo"
                     with open(abs_file_path, 'rb') as video:
-                        files = {'video': video}
+                        files = {'video': ('video.mp4', video, 'video/mp4')}
                         data = {
                             'chat_id': channel_username,
                             'caption': content[:1024] if content else "",
