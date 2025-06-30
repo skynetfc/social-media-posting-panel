@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" id="html-root">
 <head>
@@ -7,98 +6,51 @@
     <title>Login - Anonymous Creations</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --glass-bg: rgba(255, 255, 255, 0.15);
-            --glass-border: rgba(255, 255, 255, 0.25);
-            --backdrop-blur: blur(20px);
-        }
-        
         * {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        .preload * {
-            transition: none !important;
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
         }
         
-        .font-arabic {
-            font-family: 'Noto Sans Arabic', sans-serif;
-            direction: rtl;
-            text-align: right;
-        }
-        
-        .font-english {
-            font-family: 'Inter', sans-serif;
-            direction: ltr;
-            text-align: left;
-        }
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
             background-size: 400% 400%;
-            animation: gradientShift 8s ease infinite;
+            animation: gradientBG 15s ease infinite;
+            z-index: -1;
         }
         
-        @keyframes gradientShift {
+        @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
         
-        .glass-effect {
-            backdrop-filter: var(--backdrop-blur);
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
-        }
-        
-        .dark .glass-effect {
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-        }
-        
-        .form-input {
-            @apply w-full px-4 py-4 bg-white/10 dark:bg-black/10 border border-white/20 dark:border-white/10 rounded-xl backdrop-blur-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400;
-            transition: all 0.3s ease;
-        }
-        
-        .form-input:focus {
-            @apply ring-2 ring-blue-400/50 border-blue-400/50 bg-white/20 dark:bg-black/20;
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
-        }
-        
-        .btn-primary {
-            background: var(--primary-gradient);
-            @apply text-white font-semibold py-4 px-6 rounded-xl shadow-lg transform hover:scale-105 hover:shadow-2xl active:scale-95;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-primary:hover {
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
-        }
-        
-        .tab-button {
-            @apply px-6 py-3 font-medium text-white/70 hover:text-white border-b-2 border-transparent hover:border-white/50 transition-all duration-300;
-        }
-        
-        .tab-button.active {
-            @apply text-white border-white/80;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-        
         .floating-shapes {
             position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
-            z-index: 0;
+            pointer-events: none;
+            z-index: 1;
         }
         
         .shape {
@@ -111,33 +63,25 @@
         .shape:nth-child(1) {
             width: 80px;
             height: 80px;
-            top: 10%;
+            top: 20%;
             left: 10%;
             animation-delay: 0s;
         }
         
         .shape:nth-child(2) {
-            width: 120px;
-            height: 120px;
-            top: 20%;
-            right: 15%;
+            width: 60px;
+            height: 60px;
+            top: 60%;
+            left: 80%;
             animation-delay: 2s;
         }
         
         .shape:nth-child(3) {
-            width: 60px;
-            height: 60px;
-            bottom: 20%;
+            width: 40px;
+            height: 40px;
+            top: 80%;
             left: 20%;
             animation-delay: 4s;
-        }
-        
-        .shape:nth-child(4) {
-            width: 100px;
-            height: 100px;
-            bottom: 10%;
-            right: 10%;
-            animation-delay: 1s;
         }
         
         @keyframes float {
@@ -145,342 +89,423 @@
             50% { transform: translateY(-20px) rotate(180deg); }
         }
         
-        .logo-glow {
-            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+        .login-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 10;
         }
         
-        .input-icon {
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo svg {
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
+            margin-bottom: 15px;
+        }
+        
+        .logo h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            font-weight: 400;
+        }
+        
+        .form-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 30px;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            background: none;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .form-group input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+        
+        .form-group i {
             position: absolute;
-            left: 16px;
+            left: 18px;
             top: 50%;
             transform: translateY(-50%);
             color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+        
+        .password-toggle:hover {
+            color: white;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s ease;
+            margin-top: 10px;
         }
         
-        .form-input:focus + .input-icon {
-            color: #60a5fa;
-        }
-        
-        .toggle-button {
-            @apply flex items-center px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl backdrop-blur-sm border border-white/20 hover:border-white/30;
-            transition: all 0.3s ease;
-        }
-        
-        .toggle-button:hover {
+        .submit-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        .form-section {
+            display: none;
+        }
+        
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .error-message {
+            background: rgba(255, 99, 99, 0.2);
+            border: 1px solid rgba(255, 99, 99, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 20px;
+            color: #ffcccc;
+            font-size: 14px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+        }
+        
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 10px 15px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .arabic {
+            font-family: 'Noto Sans Arabic', sans-serif;
+            direction: rtl;
+        }
+        
+        .arabic .form-group input {
+            padding: 15px 50px 15px 20px;
+            text-align: right;
+        }
+        
+        .arabic .form-group i {
+            left: auto;
+            right: 18px;
+        }
+        
+        .arabic .password-toggle {
+            right: auto;
+            left: 18px;
         }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 font-english preload overflow-hidden" id="body-root">
-    <!-- Floating Background Shapes -->
+<body>
+    <div class="bg-animation"></div>
+    
     <div class="floating-shapes">
         <div class="shape"></div>
         <div class="shape"></div>
         <div class="shape"></div>
-        <div class="shape"></div>
     </div>
-
-    <!-- Header -->
-    <div class="fixed top-0 left-0 right-0 z-50 bg-black/10 backdrop-blur-md border-b border-white/10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <!-- Logo Section -->
-                <div class="flex items-center">
-                    <div class="flex items-center mr-4">
-                        <!-- Palestinian Flag SVG Logo with Glow -->
-                        <svg width="40" height="30" viewBox="0 0 32 24" class="mr-3 logo-glow">
-                            <rect x="0" y="0" width="32" height="8" fill="#CE1126"/>
-                            <rect x="0" y="8" width="32" height="8" fill="#FFFFFF"/>
-                            <rect x="0" y="16" width="32" height="8" fill="#000000"/>
-                            <polygon points="0,0 0,24 16,12" fill="#007A3D"/>
-                        </svg>
-                        <div>
-                            <h1 class="text-xl font-bold text-white drop-shadow-lg" data-translate="brand_title">
-                                Anonymous Creations
-                            </h1>
-                            <p class="text-sm text-white/80" data-translate="brand_subtitle">
-                                Professional Social Media Dashboard
-                            </p>
-                        </div>
-                    </div>
+    
+    <div class="controls">
+        <button class="control-btn" onclick="toggleLanguage()">
+            <span id="lang-flag">🇺🇸</span>
+            <span id="lang-text">EN</span>
+        </button>
+        <button class="control-btn" onclick="toggleTheme()">
+            <i class="fas fa-adjust"></i>
+        </button>
+    </div>
+    
+    <div class="login-container">
+        <div class="logo">
+            <svg width="50" height="38" viewBox="0 0 32 24">
+                <rect x="0" y="0" width="32" height="8" fill="#CE1126"/>
+                <rect x="0" y="8" width="32" height="8" fill="#FFFFFF"/>
+                <rect x="0" y="16" width="32" height="8" fill="#000000"/>
+                <polygon points="0,0 0,24 16,12" fill="#007A3D"/>
+            </svg>
+            <h1 data-text="brand_name">Anonymous Creations</h1>
+            <p data-text="brand_subtitle">Social Media Dashboard</p>
+        </div>
+        
+        <div class="form-tabs">
+            <button class="tab-btn active" onclick="switchTab('login')" id="login-tab">
+                <i class="fas fa-sign-in-alt"></i> <span data-text="login">Login</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('register')" id="register-tab">
+                <i class="fas fa-user-plus"></i> <span data-text="register">Register</span>
+            </button>
+        </div>
+        
+        <!-- Login Form -->
+        <div class="form-section active" id="login-form">
+            {% if error %}
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i> {{ error }}
+            </div>
+            {% endif %}
+            
+            <form action="/login" method="post">
+                <div class="form-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="username" placeholder="Username" required>
                 </div>
                 
-                <!-- Controls Section -->
-                <div class="flex items-center gap-3">
-                    <!-- Language Toggle -->
-                    <button 
-                        onclick="toggleLanguage()" 
-                        class="toggle-button"
-                        title="Toggle Language"
-                    >
-                        <span id="lang-icon" class="text-lg">🇺🇸</span>
-                        <span class="ml-2 text-sm font-medium" id="lang-text">EN</span>
-                    </button>
-                    
-                    <!-- Theme Toggle -->
-                    <button 
-                        onclick="toggleTheme()" 
-                        class="toggle-button"
-                        title="Toggle Theme"
-                    >
-                        <i id="theme-icon" class="fas fa-moon text-sm"></i>
-                        <span class="ml-2 text-sm font-medium" id="theme-text">Dark</span>
-                    </button>
+                <div class="form-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password" placeholder="Password" required id="login-password">
+                    <i class="fas fa-eye password-toggle" onclick="togglePassword('login-password')"></i>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="min-h-screen pt-24 gradient-bg flex items-center justify-center px-4 relative">
-        <div class="max-w-md w-full z-10">
-            <!-- Auth Card -->
-            <div class="glass-effect rounded-3xl shadow-2xl p-8 relative overflow-hidden">
-                <!-- Decorative Elements -->
-                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500"></div>
                 
-                <!-- Tab Navigation -->
-                <div class="flex border-b border-white/20 mb-8">
-                    <button onclick="switchTab('signin')" id="signin-tab" class="tab-button active flex-1 text-center">
-                        <i class="fas fa-sign-in-alt mr-2"></i>
-                        <span data-translate="sign_in">Sign In</span>
-                    </button>
-                    <button onclick="switchTab('signup')" id="signup-tab" class="tab-button flex-1 text-center">
-                        <i class="fas fa-user-plus mr-2"></i>
-                        <span data-translate="sign_up">Sign Up</span>
-                    </button>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-sign-in-alt"></i> <span data-text="login_btn">Sign In</span>
+                </button>
+            </form>
+        </div>
+        
+        <!-- Register Form -->
+        <div class="form-section" id="register-form">
+            <form action="/register" method="post">
+                <div class="form-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="username" placeholder="Choose Username" required>
                 </div>
-
-                <!-- Sign In Form -->
-                <div id="signin-form" class="auth-form">
-                    <div class="text-center mb-8">
-                        <h2 class="text-3xl font-bold text-white mb-2" data-translate="welcome_back">Welcome Back</h2>
-                        <p class="text-white/80" data-translate="signin_subtitle">Access your professional dashboard</p>
-                    </div>
-
-                    <form action="/login" method="post" class="space-y-6">
-                        <div class="relative">
-                            <i class="input-icon fas fa-user"></i>
-                            <input type="text" name="username" required class="form-input pl-12" placeholder="Enter your username">
-                        </div>
-                        
-                        <div class="relative">
-                            <i class="input-icon fas fa-lock"></i>
-                            <input type="password" name="password" required class="form-input pl-12 pr-12" placeholder="Enter your password">
-                            <button type="button" onclick="togglePassword('signin')" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white">
-                                <i class="fas fa-eye" id="signin-password-icon"></i>
-                            </button>
-                        </div>
-
-                        <button type="submit" class="btn-primary w-full">
-                            <i class="fas fa-sign-in-alt mr-2"></i>
-                            <span data-translate="sign_in">Sign In</span>
-                        </button>
-                    </form>
+                
+                <div class="form-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password" placeholder="Create Password" required id="register-password">
+                    <i class="fas fa-eye password-toggle" onclick="togglePassword('register-password')"></i>
                 </div>
-
-                <!-- Sign Up Form -->
-                <div id="signup-form" class="auth-form hidden">
-                    <div class="text-center mb-8">
-                        <h2 class="text-3xl font-bold text-white mb-2" data-translate="create_account">Create Account</h2>
-                        <p class="text-white/80" data-translate="signup_subtitle">Join our professional platform</p>
-                    </div>
-
-                    <form action="/register" method="post" class="space-y-6">
-                        <div class="relative">
-                            <i class="input-icon fas fa-user"></i>
-                            <input type="text" name="username" required class="form-input pl-12" placeholder="Choose a username">
-                        </div>
-                        
-                        <div class="relative">
-                            <i class="input-icon fas fa-lock"></i>
-                            <input type="password" name="password" required class="form-input pl-12 pr-12" placeholder="Create a password">
-                            <button type="button" onclick="togglePassword('signup')" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white">
-                                <i class="fas fa-eye" id="signup-password-icon"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="relative">
-                            <i class="input-icon fas fa-shield-alt"></i>
-                            <input type="password" name="confirm_password" required class="form-input pl-12 pr-12" placeholder="Confirm your password">
-                            <button type="button" onclick="togglePassword('confirm')" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white">
-                                <i class="fas fa-eye" id="confirm-password-icon"></i>
-                            </button>
-                        </div>
-
-                        <button type="submit" class="btn-primary w-full">
-                            <i class="fas fa-user-plus mr-2"></i>
-                            <span data-translate="create_account">Create Account</span>
-                        </button>
-                    </form>
+                
+                <div class="form-group">
+                    <i class="fas fa-shield-alt"></i>
+                    <input type="password" name="confirm_password" placeholder="Confirm Password" required id="confirm-password">
+                    <i class="fas fa-eye password-toggle" onclick="togglePassword('confirm-password')"></i>
                 </div>
-
-                <!-- Footer -->
-                <div class="mt-8 text-center">
-                    <p class="text-sm text-white/70">
-                        <span data-translate="powered_by">Powered by</span> 
-                        <span class="font-semibold text-white">Anonymous Creations</span>
-                    </p>
-                </div>
-            </div>
+                
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-user-plus"></i> <span data-text="register_btn">Create Account</span>
+                </button>
+            </form>
+        </div>
+        
+        <div class="footer">
+            <span data-text="powered_by">Powered by</span> Anonymous Creations 🇵🇸
         </div>
     </div>
-
+    
     <script>
-        // Translations
         const translations = {
             en: {
-                brand_title: "Anonymous Creations",
-                brand_subtitle: "Professional Social Media Dashboard",
-                sign_in: "Sign In",
-                sign_up: "Sign Up",
-                welcome_back: "Welcome Back",
-                signin_subtitle: "Access your professional dashboard",
-                create_account: "Create Account",
-                signup_subtitle: "Join our professional platform",
-                username: "Username",
-                password: "Password",
-                confirm_password: "Confirm Password",
+                brand_name: "Anonymous Creations",
+                brand_subtitle: "Social Media Dashboard",
+                login: "Login",
+                register: "Register",
+                login_btn: "Sign In",
+                register_btn: "Create Account",
                 powered_by: "Powered by"
             },
             ar: {
-                brand_title: "الإبداعات المجهولة",
-                brand_subtitle: "لوحة تحكم وسائل التواصل الاجتماعي المهنية",
-                sign_in: "تسجيل الدخول",
-                sign_up: "إنشاء حساب",
-                welcome_back: "مرحباً بعودتك",
-                signin_subtitle: "الوصول إلى لوحة التحكم المهنية",
-                create_account: "إنشاء حساب",
-                signup_subtitle: "انضم إلى منصتنا المهنية",
-                username: "اسم المستخدم",
-                password: "كلمة المرور",
-                confirm_password: "تأكيد كلمة المرور",
+                brand_name: "الإبداعات المجهولة",
+                brand_subtitle: "لوحة تحكم وسائل التواصل الاجتماعي",
+                login: "تسجيل الدخول",
+                register: "إنشاء حساب",
+                login_btn: "تسجيل الدخول",
+                register_btn: "إنشاء حساب",
                 powered_by: "مدعوم من"
             }
         };
-
+        
         let currentLang = localStorage.getItem('language') || 'en';
-        let currentTheme = localStorage.getItem('theme') || 'dark';
-
-        // Theme management
-        function initTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            currentTheme = savedTheme || 'dark';
+        
+        function switchTab(tab) {
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
             
-            const html = document.documentElement;
-            if (currentTheme === 'dark') {
-                html.classList.add('dark');
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
             } else {
-                html.classList.remove('dark');
+                registerTab.classList.add('active');
+                loginTab.classList.remove('active');
+                registerForm.classList.add('active');
+                loginForm.classList.remove('active');
             }
         }
-
-        function toggleTheme() {
-            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-            localStorage.setItem('theme', currentTheme);
-            updateTheme();
-        }
-
-        function updateTheme() {
-            const html = document.documentElement;
-            const themeIcon = document.getElementById('theme-icon');
-            const themeText = document.getElementById('theme-text');
+        
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling;
             
-            if (currentTheme === 'dark') {
-                html.classList.add('dark');
-                if (themeIcon) themeIcon.className = 'fas fa-sun text-sm';
-                if (themeText) themeText.textContent = 'Light';
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
             } else {
-                html.classList.remove('dark');
-                if (themeIcon) themeIcon.className = 'fas fa-moon text-sm';
-                if (themeText) themeText.textContent = 'Dark';
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
             }
         }
-
-        // Language management
+        
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'ar' : 'en';
             localStorage.setItem('language', currentLang);
             updateLanguage();
         }
-
+        
         function updateLanguage() {
-            const html = document.getElementById('html-root');
-            const body = document.getElementById('body-root');
-            const langIcon = document.getElementById('lang-icon');
+            const body = document.body;
+            const langFlag = document.getElementById('lang-flag');
             const langText = document.getElementById('lang-text');
             
             if (currentLang === 'ar') {
-                html.dir = 'rtl';
-                html.lang = 'ar';
-                body.classList.add('font-arabic');
-                body.classList.remove('font-english');
-                if (langIcon) langIcon.textContent = '🇵🇸';
-                if (langText) langText.textContent = 'العربية';
+                body.classList.add('arabic');
+                langFlag.textContent = '🇵🇸';
+                langText.textContent = 'AR';
             } else {
-                html.dir = 'ltr';
-                html.lang = 'en';
-                body.classList.add('font-english');
-                body.classList.remove('font-arabic');
-                if (langIcon) langIcon.textContent = '🇺🇸';
-                if (langText) langText.textContent = 'EN';
+                body.classList.remove('arabic');
+                langFlag.textContent = '🇺🇸';
+                langText.textContent = 'EN';
             }
             
-            // Update all translatable elements
-            document.querySelectorAll('[data-translate]').forEach(element => {
-                const key = element.getAttribute('data-translate');
+            // Update all text elements
+            document.querySelectorAll('[data-text]').forEach(element => {
+                const key = element.getAttribute('data-text');
                 if (translations[currentLang][key]) {
                     element.textContent = translations[currentLang][key];
                 }
             });
         }
-
-        // Tab switching
-        function switchTab(tab) {
-            const signinTab = document.getElementById('signin-tab');
-            const signupTab = document.getElementById('signup-tab');
-            const signinForm = document.getElementById('signin-form');
-            const signupForm = document.getElementById('signup-form');
-
-            if (tab === 'signin') {
-                signinTab.classList.add('active');
-                signupTab.classList.remove('active');
-                signinForm.classList.remove('hidden');
-                signupForm.classList.add('hidden');
-            } else {
-                signupTab.classList.add('active');
-                signinTab.classList.remove('active');
-                signupForm.classList.remove('hidden');
-                signinForm.classList.add('hidden');
-            }
+        
+        function toggleTheme() {
+            // Theme toggle functionality can be added here
+            console.log('Theme toggle clicked');
         }
-
-        // Password visibility toggle
-        function togglePassword(form) {
-            const input = document.querySelector(`#${form}-form input[type="password"], #${form === 'confirm' ? 'signup' : form}-form input[name="${form === 'confirm' ? 'confirm_password' : 'password'}"]`);
-            const icon = document.getElementById(`${form}-password-icon`);
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'fas fa-eye-slash';
-            } else {
-                input.type = 'password';
-                icon.className = 'fas fa-eye';
-            }
-        }
-
-        // Initialize
-        initTheme();
-
+        
+        // Initialize language on page load
         document.addEventListener('DOMContentLoaded', function() {
             updateLanguage();
-            updateTheme();
-            
-            setTimeout(() => {
-                document.body.classList.remove('preload');
-            }, 100);
+        });
+        
+        // Add loading state to forms
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const submitBtn = form.querySelector('.submit-btn');
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+                submitBtn.disabled = true;
+            });
         });
     </script>
 </body>
