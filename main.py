@@ -18,9 +18,14 @@ import re
 import random
 from collections import Counter
 from dotenv import load_dotenv
+import openai
+from typing import Dict, List
 
 # Load environment variables
 load_dotenv()
+
+# Initialize OpenAI client
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 from database import get_db, init_db
 from models import PostLog, User
@@ -817,6 +822,125 @@ async def analyze_seo(
         print(f"SEO analysis error: {e}")
         return JSONResponse({"error": "SEO analysis failed"}, status_code=500)
 
+async def generate_ai_content_suggestions(topic: str, platform: str = "general", tone: str = "professional") -> Dict[str, any]:
+    """Generate AI-powered content suggestions using OpenAI"""
+    try:
+        if not openai.api_key:
+            return {
+                "suggestions": [
+                    f"Create engaging content about {topic}",
+                    f"Share insights on {topic} with your audience",
+                    f"Discuss the latest trends in {topic}"
+                ],
+                "hashtags": [f"#{topic.replace(' ', '')}", "#content", "#socialmedia"],
+                "ai_powered": False
+            }
+        
+        # Platform-specific prompts
+        platform_prompts = {
+            "instagram": "Create Instagram-friendly content with visual appeal",
+            "twitter": "Create concise, engaging Twitter content under 280 characters",
+            "linkedin": "Create professional LinkedIn content for business networking",
+            "facebook": "Create engaging Facebook content for community building",
+            "tiktok": "Create trendy, fun TikTok content ideas",
+            "youtube": "Create compelling YouTube content descriptions",
+            "general": "Create engaging social media content"
+        }
+        
+        prompt = f"""
+        Generate 3 creative social media content suggestions about '{topic}' for {platform}.
+        Tone: {tone}
+        
+        Requirements:
+        - {platform_prompts.get(platform, platform_prompts['general'])}
+        - Make it engaging and shareable
+        - Include call-to-action where appropriate
+        
+        Also suggest 5-8 relevant hashtags.
+        
+        Format your response as JSON with 'suggestions' array and 'hashtags' array.
+        """
+        
+        response = await openai.ChatCompletion.acreate(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a social media content expert."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=500,
+            temperature=0.8
+        )
+        
+        content = response.choices[0].message.content
+        try:
+            result = json.loads(content)
+            result["ai_powered"] = True
+            return result
+        except json.JSONDecodeError:
+            # Fallback parsing
+            suggestions = re.findall(r'"([^"]*)"', content)[:3]
+            hashtags = re.findall(r'#\w+', content)[:8]
+            return {
+                "suggestions": suggestions or [f"Create engaging content about {topic}"],
+                "hashtags": hashtags or [f"#{topic.replace(' ', '')}", "#content"],
+                "ai_powered": True
+            }
+            
+    except Exception as e:
+        print(f"AI content generation error: {e}")
+        return {
+            "suggestions": [
+                f"Share your thoughts on {topic}",
+                f"What's your experience with {topic}?",
+                f"Let's discuss {topic} - what do you think?"
+            ],
+            "hashtags": [f"#{topic.replace(' ', '')}", "#discussion", "#community"],
+            "ai_powered": False
+        }
+
+async def generate_ai_hashtags(content: str, platform: str = "general") -> List[str]:
+    """Generate AI-powered hashtag recommendations"""
+    try:
+        if not openai.api_key:
+            # Fallback hashtag generation
+            words = re.findall(r'\b[a-zA-Z]{3,}\b', content.lower())
+            stop_words = {'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'}
+            keywords = [word for word in words if word not in stop_words][:5]
+            return [f"#{word}" for word in keywords] + ["#socialmedia", "#content"]
+        
+        prompt = f"""
+        Analyze this social media content and suggest 8-12 relevant hashtags for {platform}:
+        
+        Content: "{content}"
+        
+        Requirements:
+        - Mix of popular and niche hashtags
+        - Platform-appropriate hashtags
+        - Include trending hashtags where relevant
+        - Avoid overly generic hashtags
+        
+        Return only the hashtags, one per line, starting with #
+        """
+        
+        response = await openai.ChatCompletion.acreate(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a social media hashtag expert."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=200,
+            temperature=0.7
+        )
+        
+        hashtags = re.findall(r'#\w+', response.choices[0].message.content)
+        return hashtags[:12]
+        
+    except Exception as e:
+        print(f"AI hashtag generation error: {e}")
+        # Fallback hashtag generation
+        words = re.findall(r'\b[a-zA-Z]{3,}\b', content.lower())
+        return [f"#{word}" for word in words[:5]] + ["#ai", "#content"]
+
 def get_seo_recommendations(score: float, content: str, keywords: str, title: str, description: str) -> list:
     """Get SEO improvement recommendations"""
     recommendations = []
@@ -902,6 +1026,92 @@ async def update_analytics(
     except Exception as e:
         print(f"Update analytics error: {e}")
         return JSONResponse({"error": "Failed to update analytics"}, status_code=500)
+
+@app.post("/api/ai-content-suggestions")
+async def get_ai_content_suggestions(
+    request: Request,
+    topic: str = Form(...),
+    platform: str = Form("general"),
+    tone: str = Form("professional"),
+    user: User = Depends(require_auth)
+):
+    """Get AI-powered content suggestions"""
+    try:
+        suggestions = await generate_ai_content_suggestions(topic, platform, tone)
+        return JSONResponse(suggestions)
+    except Exception as e:
+        print(f"AI content suggestions error: {e}")
+        return JSONResponse({"error": "Failed to generate content suggestions"}, status_code=500)
+
+@app.post("/api/ai-hashtags")
+async def get_ai_hashtags(
+    request: Request,
+    content: str = Form(...),
+    platform: str = Form("general"),
+    user: User = Depends(require_auth)
+):
+    """Get AI-powered hashtag recommendations"""
+    try:
+        hashtags = await generate_ai_hashtags(content, platform)
+        return JSONResponse({"hashtags": hashtags})
+    except Exception as e:
+        print(f"AI hashtag generation error: {e}")
+        return JSONResponse({"error": "Failed to generate hashtags"}, status_code=500)
+
+@app.post("/api/enhance-content")
+async def enhance_content_with_ai(
+    request: Request,
+    content: str = Form(...),
+    platform: str = Form("general"),
+    user: User = Depends(require_auth)
+):
+    """Enhance existing content with AI suggestions"""
+    try:
+        if not openai.api_key:
+            return JSONResponse({
+                "enhanced_content": content,
+                "suggestions": ["Add emojis to make it more engaging", "Consider adding a call-to-action"],
+                "ai_powered": False
+            })
+        
+        prompt = f"""
+        Enhance this social media content for {platform}:
+        
+        Original: "{content}"
+        
+        Provide:
+        1. An enhanced version of the content
+        2. 3 specific improvement suggestions
+        
+        Keep the core message but make it more engaging and platform-appropriate.
+        
+        Format as JSON with 'enhanced_content' and 'suggestions' array.
+        """
+        
+        response = await openai.ChatCompletion.acreate(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a social media content optimization expert."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=400,
+            temperature=0.7
+        )
+        
+        try:
+            result = json.loads(response.choices[0].message.content)
+            result["ai_powered"] = True
+            return JSONResponse(result)
+        except json.JSONDecodeError:
+            return JSONResponse({
+                "enhanced_content": content,
+                "suggestions": ["Consider adding emojis", "Add a call-to-action", "Make it more conversational"],
+                "ai_powered": True
+            })
+            
+    except Exception as e:
+        print(f"Content enhancement error: {e}")
+        return JSONResponse({"error": "Failed to enhance content"}, status_code=500)
 
 if __name__ == "__main__":
     import uvicorn

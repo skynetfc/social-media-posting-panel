@@ -46,28 +46,28 @@
                 min-height: 60px;
                 touch-action: manipulation;
             }
-            
+
             .grid-mobile-friendly {
                 gap: 12px;
             }
-            
+
             .text-mobile-friendly {
                 font-size: 14px;
                 line-height: 1.4;
             }
-            
+
             .touch-target {
                 min-height: 44px;
                 min-width: 44px;
             }
-            
+
             /* Prevent text selection on mobile for better UX */
             .platform-card label {
                 -webkit-user-select: none;
                 -moz-user-select: none;
                 user-select: none;
             }
-            
+
             /* Better button spacing on mobile */
             .mobile-button-spacing {
                 margin-top: 20px;
@@ -378,15 +378,28 @@
                     <!-- Content -->
                     <div>
                         <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="content">Content</label>
-                        <textarea 
-                            id="content" 
-                            name="content" 
-                            rows="4" 
-                            required
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
-                            data-translate-placeholder="content_placeholder"
-                            placeholder="What's on your mind? Share your thoughts with the world..."
-                        ></textarea>
+                        <div class="relative">
+                            <textarea
+                                id="content"
+                                name="content"
+                                rows="4"
+                                required
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
+                                data-translate-placeholder="content_placeholder"
+                                placeholder="What's on your mind? Share your thoughts with the world..."
+                            ></textarea>
+                            <div class="absolute top-2 right-2 flex gap-2">
+                                <button type="button" id="aiSuggestBtn" class="px-3 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors duration-200" title="AI Suggestions">
+                                    <i class="fas fa-magic"></i>
+                                </button>
+                                <button type="button" id="enhanceBtn" class="px-3 py-2 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 rounded-lg hover:bg-green-200 dark:hover:bg-green-800 transition-colors duration-200" title="Enhance Content">
+                                    <i class="fas fa-sparkles"></i>
+                                </button>
+                                <button type="button" id="hashtagBtn" class="px-3 py-2 bg-pink-100 dark:bg-pink-900 text-pink-800 dark:text-pink-300 rounded-lg hover:bg-pink-200 dark:hover:bg-pink-800 transition-colors duration-200" title="Generate Hashtags">
+                                    <i class="fas fa-hashtag"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Platform Selection -->
@@ -439,7 +452,8 @@
                             </div>
 
                             <div class="platform-card relative">
-                                <input type="checkbox" id="twitter" name="platforms" value="twitter" class="sr-only">
+                               ```python
+<input type="checkbox" id="twitter" name="platforms" value="twitter" class="sr-only">
                                 <label for="twitter" class="flex items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800">
                                     <i class="fab fa-twitter text-blue-400 text-xl mr-3"></i>
                                     <span class="text-gray-900 dark:text-white font-medium" data-translate="twitter">Twitter</span>
@@ -579,6 +593,76 @@
                         </button>
                     </div>
                 </form>
+            </div>
+
+            <!-- AI Suggest Modal -->
+            <div id="aiSuggestModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="aiSuggestModalLabel" role="dialog" aria-modal="true">
+                <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                    <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                        <div class="absolute inset-0 bg-gray-500 dark:bg-gray-900 opacity-75"></div>
+                    </div>
+
+                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                    <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                        <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div class="sm:flex sm:items-start">
+                                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900 sm:mx-0 sm:h-10 sm:w-10">
+                                    <i class="fas fa-magic text-blue-600 dark:text-blue-400"></i>
+                                </div>
+                                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="aiSuggestModalLabel">
+                                        AI Content Suggestions
+                                    </h3>
+                                    <div class="mt-2">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                                            Get AI-powered content suggestions to inspire your next post. Enter a topic and let our AI generate ideas for you.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <label for="aiTopic" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Topic/Keywords</label>
+                                <input type="text" id="aiTopic" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                            </div>
+                            <div class="mt-3">
+                                <label for="aiPlatform" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Platform</label>
+                                <select id="aiPlatform" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                    <option value="general">General</option>
+                                    <option value="telegram">Telegram</option>
+                                    <option value="instagram">Instagram</option>
+                                    <option value="youtube">YouTube</option>
+                                    <option value="tiktok">TikTok</option>
+                                    <option value="facebook">Facebook</option>
+                                    <option value="twitter">Twitter</option>
+                                    <option value="linkedin">LinkedIn</option>
+                                </select>
+                            </div>
+                            <div class="mt-3">
+                                <label for="aiTone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tone</label>
+                                <select id="aiTone" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                    <option value="neutral">Neutral</option>
+                                    <option value="positive">Positive</option>
+                                    <option value="humorous">Humorous</option>
+                                    <option value="inspirational">Inspirational</option>
+                                    <option value="motivational">Motivational</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                            <button id="generateSuggestions" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                <i class="fas fa-magic mr-2"></i>Generate Suggestions
+                            </button>
+                            <button id="closeAiModal" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Suggestions Display -->
+            <div id="aiSuggestions" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mt-8 hidden p-4 md:p-6">
             </div>
 
             <!-- Recent Posts -->
@@ -884,7 +968,7 @@
                 pending: "In Sospeso",
                 create_post: "Crea Post",
                 content: "Contenuto",
-                content_placeholder: "A cosa stai pensando? Condividi i tuoi pensieri con il mondo...",
+                content_placeholder: "A cosa stai pensando? Condividi i tuoi pensi eri con il mondo...",
                 select_platforms: "Seleziona Piattaforme",
                 telegram: "Telegram",
                 instagram: "Instagram",
@@ -1578,6 +1662,308 @@
                 }
             });
         });
+
+        // AI Features
+        function initializeAIFeatures() {
+            const aiSuggestBtn = document.getElementById('aiSuggestBtn');
+            const enhanceBtn = document.getElementById('enhanceBtn');
+            const hashtagBtn = document.getElementById('hashtagBtn');
+            const aiSuggestModal = document.getElementById('aiSuggestModal');
+            const closeAiModal = document.getElementById('closeAiModal');
+            const generateSuggestions = document.getElementById('generateSuggestions');
+
+            // AI Suggest Modal
+            if (aiSuggestBtn) {
+                aiSuggestBtn.addEventListener('click', () => {
+                    aiSuggestModal.classList.remove('hidden');
+                });
+            }
+
+            if (closeAiModal) {
+                closeAiModal.addEventListener('click', () => {
+                    aiSuggestModal.classList.add('hidden');
+                });
+            }
+
+            // Generate AI Content Suggestions
+            if (generateSuggestions) {
+                generateSuggestions.addEventListener('click', async () => {
+                    const topic = document.getElementById('aiTopic').value;
+                    const platform = document.getElementById('aiPlatform').value;
+                    const tone = document.getElementById('aiTone').value;
+
+                    if (!topic.trim()) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Topic Required',
+                            text: 'Please enter a topic or keywords for content suggestions.',
+                            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                        });
+                        return;
+                    }
+
+                    generateSuggestions.disabled = true;
+                    generateSuggestions.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Generating...';
+
+                    try {
+                        const formData = new FormData();
+                        formData.append('topic', topic);
+                        formData.append('platform', platform);
+                        formData.append('tone', tone);
+
+                        const response = await fetch('/api/ai-content-suggestions', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            displayAISuggestions(data);
+                        } else {
+                            throw new Error(data.error || 'Failed to generate suggestions');
+                        }
+                    } catch (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Generation Failed',
+                            text: error.message,
+                            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                        });
+                    } finally {
+                        generateSuggestions.disabled = false;
+                        generateSuggestions.innerHTML = '<i class="fas fa-magic mr-2"></i>Generate Suggestions';
+                    }
+                });
+            }
+
+            // Enhance Content
+            if (enhanceBtn) {
+                enhanceBtn.addEventListener('click', async () => {
+                    const content = document.getElementById('content').value;
+                    if (!content.trim()) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'No Content',
+                            text: 'Please enter some content to enhance.',
+                            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                        });
+                        return;
+                    }
+
+                    enhanceBtn.disabled = true;
+                    enhanceBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Enhancing...';
+
+                    try {
+                        const formData = new FormData();
+                        formData.append('content', content);
+                        formData.append('platform', 'general');
+
+                        const response = await fetch('/api/enhance-content', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            showEnhancementResults(data);
+                        } else {
+                            throw new Error(data.error || 'Failed to enhance content');
+                        }
+                    } catch (error) {
+```python
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Enhancement Failed',
+                            text: error.message,
+                            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                        });
+                    } finally {
+                        enhanceBtn.disabled = false;
+                        enhanceBtn.innerHTML = '<i class="fas fa-sparkles mr-1"></i>Enhance';
+                    }
+                });
+            }
+
+            // Generate Hashtags
+            if (hashtagBtn) {
+                hashtagBtn.addEventListener('click', async () => {
+                    const content = document.getElementById('content').value;
+                    if (!content.trim()) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'No Content',
+                            text: 'Please enter some content to generate hashtags.',
+                            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                        });
+                        return;
+                    }
+
+                    hashtagBtn.disabled = true;
+                    hashtagBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Generating...';
+
+                    try {
+                        const formData = new FormData();
+                        formData.append('content', content);
+                        formData.append('platform', 'general');
+
+                        const response = await fetch('/api/ai-hashtags', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            showHashtagResults(data.hashtags);
+                        } else {
+                            throw new Error(data.error || 'Failed to generate hashtags');
+                        }
+                    } catch (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hashtag Generation Failed',
+                            text: error.message,
+                            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                        });
+                    } finally {
+                        hashtagBtn.disabled = false;
+                        hashtagBtn.innerHTML = '<i class="fas fa-hashtag mr-1"></i>Hashtags';
+                    }
+                });
+            }
+        }
+
+        function displayAISuggestions(data) {
+            const suggestionsDiv = document.getElementById('aiSuggestions');
+            suggestionsDiv.innerHTML = '';
+            suggestionsDiv.classList.remove('hidden');
+
+            const title = document.createElement('h4');
+            title.className = 'font-semibold text-gray-900 dark:text-white mb-3 flex items-center';
+            title.innerHTML = `<i class="fas fa-lightbulb mr-2 text-yellow-500"></i>Content Suggestions ${data.ai_powered ? '<span class="text-xs bg-gradient-to-r from-purple-500 to-blue-500 text-white px-2 py-1 rounded-full ml-2">AI Powered</span>' : ''}`;
+            suggestionsDiv.appendChild(title);
+
+            data.suggestions.forEach((suggestion, index) => {
+                const suggestionDiv = document.createElement('div');
+                suggestionDiv.className = 'p-3 bg-gray-50 dark:bg-gray-700 rounded-lg mb-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200';
+                suggestionDiv.innerHTML = `
+                    <p class="text-sm text-gray-700 dark:text-gray-300">${suggestion}</p>
+                    <button onclick="useAISuggestion('${suggestion.replace(/'/g, "\\\'")}')" class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mt-2">
+                        <i class="fas fa-plus mr-1"></i>Use This
+                    </button>
+                `;
+                suggestionsDiv.appendChild(suggestionDiv);
+            });
+
+            if (data.hashtags && data.hashtags.length > 0) {
+                const hashtagsTitle = document.createElement('h5');
+                hashtagsTitle.className = 'font-medium text-gray-900 dark:text-white mt-4 mb-2';
+                hashtagsTitle.innerHTML = '<i class="fas fa-hashtag mr-2 text-pink-500"></i>Suggested Hashtags';
+                suggestionsDiv.appendChild(hashtagsTitle);
+
+                const hashtagsDiv = document.createElement('div');
+                hashtagsDiv.className = 'flex flex-wrap gap-2';
+                data.hashtags.forEach(hashtag => {
+                    const hashtagSpan = document.createElement('span');
+                    hashtagSpan.className = 'px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 text-xs rounded-full cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800';
+                    hashtagSpan.textContent = hashtag;
+                    hashtagSpan.onclick = () => addHashtagToContent(hashtag);
+                    hashtagsDiv.appendChild(hashtagSpan);
+                });
+                suggestionsDiv.appendChild(hashtagsDiv);
+            }
+        }
+
+        function useAISuggestion(suggestion) {
+            document.getElementById('content').value = suggestion;
+            document.getElementById('aiSuggestModal').classList.add('hidden');
+            Swal.fire({
+                icon: 'success',
+                title: 'Suggestion Applied!',
+                text: 'Content has been updated with AI suggestion.',
+                timer: 2000,
+                showConfirmButton: false,
+                background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+            });
+        }
+
+        function showEnhancementResults(data) {
+            Swal.fire({
+                title: 'Content Enhanced!',
+                html: `
+                    <div class="text-left">
+                        <div class="mb-4">
+                            <h4 class="font-semibold mb-2">Enhanced Content:</h4>
+                            <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded text-sm">${data.enhanced_content}</div>
+                        </div>
+                        <div class="mb-4">
+                            <h4 class="font-semibold mb-2">Suggestions:</h4>
+                            <ul class="text-sm text-left">
+                                ${data.suggestions.map(s => `<li class="mb-1">• ${s}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Use Enhanced Version',
+                cancelButtonText: 'Keep Original',
+                background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('content').value = data.enhanced_content;
+                }
+            });
+        }
+
+        function showHashtagResults(hashtags) {
+            Swal.fire({
+                title: 'AI-Generated Hashtags',
+                html: `
+                    <div class="text-center mb-4">
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Click hashtags to add them to your content:</p>
+                        <div class="flex flex-wrap gap-2 justify-center">
+                            ${hashtags.map(tag => `
+                                <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 text-sm rounded-full cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors duration-200" onclick="addHashtagToContent('${tag}')">${tag}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                `,
+                showConfirmButton: false,
+                showCancelButton: true,
+                cancelButtonText: 'Close',
+                background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+            });
+        }
+
+        function addHashtagToContent(hashtag) {
+            const contentEl = document.getElementById('content');
+            const currentContent = contentEl.value;
+            const newContent = currentContent + (currentContent ? ' ' : '') + hashtag;
+            contentEl.value = newContent;
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Hashtag Added!',
+                text: `${hashtag} has been added to your content.`,
+                timer: 1500,
+                showConfirmButton: false,
+                background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+            });
+        }
+    });
+    initializeAIFeatures();
     </script>
 </body>
 </html>
