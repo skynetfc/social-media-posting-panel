@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr" id="html-root">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dashboard - Anonymous Creations</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -38,6 +38,40 @@
         [dir="rtl"] .ltr-force {
             direction: ltr;
             text-align: left;
+        }
+
+        /* Mobile-specific improvements */
+        @media (max-width: 640px) {
+            .platform-card label {
+                min-height: 60px;
+                touch-action: manipulation;
+            }
+            
+            .grid-mobile-friendly {
+                gap: 12px;
+            }
+            
+            .text-mobile-friendly {
+                font-size: 14px;
+                line-height: 1.4;
+            }
+            
+            .touch-target {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            /* Prevent text selection on mobile for better UX */
+            .platform-card label {
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                user-select: none;
+            }
+            
+            /* Better button spacing on mobile */
+            .mobile-button-spacing {
+                margin-top: 20px;
+            }
         }
     </style>
 </head>
@@ -281,51 +315,51 @@
         <!-- Main Content -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+            <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-6 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
                     <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900">
-                            <i class="fas fa-paper-plane text-blue-600 dark:text-blue-400"></i>
+                        <div class="p-2 md:p-3 rounded-full bg-blue-100 dark:bg-blue-900 flex-shrink-0">
+                            <i class="fas fa-paper-plane text-blue-600 dark:text-blue-400 text-sm md:text-base"></i>
                         </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400" data-translate="total_posts">Total Posts</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ total_posts }}</p>
+                        <div class="ml-3 md:ml-4 min-w-0 flex-1">
+                            <p class="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400 truncate" data-translate="total_posts">Total Posts</p>
+                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">{{ total_posts }}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-6 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
                     <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-green-100 dark:bg-green-900">
-                            <i class="fas fa-check-circle text-green-600 dark:text-green-400"></i>
+                        <div class="p-2 md:p-3 rounded-full bg-green-100 dark:bg-green-900 flex-shrink-0">
+                            <i class="fas fa-check-circle text-green-600 dark:text-green-400 text-sm md:text-base"></i>
                         </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400" data-translate="successful">Successful</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ successful_posts }}</p>
+                        <div class="ml-3 md:ml-4 min-w-0 flex-1">
+                            <p class="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400 truncate" data-translate="successful">Successful</p>
+                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">{{ successful_posts }}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-6 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
                     <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-red-100 dark:bg-red-900">
-                            <i class="fas fa-times-circle text-red-600 dark:text-red-400"></i>
+                        <div class="p-2 md:p-3 rounded-full bg-red-100 dark:bg-red-900 flex-shrink-0">
+                            <i class="fas fa-times-circle text-red-600 dark:text-red-400 text-sm md:text-base"></i>
                         </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400" data-translate="failed">Failed</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ failed_posts }}</p>
+                        <div class="ml-3 md:ml-4 min-w-0 flex-1">
+                            <p class="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400 truncate" data-translate="failed">Failed</p>
+                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">{{ failed_posts }}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-6 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
                     <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-yellow-100 dark:bg-yellow-900">
-                            <i class="fas fa-clock text-yellow-600 dark:text-yellow-400"></i>
+                        <div class="p-2 md:p-3 rounded-full bg-yellow-100 dark:bg-yellow-900 flex-shrink-0">
+                            <i class="fas fa-clock text-yellow-600 dark:text-yellow-400 text-sm md:text-base"></i>
                         </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400" data-translate="pending">Pending</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ pending_posts }}</p>
+                        <div class="ml-3 md:ml-4 min-w-0 flex-1">
+                            <p class="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400 truncate" data-translate="pending">Pending</p>
+                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">{{ pending_posts }}</p>
                         </div>
                     </div>
                 </div>
@@ -358,13 +392,13 @@
                     <!-- Platform Selection -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3" data-translate="select_platforms">Select Platforms</label>
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
                             <div class="platform-card relative">
                                 <input type="checkbox" id="telegram" name="platforms" value="telegram" class="sr-only">
-                                <label for="telegram" class="flex items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800">
-                                    <i class="fab fa-telegram text-blue-500 text-xl mr-3"></i>
-                                    <span class="text-gray-900 dark:text-white font-medium" data-translate="telegram">Telegram</span>
-                                    <i class="fas fa-check absolute top-2 right-2 text-green-500 opacity-0 platform-check"></i>
+                                <label for="telegram" class="flex items-center p-3 md:p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800 min-h-[60px] touch-manipulation">
+                                    <i class="fab fa-telegram text-blue-500 text-lg md:text-xl mr-2 md:mr-3 flex-shrink-0"></i>
+                                    <span class="text-gray-900 dark:text-white font-medium text-sm md:text-base truncate" data-translate="telegram">Telegram</span>
+                                    <i class="fas fa-check absolute top-2 right-2 text-green-500 opacity-0 platform-check text-sm"></i>
                                 </label>
                             </div>
 
@@ -549,41 +583,43 @@
 
             <!-- Recent Posts -->
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+                <div class="p-4 md:p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white">
                         <i class="fas fa-history mr-2 text-green-600"></i>
                         <span data-translate="recent_posts">Recent Posts</span>
                     </h2>
                 </div>
 
-                <div class="p-6">
+                <div class="p-4 md:p-6">
                     {% if recent_posts %}
-                        <div class="space-y-4">
+                        <div class="space-y-3 md:space-y-4">
                             {% for post in recent_posts %}
-                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex-1">
-                                        <p class="text-gray-900 dark:text-white line-clamp-2">{{ post.content }}</p>
-                                        <div class="flex items-center mt-2 space-x-4">
-                                            <span class="text-sm text-gray-500 dark:text-gray-400">
-                                                <i class="fas fa-calendar mr-1"></i>{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-3 md:p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-gray-900 dark:text-white text-sm md:text-base break-words line-clamp-2">{{ post.content }}</p>
+                                        <div class="flex flex-col sm:flex-row sm:items-center mt-2 gap-2 sm:gap-4">
+                                            <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400 flex items-center">
+                                                <i class="fas fa-calendar mr-1 flex-shrink-0"></i>
+                                                <span class="truncate">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
                                             </span>
-                                            <span class="text-sm text-gray-500 dark:text-gray-400">
-                                                <i class="fas fa-share-alt mr-1"></i>{{ post.platforms }}
+                                            <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400 flex items-center">
+                                                <i class="fas fa-share-alt mr-1 flex-shrink-0"></i>
+                                                <span class="truncate">{{ post.platforms }}</span>
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="ml-4">
+                                    <div class="flex-shrink-0 self-start sm:ml-4">
                                         {% if post.status == 'completed' %}
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                            <span class="inline-flex items-center px-2 md:px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
                                                 <i class="fas fa-check-circle mr-1"></i><span data-translate="success">Success</span>
                                             </span>
                                         {% elif post.status == 'failed' %}
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                            <span class="inline-flex items-center px-2 md:px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
                                                 <i class="fas fa-times-circle mr-1"></i><span data-translate="failed">Failed</span>
                                             </span>
                                         {% else %}
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                                            <span class="inline-flex items-center px-2 md:px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
                                                 <i class="fas fa-clock mr-1"></i><span data-translate="pending">Pending</span>
                                             </span>
                                         {% endif %}
@@ -593,10 +629,10 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        <div class="text-center py-8">
-                            <i class="fas fa-inbox text-4xl text-gray-400 dark:text-gray-500 mb-4"></i>
-                            <p class="text-gray-500 dark:text-gray-400" data-translate="no_posts">No recent posts found</p>
-                            <p class="text-sm text-gray-400 dark:text-gray-500 mt-1" data-translate="start_creating">Start creating content to see your posts here</p>
+                        <div class="text-center py-6 md:py-8">
+                            <i class="fas fa-inbox text-3xl md:text-4xl text-gray-400 dark:text-gray-500 mb-3 md:mb-4"></i>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm md:text-base" data-translate="no_posts">No recent posts found</p>
+                            <p class="text-xs md:text-sm text-gray-400 dark:text-gray-500 mt-1" data-translate="start_creating">Start creating content to see your posts here</p>
                         </div>
                     {% endif %}
                 </div>
