@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from database import Base
@@ -29,6 +29,24 @@ class PostLog(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     completed_at = Column(DateTime, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    
+    # Analytics fields
+    views = Column(Integer, default=0)
+    likes = Column(Integer, default=0)
+    shares = Column(Integer, default=0)
+    comments = Column(Integer, default=0)
+    clicks = Column(Integer, default=0)
+    engagement_rate = Column(Float, default=0.0)
+    reach = Column(Integer, default=0)
+    impressions = Column(Integer, default=0)
+    
+    # SEO fields
+    seo_keywords = Column(Text, nullable=True)  # Comma-separated keywords
+    seo_title = Column(String(255), nullable=True)
+    seo_description = Column(Text, nullable=True)
+    hashtags = Column(Text, nullable=True)  # Comma-separated hashtags
+    seo_score = Column(Float, default=0.0)
+    readability_score = Column(Float, default=0.0)
     
     # Relationship
     user = relationship("User", back_populates="posts")

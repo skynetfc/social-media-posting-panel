@@ -14,6 +14,9 @@ from typing import Optional, List
 import uuid
 import mimetypes
 import json
+import re
+import random
+from collections import Counter
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -312,6 +315,9 @@ async def create_post(
     platforms: List[str] = Form(...),
     schedule_time: Optional[str] = Form(None),
     media: Optional[UploadFile] = File(None),
+    seo_keywords: Optional[str] = Form(""),
+    seo_title: Optional[str] = Form(""),
+    seo_description: Optional[str] = Form(""),
     user: User = Depends(require_auth),
     db: Session = Depends(get_db)
 ):
@@ -411,6 +417,11 @@ async def create_post(
         else:
             print("No media file provided or file is empty")
         
+        # Calculate SEO metrics
+        seo_score = calculate_seo_score(content, seo_keywords, seo_title, seo_description)
+        readability_score = calculate_readability_score(content)
+        hashtags = extract_hashtags(content)
+        
         # Create post log
         post_log = PostLog(
             content=content,
@@ -419,7 +430,13 @@ async def create_post(
             file_type=file_type,
             scheduled_for=datetime.fromisoformat(schedule_time) if schedule_time else None,
             user_id=user.id,
-            status="pending"
+            status="pending",
+            seo_keywords=seo_keywords,
+            seo_title=seo_title,
+            seo_description=seo_description,
+            hashtags=hashtags,
+            seo_score=seo_score,
+            readability_score=readability_score
         )
         db.add(post_log)
         db.commit()
@@ -585,6 +602,306 @@ async def settings_page(
     except Exception as e:
         print(f"Settings page error: {e}")
         return HTMLResponse(content="<h1>Settings Error</h1><p>Unable to load settings.</p>", status_code=500)
+
+# SEO and Analytics helper functions
+def calculate_seo_score(content: str, keywords: str = "", title: str = "", description: str = "") -> float:
+    """Calculate SEO score based on content optimization"""
+    score = 0.0
+    
+    # Content length score (5-10 points)
+    content_length = len(content.split())
+    if 50 <= content_length <= 300:
+        score += 10
+    elif 20 <= content_length < 50 or 300 < content_length <= 500:
+        score += 7
+    else:
+        score += 3
+    
+    # Keywords usage (10-20 points)
+    if keywords:
+        keyword_list = [k.strip().lower() for k in keywords.split(',')]
+        content_lower = content.lower()
+        keyword_mentions = sum(content_lower.count(keyword) for keyword in keyword_list)
+        if keyword_mentions >= 3:
+            score += 20
+        elif keyword_mentions >= 1:
+            score += 15
+        else:
+            score += 5
+    
+    # Title optimization (5-15 points)
+    if title:
+        title_length = len(title)
+        if 30 <= title_length <= 60:
+            score += 15
+        elif 20 <= title_length < 30 or 60 < title_length <= 80:
+            score += 10
+        else:
+            score += 5
+    
+    # Description optimization (5-15 points)
+    if description:
+        desc_length = len(description)
+        if 120 <= desc_length <= 160:
+            score += 15
+        elif 80 <= desc_length < 120 or 160 < desc_length <= 200:
+            score += 10
+        else:
+            score += 5
+    
+    # Hashtag presence (5-10 points)
+    hashtag_count = len(re.findall(r'#\w+', content))
+    if 3 <= hashtag_count <= 8:
+        score += 10
+    elif 1 <= hashtag_count < 3:
+        score += 7
+    else:
+        score += 3
+    
+    # Readability (5-10 points)
+    readability = calculate_readability_score(content)
+    if readability >= 70:
+        score += 10
+    elif readability >= 50:
+        score += 7
+    else:
+        score += 5
+    
+    return min(score, 100)
+
+def calculate_readability_score(content: str) -> float:
+    """Calculate readability score using simplified Flesch Reading Ease"""
+    sentences = len(re.split(r'[.!?]+', content))
+    words = len(content.split())
+    
+    if sentences == 0 or words == 0:
+        return 0
+    
+    # Simplified calculation
+    avg_sentence_length = words / sentences
+    
+    # Simple readability score (higher is better)
+    if avg_sentence_length <= 15:
+        return 90  # Very easy
+    elif avg_sentence_length <= 20:
+        return 75  # Easy
+    elif avg_sentence_length <= 25:
+        return 60  # Fairly easy
+    else:
+        return 40  # Difficult
+    
+def extract_hashtags(content: str) -> str:
+    """Extract hashtags from content"""
+    hashtags = re.findall(r'#\w+', content)
+    return ', '.join(hashtags)
+
+def suggest_keywords(content: str) -> str:
+    """Suggest keywords based on content analysis"""
+    # Remove common stop words and get meaningful words
+    stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those'}
+    
+    words = re.findall(r'\b[a-zA-Z]{3,}\b', content.lower())
+    meaningful_words = [word for word in words if word not in stop_words]
+    
+    # Get most common words
+    word_counts = Counter(meaningful_words)
+    top_keywords = [word for word, count in word_counts.most_common(5)]
+    
+    return ', '.join(top_keywords[:5])
+
+def simulate_analytics_data(post_id: int) -> dict:
+    """Simulate analytics data for demonstration"""
+    # In a real application, this would fetch data from social media APIs
+    base_engagement = random.randint(10, 1000)
+    
+    return {
+        'views': base_engagement * random.randint(5, 20),
+        'likes': base_engagement + random.randint(0, base_engagement // 2),
+        'shares': random.randint(0, base_engagement // 4),
+        'comments': random.randint(0, base_engagement // 6),
+        'clicks': random.randint(0, base_engagement // 3),
+        'reach': base_engagement * random.randint(2, 8),
+        'impressions': base_engagement * random.randint(8, 25)
+    }
+
+@app.get("/analytics", response_class=HTMLResponse)
+async def analytics_page(
+    request: Request,
+    user: User = Depends(require_auth),
+    db: Session = Depends(get_db)
+):
+    """Analytics dashboard page"""
+    try:
+        # Get all posts for analytics
+        posts = db.query(PostLog).filter(PostLog.user_id == user.id).order_by(PostLog.created_at.desc()).all()
+        
+        # Calculate overall analytics
+        total_views = sum(post.views or 0 for post in posts)
+        total_likes = sum(post.likes or 0 for post in posts)
+        total_shares = sum(post.shares or 0 for post in posts)
+        total_comments = sum(post.comments or 0 for post in posts)
+        total_clicks = sum(post.clicks or 0 for post in posts)
+        total_reach = sum(post.reach or 0 for post in posts)
+        total_impressions = sum(post.impressions or 0 for post in posts)
+        
+        # Calculate engagement rate
+        avg_engagement_rate = sum(post.engagement_rate or 0 for post in posts) / len(posts) if posts else 0
+        
+        # Get top performing posts
+        top_posts = sorted(posts, key=lambda x: (x.views or 0) + (x.likes or 0) + (x.shares or 0), reverse=True)[:5]
+        
+        # Platform performance
+        platform_stats = {}
+        for post in posts:
+            platforms = post.platforms.split(', ')
+            for platform in platforms:
+                if platform not in platform_stats:
+                    platform_stats[platform] = {'posts': 0, 'views': 0, 'likes': 0, 'shares': 0}
+                platform_stats[platform]['posts'] += 1
+                platform_stats[platform]['views'] += post.views or 0
+                platform_stats[platform]['likes'] += post.likes or 0
+                platform_stats[platform]['shares'] += post.shares or 0
+        
+        # SEO performance
+        avg_seo_score = sum(post.seo_score or 0 for post in posts) / len(posts) if posts else 0
+        avg_readability = sum(post.readability_score or 0 for post in posts) / len(posts) if posts else 0
+        
+        return templates.TemplateResponse(
+            "analytics.html",
+            {
+                "request": request,
+                "user": user,
+                "posts": posts,
+                "total_views": total_views,
+                "total_likes": total_likes,
+                "total_shares": total_shares,
+                "total_comments": total_comments,
+                "total_clicks": total_clicks,
+                "total_reach": total_reach,
+                "total_impressions": total_impressions,
+                "avg_engagement_rate": round(avg_engagement_rate, 2),
+                "top_posts": top_posts,
+                "platform_stats": platform_stats,
+                "avg_seo_score": round(avg_seo_score, 1),
+                "avg_readability": round(avg_readability, 1)
+            }
+        )
+    except Exception as e:
+        print(f"Analytics page error: {e}")
+        return HTMLResponse(content="<h1>Analytics Error</h1><p>Unable to load analytics.</p>", status_code=500)
+
+@app.post("/api/analyze-seo")
+async def analyze_seo(
+    request: Request,
+    content: str = Form(...),
+    keywords: str = Form(""),
+    title: str = Form(""),
+    description: str = Form(""),
+    user: User = Depends(require_auth)
+):
+    """Analyze SEO for content"""
+    try:
+        seo_score = calculate_seo_score(content, keywords, title, description)
+        readability_score = calculate_readability_score(content)
+        suggested_keywords = suggest_keywords(content)
+        hashtags = extract_hashtags(content)
+        
+        return JSONResponse({
+            "seo_score": round(seo_score, 1),
+            "readability_score": round(readability_score, 1),
+            "suggested_keywords": suggested_keywords,
+            "hashtags": hashtags,
+            "recommendations": get_seo_recommendations(seo_score, content, keywords, title, description)
+        })
+    except Exception as e:
+        print(f"SEO analysis error: {e}")
+        return JSONResponse({"error": "SEO analysis failed"}, status_code=500)
+
+def get_seo_recommendations(score: float, content: str, keywords: str, title: str, description: str) -> list:
+    """Get SEO improvement recommendations"""
+    recommendations = []
+    
+    if score < 50:
+        recommendations.append("Your content needs significant SEO improvements")
+    elif score < 70:
+        recommendations.append("Good SEO foundation, but there's room for improvement")
+    else:
+        recommendations.append("Excellent SEO optimization!")
+    
+    # Content length recommendations
+    word_count = len(content.split())
+    if word_count < 20:
+        recommendations.append("Consider adding more content (aim for 50-300 words)")
+    elif word_count > 500:
+        recommendations.append("Consider shortening your content for better engagement")
+    
+    # Keywords recommendations
+    if not keywords:
+        recommendations.append("Add relevant keywords to improve discoverability")
+    
+    # Title recommendations
+    if not title:
+        recommendations.append("Add a compelling title (30-60 characters)")
+    elif len(title) < 30:
+        recommendations.append("Consider making your title longer (30-60 characters)")
+    elif len(title) > 80:
+        recommendations.append("Consider shortening your title (30-60 characters)")
+    
+    # Description recommendations
+    if not description:
+        recommendations.append("Add a meta description (120-160 characters)")
+    elif len(description) < 120:
+        recommendations.append("Consider making your description longer (120-160 characters)")
+    elif len(description) > 200:
+        recommendations.append("Consider shortening your description (120-160 characters)")
+    
+    # Hashtag recommendations
+    hashtag_count = len(re.findall(r'#\w+', content))
+    if hashtag_count == 0:
+        recommendations.append("Add relevant hashtags to increase reach")
+    elif hashtag_count > 10:
+        recommendations.append("Consider reducing hashtags (3-8 is optimal)")
+    
+    return recommendations
+
+@app.post("/api/update-analytics/{post_id}")
+async def update_analytics(
+    post_id: int,
+    user: User = Depends(require_auth),
+    db: Session = Depends(get_db)
+):
+    """Update analytics data for a post (simulation)"""
+    try:
+        post = db.query(PostLog).filter(PostLog.id == post_id, PostLog.user_id == user.id).first()
+        if not post:
+            raise HTTPException(status_code=404, detail="Post not found")
+        
+        # Simulate fetching analytics data
+        analytics_data = simulate_analytics_data(post_id)
+        
+        # Update post with analytics data
+        post.views = analytics_data['views']
+        post.likes = analytics_data['likes']
+        post.shares = analytics_data['shares']
+        post.comments = analytics_data['comments']
+        post.clicks = analytics_data['clicks']
+        post.reach = analytics_data['reach']
+        post.impressions = analytics_data['impressions']
+        
+        # Calculate engagement rate
+        total_engagements = post.likes + post.shares + post.comments + post.clicks
+        post.engagement_rate = (total_engagements / max(post.reach, 1)) * 100 if post.reach else 0
+        
+        db.commit()
+        
+        return JSONResponse({
+            "message": "Analytics updated successfully",
+            "analytics": analytics_data,
+            "engagement_rate": round(post.engagement_rate, 2)
+        })
+    except Exception as e:
+        print(f"Update analytics error: {e}")
+        return JSONResponse({"error": "Failed to update analytics"}, status_code=500)
 
 if __name__ == "__main__":
     import uvicorn

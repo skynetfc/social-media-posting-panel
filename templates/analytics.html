@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Analytics - Anonymous Creations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .analytics-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .analytics-card-green {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .analytics-card-orange {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        .analytics-card-purple {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 font-english transition-colors duration-300">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <!-- Enhanced Header with Navigation -->
+        <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <!-- Logo and Brand -->
+                    <div class="flex items-center">
+                        <div class="flex items-center">
+                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-3">
+                                <rect width="40" height="13.33" fill="#000000"/>
+                                <rect y="13.33" width="40" height="13.33" fill="#FFFFFF"/>
+                                <rect y="26.67" width="40" height="13.33" fill="#009639"/>
+                                <polygon points="0,0 15,20 0,40" fill="#FF0000"/>
+                            </svg>
+                            <div>
+                                <h1 class="text-xl font-bold text-gray-900 dark:text-white" data-translate="brand_title">Anonymous Creations</h1>
+                                <p class="text-sm text-gray-600 dark:text-gray-400" data-translate="brand_subtitle">Social Media Dashboard</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Menu -->
+                    <nav class="hidden md:flex items-center space-x-6">
+                        <a href="/dashboard" class="flex items-center px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
+                            <i class="fas fa-home mr-2"></i>
+                            <span data-translate="dashboard">Dashboard</span>
+                        </a>
+                        <a href="/analytics" class="flex items-center px-3 py-2 text-blue-600 dark:text-blue-400 font-medium">
+                            <i class="fas fa-chart-line mr-2"></i>
+                            <span data-translate="analytics">Analytics</span>
+                        </a>
+                        <a href="/logs" class="flex items-center px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
+                            <i class="fas fa-list-alt mr-2"></i>
+                            <span>Logs</span>
+                        </a>
+                        <a href="/settings" class="flex items-center px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
+                            <i class="fas fa-cog mr-2"></i>
+                            <span data-translate="settings">Settings</span>
+                        </a>
+                    </nav>
+
+                    <!-- Right Side Controls -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Theme Toggle -->
+                        <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200">
+                            <i class="fas fa-moon dark:hidden"></i>
+                            <i class="fas fa-sun hidden dark:inline"></i>
+                        </button>
+
+                        <!-- User Menu -->
+                        <div class="relative">
+                            <button id="user-menu-button" class="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                <i class="fas fa-user-circle text-xl"></i>
+                                <span class="hidden md:inline" data-translate="welcome">Welcome</span>
+                                <span class="hidden md:inline font-medium">{{ user.username }}</span>
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </button>
+                            <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-50">
+                                <div class="py-2">
+                                    <a href="/logout" class="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900">
+                                        <i class="fas fa-sign-out-alt mr-2"></i>
+                                        <span data-translate="logout">Logout</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    <i class="fas fa-chart-line mr-3 text-blue-600"></i>Analytics Dashboard
+                </h2>
+                <p class="text-gray-600 dark:text-gray-400">Track your social media performance and SEO optimization</p>
+            </div>
+
+            <!-- Overview Analytics Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+                <div class="analytics-card rounded-xl p-4 md:p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white/80 text-sm">Total Views</p>
+                            <p class="text-2xl md:text-3xl font-bold">{{ "{:,}".format(total_views) }}</p>
+                        </div>
+                        <i class="fas fa-eye text-2xl text-white/60"></i>
+                    </div>
+                </div>
+
+                <div class="analytics-card-green rounded-xl p-4 md:p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white/80 text-sm">Total Likes</p>
+                            <p class="text-2xl md:text-3xl font-bold">{{ "{:,}".format(total_likes) }}</p>
+                        </div>
+                        <i class="fas fa-heart text-2xl text-white/60"></i>
+                    </div>
+                </div>
+
+                <div class="analytics-card-orange rounded-xl p-4 md:p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white/80 text-sm">Total Shares</p>
+                            <p class="text-2xl md:text-3xl font-bold">{{ "{:,}".format(total_shares) }}</p>
+                        </div>
+                        <i class="fas fa-share text-2xl text-white/60"></i>
+                    </div>
+                </div>
+
+                <div class="analytics-card-purple rounded-xl p-4 md:p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white/80 text-sm">Engagement</p>
+                            <p class="text-2xl md:text-3xl font-bold">{{ avg_engagement_rate }}%</p>
+                        </div>
+                        <i class="fas fa-chart-line text-2xl text-white/60"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secondary Analytics -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center">
+                        <div class="p-2 md:p-3 rounded-full bg-blue-100 dark:bg-blue-900 flex-shrink-0">
+                            <i class="fas fa-comments text-blue-600 dark:text-blue-400"></i>
+                        </div>
+                        <div class="ml-3 md:ml-4">
+                            <p class="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Comments</p>
+                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">{{ "{:,}".format(total_comments) }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center">
+                        <div class="p-2 md:p-3 rounded-full bg-green-100 dark:bg-green-900 flex-shrink-0">
+                            <i class="fas fa-mouse-pointer text-green-600 dark:text-green-400"></i>
+                        </div>
+                        <div class="ml-3 md:ml-4">
+                            <p class="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Clicks</p>
+                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">{{ "{:,}".format(total_clicks) }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center">
+                        <div class="p-2 md:p-3 rounded-full bg-purple-100 dark:bg-purple-900 flex-shrink-0">
+                            <i class="fas fa-users text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                        <div class="ml-3 md:ml-4">
+                            <p class="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Reach</p>
+                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">{{ "{:,}".format(total_reach) }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center">
+                        <div class="p-2 md:p-3 rounded-full bg-orange-100 dark:bg-orange-900 flex-shrink-0">
+                            <i class="fas fa-chart-bar text-orange-600 dark:text-orange-400"></i>
+                        </div>
+                        <div class="ml-3 md:ml-4">
+                            <p class="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Impressions</p>
+                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">{{ "{:,}".format(total_impressions) }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO Performance -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <div class="p-4 md:p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+                            <i class="fas fa-search mr-2 text-green-600"></i>SEO Performance
+                        </h3>
+                    </div>
+                    <div class="p-4 md:p-6">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Average SEO Score</span>
+                                <div class="flex items-center">
+                                    <span class="text-2xl font-bold text-gray-900 dark:text-white mr-2">{{ avg_seo_score }}/100</span>
+                                    <div class="w-20 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: {{ avg_seo_score }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Readability Score</span>
+                                <div class="flex items-center">
+                                    <span class="text-2xl font-bold text-gray-900 dark:text-white mr-2">{{ avg_readability }}/100</span>
+                                    <div class="w-20 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                        <div class="bg-blue-500 h-2 rounded-full" style="width: {{ avg_readability }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Platform Performance -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <div class="p-4 md:p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+                            <i class="fas fa-share-alt mr-2 text-blue-600"></i>Platform Performance
+                        </h3>
+                    </div>
+                    <div class="p-4 md:p-6">
+                        <div class="space-y-3">
+                            {% for platform, stats in platform_stats.items() %}
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <i class="fab fa-{{ platform.lower() }} text-lg mr-2 text-gray-600 dark:text-gray-400"></i>
+                                    <span class="text-gray-900 dark:text-white font-medium capitalize">{{ platform }}</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-gray-900 dark:text-white">{{ stats.posts }} posts</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ "{:,}".format(stats.views) }} views</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Performing Posts -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
+                <div class="p-4 md:p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+                        <i class="fas fa-trophy mr-2 text-yellow-600"></i>Top Performing Posts
+                    </h3>
+                </div>
+                <div class="p-4 md:p-6">
+                    {% if top_posts %}
+                        <div class="space-y-4">
+                            {% for post in top_posts %}
+                            <div class="flex items-start justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-gray-900 dark:text-white font-medium line-clamp-2 mb-2">{{ post.content[:100] }}...</p>
+                                    <div class="flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400">
+                                        <span><i class="fas fa-eye mr-1"></i>{{ post.views or 0 }} views</span>
+                                        <span><i class="fas fa-heart mr-1"></i>{{ post.likes or 0 }} likes</span>
+                                        <span><i class="fas fa-share mr-1"></i>{{ post.shares or 0 }} shares</span>
+                                        <span><i class="fas fa-calendar mr-1"></i>{{ post.created_at.strftime('%m/%d') }}</span>
+                                    </div>
+                                </div>
+                                <button onclick="updateAnalytics({{ post.id }})" class="ml-4 px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                                    Update
+                                </button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <i class="fas fa-chart-line text-4xl text-gray-400 dark:text-gray-500 mb-4"></i>
+                            <p class="text-gray-500 dark:text-gray-400">No posts to analyze yet</p>
+                            <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Create some posts to see analytics here</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- SEO Optimizer Tool -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="p-4 md:p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+                        <i class="fas fa-search-plus mr-2 text-purple-600"></i>SEO Optimizer
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Analyze and optimize your content for better search visibility</p>
+                </div>
+                <div class="p-4 md:p-6">
+                    <form id="seo-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Content</label>
+                            <textarea id="seo-content" rows="4" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" placeholder="Paste your content here for SEO analysis..."></textarea>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Keywords</label>
+                                <input type="text" id="seo-keywords" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" placeholder="keyword1, keyword2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Title</label>
+                                <input type="text" id="seo-title" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" placeholder="Post title">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
+                                <input type="text" id="seo-description" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" placeholder="Meta description">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full md:w-auto bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200">
+                            <i class="fas fa-search mr-2"></i>Analyze SEO
+                        </button>
+                    </form>
+
+                    <!-- SEO Results -->
+                    <div id="seo-results" class="hidden mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-gray-900 dark:text-white">
+                                    <span id="seo-score">0</span>/100
+                                </div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">SEO Score</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-gray-900 dark:text-white">
+                                    <span id="readability-score">0</span>/100
+                                </div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">Readability</div>
+                            </div>
+                        </div>
+                        <div id="seo-recommendations" class="space-y-2"></div>
+                        <div id="suggested-keywords" class="mt-4">
+                            <h4 class="font-medium text-gray-900 dark:text-white mb-2">Suggested Keywords:</h4>
+                            <div class="text-sm text-gray-600 dark:text-gray-400" id="keywords-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+    <script>
+        // Analytics specific JavaScript
+        async function updateAnalytics(postId) {
+            try {
+                const response = await fetch(`/api/update-analytics/${postId}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast('Analytics updated successfully!', 'success');
+                    // Refresh the page to show updated data
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast(data.error || 'Failed to update analytics', 'error');
+                }
+            } catch (error) {
+                showToast('Error updating analytics', 'error');
+            }
+        }
+
+        // SEO Analyzer
+        document.getElementById('seo-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const content = document.getElementById('seo-content').value;
+            const keywords = document.getElementById('seo-keywords').value;
+            const title = document.getElementById('seo-title').value;
+            const description = document.getElementById('seo-description').value;
+            
+            if (!content.trim()) {
+                showToast('Please enter content to analyze', 'warning');
+                return;
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append('content', content);
+                formData.append('keywords', keywords);
+                formData.append('title', title);
+                formData.append('description', description);
+                
+                const response = await fetch('/api/analyze-seo', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Show results
+                    document.getElementById('seo-results').classList.remove('hidden');
+                    document.getElementById('seo-score').textContent = data.seo_score;
+                    document.getElementById('readability-score').textContent = data.readability_score;
+                    document.getElementById('keywords-list').textContent = data.suggested_keywords;
+                    
+                    // Show recommendations
+                    const recommendationsDiv = document.getElementById('seo-recommendations');
+                    recommendationsDiv.innerHTML = '';
+                    data.recommendations.forEach(rec => {
+                        const div = document.createElement('div');
+                        div.className = 'text-sm text-gray-600 dark:text-gray-400';
+                        div.innerHTML = `<i class="fas fa-lightbulb mr-2 text-yellow-500"></i>${rec}`;
+                        recommendationsDiv.appendChild(div);
+                    });
+                } else {
+                    showToast(data.error || 'SEO analysis failed', 'error');
+                }
+            } catch (error) {
+                showToast('Error analyzing content', 'error');
+            }
+        });
+
+        // Initialize analytics page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-update analytics every 30 seconds (you can adjust this)
+            setInterval(() => {
+                // Optional: Auto-refresh analytics data
+                // location.reload();
+            }, 30000);
+        });
+    </script>
+</body>
+</html>
