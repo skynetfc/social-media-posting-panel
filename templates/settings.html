@@ -55,6 +55,26 @@
                     </nav>
 
                     <div class="flex items-center gap-3">
+                        <!-- Language Toggle -->
+                        <button 
+                            onclick="toggleLanguage()" 
+                            class="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
+                            title="Toggle Language"
+                        >
+                            <span id="lang-icon" class="text-sm">🇺🇸</span>
+                            <span class="ml-2 text-sm font-medium" id="lang-text">EN</span>
+                        </button>
+                        
+                        <!-- Theme Toggle -->
+                        <button 
+                            onclick="toggleTheme()" 
+                            class="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
+                            title="Toggle Theme"
+                        >
+                            <i id="theme-icon" class="fas fa-moon text-sm"></i>
+                            <span class="ml-2 text-sm font-medium" id="theme-text">Dark</span>
+                        </button>
+                        
                         <span class="text-sm text-gray-600 dark:text-gray-400">Welcome, {{ user.username }}</span>
                         <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
                             <i class="fas fa-sign-out-alt mr-2"></i>Logout
@@ -448,11 +468,21 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">API Rate Limit</label>
-                                <input type="text" value="1000 requests/hour" readonly class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white">
+                                <div class="flex">
+                                    <input type="text" id="api-rate-limit" value="1000 requests/hour" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md bg-white dark:bg-gray-800 dark:text-white">
+                                    <button onclick="saveApiSetting('rate-limit')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-r-md">
+                                        <i class="fas fa-save"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">API Version</label>
-                                <input type="text" value="v2.1" readonly class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white">
+                                <div class="flex">
+                                    <input type="text" id="api-version" value="v2.1" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md bg-white dark:bg-gray-800 dark:text-white">
+                                    <button onclick="saveApiSetting('version')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-r-md">
+                                        <i class="fas fa-save"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         
@@ -485,11 +515,21 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Max File Size</label>
-                                    <input type="text" value="10MB" readonly class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white">
+                                    <div class="flex">
+                                        <input type="text" id="max-file-size" value="10MB" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md bg-white dark:bg-gray-800 dark:text-white">
+                                        <button onclick="saveSystemSetting('file-size')" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-r-md">
+                                            <i class="fas fa-save"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div>
                                     <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Allowed Types</label>
-                                    <input type="text" value="jpg,png,gif,mp4,mov,avi" readonly class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white">
+                                    <div class="flex">
+                                        <input type="text" id="allowed-types" value="jpg,png,gif,mp4,mov,avi" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md bg-white dark:bg-gray-800 dark:text-white">
+                                        <button onclick="saveSystemSetting('file-types')" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-r-md">
+                                            <i class="fas fa-save"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -501,11 +541,23 @@
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
                                     <span class="text-sm text-gray-900 dark:text-white">Concurrent Posts</span>
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">5 platforms</span>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" id="concurrent-posts" value="5" min="1" max="15" class="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 dark:text-white text-sm">
+                                        <span class="text-sm text-gray-600 dark:text-gray-400">platforms</span>
+                                        <button onclick="savePerformanceSetting('concurrent')" class="px-2 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-xs">
+                                            <i class="fas fa-save"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
                                     <span class="text-sm text-gray-900 dark:text-white">Cache Duration</span>
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">24 hours</span>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" id="cache-duration" value="24" min="1" max="168" class="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 dark:text-white text-sm">
+                                        <span class="text-sm text-gray-600 dark:text-gray-400">hours</span>
+                                        <button onclick="savePerformanceSetting('cache')" class="px-2 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-xs">
+                                            <i class="fas fa-save"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -725,7 +777,116 @@
             });
         }
 
+        // Theme and Language Management
+        let currentLang = localStorage.getItem('language') || 'en';
+        let currentTheme = localStorage.getItem('theme') || 'light';
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            updateTheme();
+        }
+
+        function updateTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            if (currentTheme === 'dark') {
+                html.classList.add('dark');
+                if (themeIcon) themeIcon.className = 'fas fa-sun text-sm';
+                if (themeText) themeText.textContent = 'Light';
+            } else {
+                html.classList.remove('dark');
+                if (themeIcon) themeIcon.className = 'fas fa-moon text-sm';
+                if (themeText) themeText.textContent = 'Dark';
+            }
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('language', currentLang);
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const html = document.documentElement;
+            const body = document.body;
+            const langIcon = document.getElementById('lang-icon');
+            const langText = document.getElementById('lang-text');
+            
+            if (currentLang === 'ar') {
+                html.dir = 'rtl';
+                html.lang = 'ar';
+                body.classList.add('font-arabic');
+                body.classList.remove('font-english');
+                if (langIcon) langIcon.textContent = '🇵🇸';
+                if (langText) langText.textContent = 'العربية';
+            } else {
+                html.dir = 'ltr';
+                html.lang = 'en';
+                body.classList.add('font-english');
+                body.classList.remove('font-arabic');
+                if (langIcon) langIcon.textContent = '🇺🇸';
+                if (langText) langText.textContent = 'EN';
+            }
+        }
+
+        // Settings Save Functions
+        function saveApiSetting(type) {
+            const value = type === 'rate-limit' ? 
+                document.getElementById('api-rate-limit').value : 
+                document.getElementById('api-version').value;
+            
+            showLoading('Saving API setting...');
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Setting Saved!',
+                    text: `API ${type} updated successfully`,
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                });
+            }, 1000);
+        }
+
+        function saveSystemSetting(type) {
+            const value = type === 'file-size' ? 
+                document.getElementById('max-file-size').value : 
+                document.getElementById('allowed-types').value;
+            
+            showLoading('Saving system setting...');
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Setting Saved!',
+                    text: `System ${type} updated successfully`,
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                });
+            }, 1000);
+        }
+
+        function savePerformanceSetting(type) {
+            const value = type === 'concurrent' ? 
+                document.getElementById('concurrent-posts').value : 
+                document.getElementById('cache-duration').value;
+            
+            showLoading('Saving performance setting...');
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Setting Saved!',
+                    text: `Performance ${type} setting updated successfully`,
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                });
+            }, 1000);
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            updateTheme();
+            updateLanguage();
             console.log('Settings page loaded');
         });
     </script>

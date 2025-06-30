@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" id="html-root">
 <head>
@@ -6,18 +7,20 @@
     <title>Login - Anonymous Creations</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
-            --transition-duration: 300ms;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.25);
+            --backdrop-blur: blur(20px);
         }
         
         * {
-            transition: 
-                background-color var(--transition-duration) ease, 
-                color var(--transition-duration) ease, 
-                border-color var(--transition-duration) ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .preload * {
@@ -37,58 +40,168 @@
         }
         
         .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         
         .glass-effect {
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: var(--backdrop-blur);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
         }
         
         .dark .glass-effect {
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
         }
         
         .form-input {
-            @apply w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400;
+            @apply w-full px-4 py-4 bg-white/10 dark:bg-black/10 border border-white/20 dark:border-white/10 rounded-xl backdrop-blur-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            @apply ring-2 ring-blue-400/50 border-blue-400/50 bg-white/20 dark:bg-black/20;
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
         }
         
         .btn-primary {
-            @apply w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+            background: var(--primary-gradient);
+            @apply text-white font-semibold py-4 px-6 rounded-xl shadow-lg transform hover:scale-105 hover:shadow-2xl active:scale-95;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
         }
         
         .tab-button {
-            @apply px-6 py-3 font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 border-b-2 border-transparent hover:border-blue-600 dark:hover:border-blue-400 transition-all duration-200;
+            @apply px-6 py-3 font-medium text-white/70 hover:text-white border-b-2 border-transparent hover:border-white/50 transition-all duration-300;
         }
         
         .tab-button.active {
-            @apply text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400;
+            @apply text-white border-white/80;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 20%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+        
+        .shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+        
+        .shape:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 1s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .logo-glow {
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus + .input-icon {
+            color: #60a5fa;
+        }
+        
+        .toggle-button {
+            @apply flex items-center px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl backdrop-blur-sm border border-white/20 hover:border-white/30;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15);
         }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 font-english preload" id="body-root">
+<body class="bg-gray-50 dark:bg-gray-900 font-english preload overflow-hidden" id="body-root">
+    <!-- Floating Background Shapes -->
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
     <!-- Header -->
-    <div class="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <div class="fixed top-0 left-0 right-0 z-50 bg-black/10 backdrop-blur-md border-b border-white/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-3">
+            <div class="flex justify-between items-center py-4">
                 <!-- Logo Section -->
                 <div class="flex items-center">
                     <div class="flex items-center mr-4">
-                        <!-- Palestinian Flag SVG Logo -->
-                        <svg width="32" height="24" viewBox="0 0 32 24" class="mr-3">
+                        <!-- Palestinian Flag SVG Logo with Glow -->
+                        <svg width="40" height="30" viewBox="0 0 32 24" class="mr-3 logo-glow">
                             <rect x="0" y="0" width="32" height="8" fill="#CE1126"/>
                             <rect x="0" y="8" width="32" height="8" fill="#FFFFFF"/>
                             <rect x="0" y="16" width="32" height="8" fill="#000000"/>
                             <polygon points="0,0 0,24 16,12" fill="#007A3D"/>
                         </svg>
                         <div>
-                            <h1 class="text-lg font-bold text-gray-900 dark:text-white" data-translate="brand_title">
+                            <h1 class="text-xl font-bold text-white drop-shadow-lg" data-translate="brand_title">
                                 Anonymous Creations
                             </h1>
-                            <p class="text-xs text-gray-600 dark:text-gray-400" data-translate="brand_subtitle">
-                                Social Media Dashboard
+                            <p class="text-sm text-white/80" data-translate="brand_subtitle">
+                                Professional Social Media Dashboard
                             </p>
                         </div>
                     </div>
@@ -99,17 +212,17 @@
                     <!-- Language Toggle -->
                     <button 
                         onclick="toggleLanguage()" 
-                        class="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
+                        class="toggle-button"
                         title="Toggle Language"
                     >
-                        <span id="lang-icon" class="text-sm">🇺🇸</span>
+                        <span id="lang-icon" class="text-lg">🇺🇸</span>
                         <span class="ml-2 text-sm font-medium" id="lang-text">EN</span>
                     </button>
                     
                     <!-- Theme Toggle -->
                     <button 
                         onclick="toggleTheme()" 
-                        class="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
+                        class="toggle-button"
                         title="Toggle Theme"
                     >
                         <i id="theme-icon" class="fas fa-moon text-sm"></i>
@@ -121,12 +234,15 @@
     </div>
 
     <!-- Main Content -->
-    <div class="min-h-screen pt-20 gradient-bg flex items-center justify-center px-4">
-        <div class="max-w-md w-full">
+    <div class="min-h-screen pt-24 gradient-bg flex items-center justify-center px-4 relative">
+        <div class="max-w-md w-full z-10">
             <!-- Auth Card -->
-            <div class="glass-effect rounded-2xl shadow-2xl p-8">
+            <div class="glass-effect rounded-3xl shadow-2xl p-8 relative overflow-hidden">
+                <!-- Decorative Elements -->
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500"></div>
+                
                 <!-- Tab Navigation -->
-                <div class="flex border-b border-gray-200 dark:border-gray-700 mb-8">
+                <div class="flex border-b border-white/20 mb-8">
                     <button onclick="switchTab('signin')" id="signin-tab" class="tab-button active flex-1 text-center">
                         <i class="fas fa-sign-in-alt mr-2"></i>
                         <span data-translate="sign_in">Sign In</span>
@@ -139,28 +255,26 @@
 
                 <!-- Sign In Form -->
                 <div id="signin-form" class="auth-form">
-                    <div class="text-center mb-6">
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white" data-translate="welcome_back">Welcome Back</h2>
-                        <p class="text-gray-600 dark:text-gray-400 mt-2" data-translate="signin_subtitle">Sign in to your account</p>
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-white mb-2" data-translate="welcome_back">Welcome Back</h2>
+                        <p class="text-white/80" data-translate="signin_subtitle">Access your professional dashboard</p>
                     </div>
 
                     <form action="/login" method="post" class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="username">Username</label>
-                            <input type="text" name="username" required class="form-input" placeholder="Enter your username">
+                        <div class="relative">
+                            <i class="input-icon fas fa-user"></i>
+                            <input type="text" name="username" required class="form-input pl-12" placeholder="Enter your username">
                         </div>
                         
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="password">Password</label>
-                            <div class="relative">
-                                <input type="password" name="password" required class="form-input pr-12" placeholder="Enter your password">
-                                <button type="button" onclick="togglePassword('signin')" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                                    <i class="fas fa-eye" id="signin-password-icon"></i>
-                                </button>
-                            </div>
+                        <div class="relative">
+                            <i class="input-icon fas fa-lock"></i>
+                            <input type="password" name="password" required class="form-input pl-12 pr-12" placeholder="Enter your password">
+                            <button type="button" onclick="togglePassword('signin')" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white">
+                                <i class="fas fa-eye" id="signin-password-icon"></i>
+                            </button>
                         </div>
 
-                        <button type="submit" class="btn-primary">
+                        <button type="submit" class="btn-primary w-full">
                             <i class="fas fa-sign-in-alt mr-2"></i>
                             <span data-translate="sign_in">Sign In</span>
                         </button>
@@ -169,38 +283,34 @@
 
                 <!-- Sign Up Form -->
                 <div id="signup-form" class="auth-form hidden">
-                    <div class="text-center mb-6">
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white" data-translate="create_account">Create Account</h2>
-                        <p class="text-gray-600 dark:text-gray-400 mt-2" data-translate="signup_subtitle">Join our platform today</p>
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-white mb-2" data-translate="create_account">Create Account</h2>
+                        <p class="text-white/80" data-translate="signup_subtitle">Join our professional platform</p>
                     </div>
 
                     <form action="/register" method="post" class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="username">Username</label>
-                            <input type="text" name="username" required class="form-input" placeholder="Choose a username">
+                        <div class="relative">
+                            <i class="input-icon fas fa-user"></i>
+                            <input type="text" name="username" required class="form-input pl-12" placeholder="Choose a username">
                         </div>
                         
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="password">Password</label>
-                            <div class="relative">
-                                <input type="password" name="password" required class="form-input pr-12" placeholder="Create a password">
-                                <button type="button" onclick="togglePassword('signup')" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                                    <i class="fas fa-eye" id="signup-password-icon"></i>
-                                </button>
-                            </div>
+                        <div class="relative">
+                            <i class="input-icon fas fa-lock"></i>
+                            <input type="password" name="password" required class="form-input pl-12 pr-12" placeholder="Create a password">
+                            <button type="button" onclick="togglePassword('signup')" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white">
+                                <i class="fas fa-eye" id="signup-password-icon"></i>
+                            </button>
                         </div>
                         
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="confirm_password">Confirm Password</label>
-                            <div class="relative">
-                                <input type="password" name="confirm_password" required class="form-input pr-12" placeholder="Confirm your password">
-                                <button type="button" onclick="togglePassword('confirm')" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                                    <i class="fas fa-eye" id="confirm-password-icon"></i>
-                                </button>
-                            </div>
+                        <div class="relative">
+                            <i class="input-icon fas fa-shield-alt"></i>
+                            <input type="password" name="confirm_password" required class="form-input pl-12 pr-12" placeholder="Confirm your password">
+                            <button type="button" onclick="togglePassword('confirm')" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white">
+                                <i class="fas fa-eye" id="confirm-password-icon"></i>
+                            </button>
                         </div>
 
-                        <button type="submit" class="btn-primary">
+                        <button type="submit" class="btn-primary w-full">
                             <i class="fas fa-user-plus mr-2"></i>
                             <span data-translate="create_account">Create Account</span>
                         </button>
@@ -209,9 +319,9 @@
 
                 <!-- Footer -->
                 <div class="mt-8 text-center">
-                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                    <p class="text-sm text-white/70">
                         <span data-translate="powered_by">Powered by</span> 
-                        <span class="font-semibold text-blue-600 dark:text-blue-400">Anonymous Creations</span>
+                        <span class="font-semibold text-white">Anonymous Creations</span>
                     </p>
                 </div>
             </div>
@@ -223,13 +333,13 @@
         const translations = {
             en: {
                 brand_title: "Anonymous Creations",
-                brand_subtitle: "Social Media Dashboard",
+                brand_subtitle: "Professional Social Media Dashboard",
                 sign_in: "Sign In",
                 sign_up: "Sign Up",
                 welcome_back: "Welcome Back",
-                signin_subtitle: "Sign in to your account",
+                signin_subtitle: "Access your professional dashboard",
                 create_account: "Create Account",
-                signup_subtitle: "Join our platform today",
+                signup_subtitle: "Join our professional platform",
                 username: "Username",
                 password: "Password",
                 confirm_password: "Confirm Password",
@@ -237,13 +347,13 @@
             },
             ar: {
                 brand_title: "الإبداعات المجهولة",
-                brand_subtitle: "لوحة تحكم وسائل التواصل الاجتماعي",
+                brand_subtitle: "لوحة تحكم وسائل التواصل الاجتماعي المهنية",
                 sign_in: "تسجيل الدخول",
                 sign_up: "إنشاء حساب",
                 welcome_back: "مرحباً بعودتك",
-                signin_subtitle: "سجل دخولك إلى حسابك",
+                signin_subtitle: "الوصول إلى لوحة التحكم المهنية",
                 create_account: "إنشاء حساب",
-                signup_subtitle: "انضم إلى منصتنا اليوم",
+                signup_subtitle: "انضم إلى منصتنا المهنية",
                 username: "اسم المستخدم",
                 password: "كلمة المرور",
                 confirm_password: "تأكيد كلمة المرور",
@@ -252,13 +362,12 @@
         };
 
         let currentLang = localStorage.getItem('language') || 'en';
-        let currentTheme = localStorage.getItem('theme') || 'light';
+        let currentTheme = localStorage.getItem('theme') || 'dark';
 
         // Theme management
         function initTheme() {
             const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+            currentTheme = savedTheme || 'dark';
             
             const html = document.documentElement;
             if (currentTheme === 'dark') {
