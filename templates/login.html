@@ -1,539 +1,378 @@
-{% extends "base.html" %}
-
-{% block title %}Login - Anonymous Creations{% endblock %}
-
-{% block extra_head %}
-<style>
-    @keyframes geometric-shift {
-        0% { transform: rotate(0deg) translateX(0px); }
-        25% { transform: rotate(90deg) translateX(10px); }
-        50% { transform: rotate(180deg) translateX(0px); }
-        75% { transform: rotate(270deg) translateX(-10px); }
-        100% { transform: rotate(360deg) translateX(0px); }
-    }
-    
-    @keyframes neon-pulse {
-        0%, 100% { 
-            box-shadow: 0 0 5px #00ff88, 0 0 10px #00ff88, 0 0 15px #00ff88, 0 0 20px #00ff88;
-            border-color: #00ff88;
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Anonymous Creations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --transition-duration: 300ms;
         }
-        50% { 
-            box-shadow: 0 0 10px #ff0088, 0 0 20px #ff0088, 0 0 30px #ff0088, 0 0 40px #ff0088;
-            border-color: #ff0088;
+        
+        * {
+            transition: 
+                background-color var(--transition-duration) ease, 
+                color var(--transition-duration) ease, 
+                border-color var(--transition-duration) ease;
         }
-    }
-    
-    @keyframes matrix-rain {
-        0% { transform: translateY(-100vh); opacity: 1; }
-        100% { transform: translateY(100vh); opacity: 0; }
-    }
-    
-    @keyframes cyber-glitch {
-        0%, 100% { transform: translate(0); }
-        20% { transform: translate(-2px, 2px); }
-        40% { transform: translate(-2px, -2px); }
-        60% { transform: translate(2px, 2px); }
-        80% { transform: translate(2px, -2px); }
-    }
-    
-    .cyber-bg {
-        background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .cyber-bg::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-image: 
-            linear-gradient(90deg, transparent 98%, #00ff88 100%),
-            linear-gradient(0deg, transparent 98%, #ff0088 100%);
-        background-size: 50px 50px;
-        animation: geometric-shift 20s linear infinite;
-        opacity: 0.1;
-    }
-    
-    .matrix-char {
-        position: absolute;
-        color: #00ff88;
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-        animation: matrix-rain 8s linear infinite;
-        opacity: 0.3;
-    }
-    
-    .holographic-card {
-        background: linear-gradient(135deg, 
-            rgba(0, 255, 136, 0.1) 0%,
-            rgba(255, 0, 136, 0.1) 50%,
-            rgba(0, 136, 255, 0.1) 100%
-        );
-        border: 2px solid transparent;
-        background-clip: padding-box;
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        position: relative;
-        transition: all 0.3s ease;
-    }
-    
-    .holographic-card::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        padding: 2px;
-        background: linear-gradient(45deg, #00ff88, #ff0088, #0088ff, #00ff88);
-        border-radius: inherit;
-        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        mask-composite: exclude;
-        animation: geometric-shift 4s linear infinite;
-    }
-    
-    .cyber-input {
-        background: rgba(0, 0, 0, 0.3);
-        border: 1px solid #00ff88;
-        color: #00ff88;
-        transition: all 0.3s ease;
-    }
-    
-    .cyber-input:focus {
-        animation: neon-pulse 2s ease-in-out infinite;
-        background: rgba(0, 255, 136, 0.1);
-        color: #ffffff;
-    }
-    
-    .cyber-input::placeholder {
-        color: rgba(0, 255, 136, 0.6);
-    }
-    
-    .cyber-btn {
-        background: linear-gradient(45deg, #00ff88, #0088ff);
-        border: none;
-        color: #000;
-        font-weight: bold;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s ease;
-    }
-    
-    .cyber-btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-        transition: left 0.5s;
-    }
-    
-    .cyber-btn:hover::before {
-        left: 100%;
-    }
-    
-    .cyber-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(0, 255, 136, 0.3);
-    }
-    
-    .glitch-text {
-        position: relative;
-        color: #ffffff;
-        font-weight: bold;
-    }
-    
-    .glitch-text:hover {
-        animation: cyber-glitch 0.5s ease-in-out;
-    }
-    
-    .tab-cyber {
-        background: rgba(0, 0, 0, 0.5);
-        border: 1px solid #333;
-        color: #00ff88;
-        transition: all 0.3s ease;
-    }
-    
-    .tab-cyber.active {
-        background: linear-gradient(45deg, #00ff88, #0088ff);
-        color: #000;
-        border-color: #00ff88;
-        box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
-    }
-</style>
-{% endblock %}
-
-{% block content %}
-<!-- Cyberpunk Matrix Background -->
-<div class="min-h-screen cyber-bg relative overflow-hidden">
-    <!-- Matrix Rain Effect -->
-    <div class="absolute inset-0 pointer-events-none">
-        <div class="matrix-char" style="left: 5%; animation-delay: 0s;">1</div>
-        <div class="matrix-char" style="left: 15%; animation-delay: 1s;">0</div>
-        <div class="matrix-char" style="left: 25%; animation-delay: 2s;">1</div>
-        <div class="matrix-char" style="left: 35%; animation-delay: 0.5s;">0</div>
-        <div class="matrix-char" style="left: 45%; animation-delay: 1.5s;">1</div>
-        <div class="matrix-char" style="left: 55%; animation-delay: 3s;">0</div>
-        <div class="matrix-char" style="left: 65%; animation-delay: 2.5s;">1</div>
-        <div class="matrix-char" style="left: 75%; animation-delay: 4s;">0</div>
-        <div class="matrix-char" style="left: 85%; animation-delay: 3.5s;">1</div>
-        <div class="matrix-char" style="left: 95%; animation-delay: 5s;">0</div>
-    </div>
-    <!-- Content Container -->
-    <div class="relative z-10 flex items-center justify-center min-h-screen px-4 py-8">
-        <div class="w-full max-w-lg">
-            <!-- Cyberpunk Logo Section -->
-            <div class="text-center mb-12">
-                <div class="relative inline-block">
-                    <h1 class="glitch-text text-6xl font-black mb-4 tracking-wider">
-                        <span style="color: #00ff88;">ANON</span><span style="color: #ff0088;">YMOUS</span>
-                    </h1>
-                    <h2 class="glitch-text text-2xl font-bold" style="color: #0088ff;">
-                        CREATIONS
-                    </h2>
-                </div>
-                <div class="mt-6 text-center">
-                    <div class="inline-block px-4 py-2 border border-green-400 rounded-lg" style="background: rgba(0, 255, 136, 0.1);">
-                        <span class="text-green-400 font-mono text-sm">SYSTEM READY FOR NEURAL LINK</span>
+        
+        .preload * {
+            transition: none !important;
+        }
+        
+        .font-arabic {
+            font-family: 'Noto Sans Arabic', sans-serif;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .font-english {
+            font-family: 'Inter', sans-serif;
+            direction: ltr;
+            text-align: left;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .dark .glass-effect {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .form-input {
+            @apply w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400;
+        }
+        
+        .btn-primary {
+            @apply w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+        }
+        
+        .tab-button {
+            @apply px-6 py-3 font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 border-b-2 border-transparent hover:border-blue-600 dark:hover:border-blue-400 transition-all duration-200;
+        }
+        
+        .tab-button.active {
+            @apply text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 font-english preload" id="body-root">
+    <!-- Header -->
+    <div class="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-3">
+                <!-- Logo Section -->
+                <div class="flex items-center">
+                    <div class="flex items-center mr-4">
+                        <!-- Palestinian Flag SVG Logo -->
+                        <svg width="32" height="24" viewBox="0 0 32 24" class="mr-3">
+                            <rect x="0" y="0" width="32" height="8" fill="#CE1126"/>
+                            <rect x="0" y="8" width="32" height="8" fill="#FFFFFF"/>
+                            <rect x="0" y="16" width="32" height="8" fill="#000000"/>
+                            <polygon points="0,0 0,24 16,12" fill="#007A3D"/>
+                        </svg>
+                        <div>
+                            <h1 class="text-lg font-bold text-gray-900 dark:text-white" data-translate="brand_title">
+                                Anonymous Creations
+                            </h1>
+                            <p class="text-xs text-gray-600 dark:text-gray-400" data-translate="brand_subtitle">
+                                Social Media Dashboard
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Holographic Auth Container -->
-            <div class="holographic-card p-8">
-                <!-- Cyber Tab Navigation -->
-                <div class="flex mb-8 p-1 bg-black/50 rounded-lg border border-gray-700">
-                    <button id="loginTab" class="tab-cyber active flex-1 py-3 px-4 text-center font-mono font-bold rounded-lg transition-all duration-300">
-                        <i class="fas fa-terminal mr-2"></i>
-                        LOGIN
+                
+                <!-- Controls Section -->
+                <div class="flex items-center gap-3">
+                    <!-- Language Toggle -->
+                    <button 
+                        onclick="toggleLanguage()" 
+                        class="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
+                        title="Toggle Language"
+                    >
+                        <span id="lang-icon" class="text-sm">🇺🇸</span>
+                        <span class="ml-2 text-sm font-medium" id="lang-text">EN</span>
                     </button>
-                    <button id="signupTab" class="tab-cyber flex-1 py-3 px-4 text-center font-mono font-bold rounded-lg transition-all duration-300">
-                        <i class="fas fa-plus-circle mr-2"></i>
-                        REGISTER
-                    </button>
-                </div>
-
-                <!-- Error Messages -->
-                {% if error %}
-                <div class="bg-red-500/20 border border-red-400 text-red-300 px-4 py-3 rounded-lg mb-6 font-mono text-sm">
-                    <i class="fas fa-exclamation-triangle mr-2"></i>
-                    SYSTEM ERROR: {{ error }}
-                </div>
-                {% endif %}
-
-                <!-- Login Form -->
-                <div id="loginForm" class="space-y-6">
-                    <form method="POST" action="/login" class="space-y-6">
-                        <!-- Username Field -->
-                        <div>
-                            <label class="block text-green-400 font-mono text-xs mb-2 uppercase tracking-wider">USERNAME</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <i class="fas fa-user text-green-400"></i>
-                                </div>
-                                <input 
-                                    type="text" 
-                                    id="username" 
-                                    name="username" 
-                                    required
-                                    placeholder="Enter neural access code"
-                                    class="cyber-input w-full pl-12 pr-4 py-4 rounded-lg font-mono"
-                                >
-                            </div>
-                        </div>
-
-                        <!-- Password Field -->
-                        <div>
-                            <label class="block text-green-400 font-mono text-xs mb-2 uppercase tracking-wider">PASSWORD</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <i class="fas fa-lock text-green-400"></i>
-                                </div>
-                                <input 
-                                    type="password" 
-                                    id="password" 
-                                    name="password" 
-                                    required
-                                    placeholder="Enter security matrix"
-                                    class="cyber-input w-full pl-12 pr-12 py-4 rounded-lg font-mono"
-                                >
-                                <button type="button" onclick="togglePassword('password')" class="absolute inset-y-0 right-0 pr-4 flex items-center">
-                                    <i class="fas fa-eye text-green-400 hover:text-white transition-colors"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Remember Me & Forgot Password -->
-                        <div class="flex items-center justify-between">
-                            <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-green-400 text-green-400 focus:ring-green-400">
-                                <span class="ml-2 text-sm text-green-400 font-mono">REMEMBER SESSION</span>
-                            </label>
-                            <a href="#" class="text-sm text-blue-400 hover:text-white transition-colors font-mono">
-                                RESET ACCESS?
-                            </a>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button 
-                            type="submit"
-                            class="cyber-btn w-full py-4 px-6 font-mono font-bold rounded-lg text-lg tracking-wider"
-                        >
-                            <i class="fas fa-plug mr-2"></i>
-                            JACK IN
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Signup Form (Hidden by default) -->
-                <div id="signupForm" class="space-y-6 hidden">
-                    <form method="POST" action="/register" class="space-y-6">
-                        <!-- Full Name Field -->
-                        <div>
-                            <label class="block text-green-400 font-mono text-xs mb-2 uppercase tracking-wider">FULL NAME</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <i class="fas fa-id-card text-green-400"></i>
-                                </div>
-                                <input 
-                                    type="text" 
-                                    id="fullname" 
-                                    name="fullname" 
-                                    required
-                                    placeholder="Enter identity string"
-                                    class="cyber-input w-full pl-12 pr-4 py-4 rounded-lg font-mono"
-                                >
-                            </div>
-                        </div>
-
-                        <!-- Email Field -->
-                        <div>
-                            <label class="block text-green-400 font-mono text-xs mb-2 uppercase tracking-wider">EMAIL ADDRESS</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <i class="fas fa-at text-green-400"></i>
-                                </div>
-                                <input 
-                                    type="email" 
-                                    id="email" 
-                                    name="email" 
-                                    required
-                                    placeholder="Enter communication channel"
-                                    class="cyber-input w-full pl-12 pr-4 py-4 rounded-lg font-mono"
-                                >
-                            </div>
-                        </div>
-
-                        <!-- Username Field -->
-                        <div>
-                            <label class="block text-green-400 font-mono text-xs mb-2 uppercase tracking-wider">USERNAME</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <i class="fas fa-user text-green-400"></i>
-                                </div>
-                                <input 
-                                    type="text" 
-                                    id="new_username" 
-                                    name="username" 
-                                    required
-                                    placeholder="Choose neural handle"
-                                    class="cyber-input w-full pl-12 pr-4 py-4 rounded-lg font-mono"
-                                >
-                            </div>
-                        </div>
-
-                        <!-- Password Field -->
-                        <div>
-                            <label class="block text-green-400 font-mono text-xs mb-2 uppercase tracking-wider">PASSWORD</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <i class="fas fa-lock text-green-400"></i>
-                                </div>
-                                <input 
-                                    type="password" 
-                                    id="new_password" 
-                                    name="password" 
-                                    required
-                                    placeholder="Create security matrix"
-                                    class="cyber-input w-full pl-12 pr-12 py-4 rounded-lg font-mono"
-                                >
-                                <button type="button" onclick="togglePassword('new_password')" class="absolute inset-y-0 right-0 pr-4 flex items-center">
-                                    <i class="fas fa-eye text-green-400 hover:text-white transition-colors"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Confirm Password Field -->
-                        <div>
-                            <label class="block text-green-400 font-mono text-xs mb-2 uppercase tracking-wider">CONFIRM PASSWORD</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <i class="fas fa-shield-alt text-green-400"></i>
-                                </div>
-                                <input 
-                                    type="password" 
-                                    id="confirm_password" 
-                                    name="confirm_password" 
-                                    required
-                                    placeholder="Verify security matrix"
-                                    class="cyber-input w-full pl-12 pr-12 py-4 rounded-lg font-mono"
-                                >
-                                <button type="button" onclick="togglePassword('confirm_password')" class="absolute inset-y-0 right-0 pr-4 flex items-center">
-                                    <i class="fas fa-eye text-green-400 hover:text-white transition-colors"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Terms Agreement -->
-                        <div>
-                            <label class="flex items-start">
-                                <input type="checkbox" required class="mt-1 rounded border-green-400 text-green-400 focus:ring-green-400">
-                                <span class="ml-2 text-sm text-green-400 font-mono">
-                                    ACCEPT NEURAL LINK <a href="#" class="text-blue-400 hover:text-white">PROTOCOLS</a> AND <a href="#" class="text-blue-400 hover:text-white">DATA MATRIX</a>
-                                </span>
-                            </label>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button 
-                            type="submit"
-                            class="cyber-btn w-full py-4 px-6 font-mono font-bold rounded-lg text-lg tracking-wider"
-                        >
-                            <i class="fas fa-plus-circle mr-2"></i>
-                            INITIALIZE USER
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Social Login Options -->
-                <div class="mt-8">
-                    <div class="relative">
-                        <div class="absolute inset-0 flex items-center">
-                            <div class="w-full border-t border-green-400/30"></div>
-                        </div>
-                        <div class="relative flex justify-center text-sm">
-                            <span class="px-2 bg-black/50 text-green-400 font-mono">ALTERNATE PROTOCOLS</span>
-                        </div>
-                    </div>
                     
-                    <div class="mt-6 grid grid-cols-3 gap-3">
-                        <button class="w-full inline-flex justify-center py-3 px-4 rounded-lg border border-green-400/50 bg-black/30 hover:bg-green-400/10 transition-all duration-300">
-                            <i class="fab fa-google text-red-400 text-xl"></i>
-                        </button>
-                        <button class="w-full inline-flex justify-center py-3 px-4 rounded-lg border border-green-400/50 bg-black/30 hover:bg-green-400/10 transition-all duration-300">
-                            <i class="fab fa-github text-white text-xl"></i>
-                        </button>
-                        <button class="w-full inline-flex justify-center py-3 px-4 rounded-lg border border-green-400/50 bg-black/30 hover:bg-green-400/10 transition-all duration-300">
-                            <i class="fab fa-discord text-indigo-400 text-xl"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="text-center mt-8">
-                <div class="text-green-400 font-mono text-xs tracking-wider">
-                    <span class="opacity-60">© 2025 ANONYMOUS CREATIONS</span>
-                </div>
-                <div class="text-green-400/50 font-mono text-xs mt-1">
-                    <span>NEURAL INTERFACE v2.1.0</span>
+                    <!-- Theme Toggle -->
+                    <button 
+                        onclick="toggleTheme()" 
+                        class="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
+                        title="Toggle Theme"
+                    >
+                        <i id="theme-icon" class="fas fa-moon text-sm"></i>
+                        <span class="ml-2 text-sm font-medium" id="theme-text">Dark</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    // Cyber Tab Switching Logic
-    document.getElementById('loginTab').addEventListener('click', function() {
-        document.getElementById('loginForm').classList.remove('hidden');
-        document.getElementById('signupForm').classList.add('hidden');
-        
-        // Update tab styles
-        this.classList.add('active');
-        document.getElementById('signupTab').classList.remove('active');
-    });
+    <!-- Main Content -->
+    <div class="min-h-screen pt-20 gradient-bg flex items-center justify-center px-4">
+        <div class="max-w-md w-full">
+            <!-- Auth Card -->
+            <div class="glass-effect rounded-2xl shadow-2xl p-8">
+                <!-- Tab Navigation -->
+                <div class="flex border-b border-gray-200 dark:border-gray-700 mb-8">
+                    <button onclick="switchTab('signin')" id="signin-tab" class="tab-button active flex-1 text-center">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        <span data-translate="sign_in">Sign In</span>
+                    </button>
+                    <button onclick="switchTab('signup')" id="signup-tab" class="tab-button flex-1 text-center">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        <span data-translate="sign_up">Sign Up</span>
+                    </button>
+                </div>
 
-    document.getElementById('signupTab').addEventListener('click', function() {
-        document.getElementById('signupForm').classList.remove('hidden');
-        document.getElementById('loginForm').classList.add('hidden');
-        
-        // Update tab styles
-        this.classList.add('active');
-        document.getElementById('loginTab').classList.remove('active');
-    });
+                <!-- Sign In Form -->
+                <div id="signin-form" class="auth-form">
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white" data-translate="welcome_back">Welcome Back</h2>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2" data-translate="signin_subtitle">Sign in to your account</p>
+                    </div>
 
-    // Cyber Password Toggle Function
-    function togglePassword(inputId) {
-        const input = document.getElementById(inputId);
-        const icon = input.nextElementSibling.querySelector('i');
-        
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            input.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    }
+                    <form action="/login" method="post" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="username">Username</label>
+                            <input type="text" name="username" required class="form-input" placeholder="Enter your username">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="password">Password</label>
+                            <div class="relative">
+                                <input type="password" name="password" required class="form-input pr-12" placeholder="Enter your password">
+                                <button type="button" onclick="togglePassword('signin')" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                    <i class="fas fa-eye" id="signin-password-icon"></i>
+                                </button>
+                            </div>
+                        </div>
 
-    // Enhanced Cyber Form Validation
-    document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            const inputs = form.querySelectorAll('input[required]');
-            let valid = true;
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-sign-in-alt mr-2"></i>
+                            <span data-translate="sign_in">Sign In</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Sign Up Form -->
+                <div id="signup-form" class="auth-form hidden">
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white" data-translate="create_account">Create Account</h2>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2" data-translate="signup_subtitle">Join our platform today</p>
+                    </div>
+
+                    <form action="/register" method="post" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="username">Username</label>
+                            <input type="text" name="username" required class="form-input" placeholder="Choose a username">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="password">Password</label>
+                            <div class="relative">
+                                <input type="password" name="password" required class="form-input pr-12" placeholder="Create a password">
+                                <button type="button" onclick="togglePassword('signup')" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                    <i class="fas fa-eye" id="signup-password-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="confirm_password">Confirm Password</label>
+                            <div class="relative">
+                                <input type="password" name="confirm_password" required class="form-input pr-12" placeholder="Confirm your password">
+                                <button type="button" onclick="togglePassword('confirm')" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                    <i class="fas fa-eye" id="confirm-password-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-user-plus mr-2"></i>
+                            <span data-translate="create_account">Create Account</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Footer -->
+                <div class="mt-8 text-center">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        <span data-translate="powered_by">Powered by</span> 
+                        <span class="font-semibold text-blue-600 dark:text-blue-400">Anonymous Creations</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Translations
+        const translations = {
+            en: {
+                brand_title: "Anonymous Creations",
+                brand_subtitle: "Social Media Dashboard",
+                sign_in: "Sign In",
+                sign_up: "Sign Up",
+                welcome_back: "Welcome Back",
+                signin_subtitle: "Sign in to your account",
+                create_account: "Create Account",
+                signup_subtitle: "Join our platform today",
+                username: "Username",
+                password: "Password",
+                confirm_password: "Confirm Password",
+                powered_by: "Powered by"
+            },
+            ar: {
+                brand_title: "الإبداعات المجهولة",
+                brand_subtitle: "لوحة تحكم وسائل التواصل الاجتماعي",
+                sign_in: "تسجيل الدخول",
+                sign_up: "إنشاء حساب",
+                welcome_back: "مرحباً بعودتك",
+                signin_subtitle: "سجل دخولك إلى حسابك",
+                create_account: "إنشاء حساب",
+                signup_subtitle: "انضم إلى منصتنا اليوم",
+                username: "اسم المستخدم",
+                password: "كلمة المرور",
+                confirm_password: "تأكيد كلمة المرور",
+                powered_by: "مدعوم من"
+            }
+        };
+
+        let currentLang = localStorage.getItem('language') || 'en';
+        let currentTheme = localStorage.getItem('theme') || 'light';
+
+        // Theme management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
             
-            inputs.forEach(input => {
-                if (!input.value.trim()) {
-                    input.style.borderColor = '#ff0088';
-                    input.style.boxShadow = '0 0 10px #ff0088';
-                    valid = false;
-                } else {
-                    input.style.borderColor = '#00ff88';
-                    input.style.boxShadow = '';
+            const html = document.documentElement;
+            if (currentTheme === 'dark') {
+                html.classList.add('dark');
+            } else {
+                html.classList.remove('dark');
+            }
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            updateTheme();
+        }
+
+        function updateTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            if (currentTheme === 'dark') {
+                html.classList.add('dark');
+                if (themeIcon) themeIcon.className = 'fas fa-sun text-sm';
+                if (themeText) themeText.textContent = 'Light';
+            } else {
+                html.classList.remove('dark');
+                if (themeIcon) themeIcon.className = 'fas fa-moon text-sm';
+                if (themeText) themeText.textContent = 'Dark';
+            }
+        }
+
+        // Language management
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('language', currentLang);
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const html = document.getElementById('html-root');
+            const body = document.getElementById('body-root');
+            const langIcon = document.getElementById('lang-icon');
+            const langText = document.getElementById('lang-text');
+            
+            if (currentLang === 'ar') {
+                html.dir = 'rtl';
+                html.lang = 'ar';
+                body.classList.add('font-arabic');
+                body.classList.remove('font-english');
+                if (langIcon) langIcon.textContent = '🇵🇸';
+                if (langText) langText.textContent = 'العربية';
+            } else {
+                html.dir = 'ltr';
+                html.lang = 'en';
+                body.classList.add('font-english');
+                body.classList.remove('font-arabic');
+                if (langIcon) langIcon.textContent = '🇺🇸';
+                if (langText) langText.textContent = 'EN';
+            }
+            
+            // Update all translatable elements
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[currentLang][key]) {
+                    element.textContent = translations[currentLang][key];
                 }
             });
-            
-            // Password confirmation validation for signup
-            if (form.action.includes('/register')) {
-                const password = form.querySelector('#new_password').value;
-                const confirmPassword = form.querySelector('#confirm_password').value;
-                
-                if (password !== confirmPassword) {
-                    document.getElementById('confirm_password').style.borderColor = '#ff0088';
-                    document.getElementById('confirm_password').style.boxShadow = '0 0 10px #ff0088';
-                    valid = false;
-                    
-                    // Cyber-style alert
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'fixed top-4 right-4 bg-red-500/20 border border-red-400 text-red-300 px-4 py-3 rounded-lg font-mono text-sm z-50';
-                    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>MATRIX MISMATCH: Security codes do not align';
-                    document.body.appendChild(errorDiv);
-                    setTimeout(() => errorDiv.remove(), 3000);
-                }
-            }
-            
-            if (!valid) {
-                e.preventDefault();
-            }
-        });
-    });
+        }
 
-    // Cyber Input Focus Effects
-    document.querySelectorAll('.cyber-input').forEach(input => {
-        input.addEventListener('focus', function() {
-            this.style.transform = 'translateY(-2px)';
-            this.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.3)';
+        // Tab switching
+        function switchTab(tab) {
+            const signinTab = document.getElementById('signin-tab');
+            const signupTab = document.getElementById('signup-tab');
+            const signinForm = document.getElementById('signin-form');
+            const signupForm = document.getElementById('signup-form');
+
+            if (tab === 'signin') {
+                signinTab.classList.add('active');
+                signupTab.classList.remove('active');
+                signinForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+            } else {
+                signupTab.classList.add('active');
+                signinTab.classList.remove('active');
+                signupForm.classList.remove('hidden');
+                signinForm.classList.add('hidden');
+            }
+        }
+
+        // Password visibility toggle
+        function togglePassword(form) {
+            const input = document.querySelector(`#${form}-form input[type="password"], #${form === 'confirm' ? 'signup' : form}-form input[name="${form === 'confirm' ? 'confirm_password' : 'password'}"]`);
+            const icon = document.getElementById(`${form}-password-icon`);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // Initialize
+        initTheme();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLanguage();
+            updateTheme();
+            
+            setTimeout(() => {
+                document.body.classList.remove('preload');
+            }, 100);
         });
-        
-        input.addEventListener('blur', function() {
-            this.style.transform = 'translateY(0)';
-            this.style.boxShadow = '';
-        });
-    });
-</script>
-{% endblock %}
+    </script>
+</body>
+</html>

@@ -396,12 +396,85 @@
                 </div>
             </div>
 
+            <!-- Security Preferences -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+                        <i class="fas fa-shield-alt mr-2 text-red-600"></i>Security Preferences
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Manage your account security settings</p>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-white">Two-Factor Authentication</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Add an extra layer of security</p>
+                            </div>
+                            <button class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">
+                                Enable
+                            </button>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-white">Session Timeout</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">30 minutes of inactivity</p>
+                            </div>
+                            <span class="text-sm text-green-600 dark:text-green-400">Active</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-white">Password Encryption</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">bcrypt hashing algorithm</p>
+                            </div>
+                            <span class="text-sm text-green-600 dark:text-green-400">Enabled</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Configuration -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+                        <i class="fas fa-code mr-2 text-yellow-600"></i>API Configuration
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Configure API keys and endpoints</p>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">API Rate Limit</label>
+                                <input type="text" value="1000 requests/hour" readonly class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">API Version</label>
+                                <input type="text" value="v2.1" readonly class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white">
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-400 mr-2"></i>
+                                <p class="text-sm text-yellow-800 dark:text-yellow-200">
+                                    API keys are managed through environment variables for security
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- System Settings -->
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                 <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white">
                         <i class="fas fa-cogs mr-2 text-purple-600"></i>System Settings
                     </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Configure system preferences and limits</p>
                 </div>
                 <div class="p-6">
                     <div class="space-y-6">
@@ -423,16 +496,16 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Security Settings
+                                Performance Settings
                             </label>
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
-                                    <span class="text-sm text-gray-900 dark:text-white">Session Timeout</span>
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">30 minutes</span>
+                                    <span class="text-sm text-gray-900 dark:text-white">Concurrent Posts</span>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">5 platforms</span>
                                 </div>
                                 <div class="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
-                                    <span class="text-sm text-gray-900 dark:text-white">Password Encryption</span>
-                                    <span class="text-sm text-green-600">bcrypt</span>
+                                    <span class="text-sm text-gray-900 dark:text-white">Cache Duration</span>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">24 hours</span>
                                 </div>
                             </div>
                         </div>
@@ -503,6 +576,136 @@
                     icon: 'info',
                     title: 'Facebook Test Mode',
                     text: 'Running in test mode. Configure Facebook Graph API for live posting.',
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                });
+            }, 1500);
+        }
+
+        async function testTwitter() {
+            showLoading('Testing Twitter connection...');
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Twitter Test Mode',
+                    text: 'Running in test mode. Configure Twitter API v2 for live posting.',
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                });
+            }, 1500);
+        }
+
+        async function testLinkedIn() {
+            showLoading('Testing LinkedIn connection...');
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'LinkedIn Test Mode',
+                    text: 'Running in test mode. Configure LinkedIn Marketing API for live posting.',
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                });
+            }, 1500);
+        }
+
+        async function testSnapchat() {
+            showLoading('Testing Snapchat connection...');
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Snapchat Test Mode',
+                    text: 'Running in test mode. Configure Snapchat Creative Kit API for live posting.',
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                });
+            }, 1500);
+        }
+
+        async function testPinterest() {
+            showLoading('Testing Pinterest connection...');
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Pinterest Test Mode',
+                    text: 'Running in test mode. Configure Pinterest Business API for live posting.',
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                });
+            }, 1500);
+        }
+
+        async function testReddit() {
+            showLoading('Testing Reddit connection...');
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Reddit Test Mode',
+                    text: 'Running in test mode. Configure Reddit API v1 for live posting.',
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                });
+            }, 1500);
+        }
+
+        async function testDiscord() {
+            showLoading('Testing Discord connection...');
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Discord Test Mode',
+                    text: 'Running in test mode. Configure Discord Webhook API for live posting.',
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                });
+            }, 1500);
+        }
+
+        async function testWhatsApp() {
+            showLoading('Testing WhatsApp connection...');
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'WhatsApp Test Mode',
+                    text: 'Running in test mode. Configure WhatsApp Business API for live posting.',
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                });
+            }, 1500);
+        }
+
+        async function testThreads() {
+            showLoading('Testing Threads connection...');
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Threads Test Mode',
+                    text: 'Running in test mode. Configure Meta Threads API for live posting.',
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                });
+            }, 1500);
+        }
+
+        async function testMedium() {
+            showLoading('Testing Medium connection...');
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Medium Test Mode',
+                    text: 'Running in test mode. Configure Medium Publishing API for live posting.',
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                });
+            }, 1500);
+        }
+
+        async function testTumblr() {
+            showLoading('Testing Tumblr connection...');
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Tumblr Test Mode',
+                    text: 'Running in test mode. Configure Tumblr API v2 for live posting.',
                     background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
                     color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
                 });

@@ -62,7 +62,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300 font-english" id="body-root">
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors font-english preload" id="body-root">
     <!-- Enhanced Header with Logo and Controls -->
     <div class="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -261,6 +261,12 @@
             const themeIcon = document.getElementById('theme-icon');
             const themeText = document.getElementById('theme-text');
             
+            // Add transition class for smooth switching
+            if (!html.classList.contains('theme-transitioning')) {
+                html.classList.add('theme-transitioning');
+                setTimeout(() => html.classList.remove('theme-transitioning'), 300);
+            }
+            
             if (currentTheme === 'dark') {
                 html.classList.add('dark');
                 if (themeIcon) themeIcon.className = 'fas fa-sun text-sm';
@@ -272,10 +278,33 @@
             }
         }
 
+        // Initialize theme immediately to prevent flash
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+            
+            // Apply theme immediately without transition
+            const html = document.documentElement;
+            if (currentTheme === 'dark') {
+                html.classList.add('dark');
+            } else {
+                html.classList.remove('dark');
+            }
+        }
+
+        // Call initTheme immediately
+        initTheme();
+
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             updateLanguage();
             updateTheme();
+            
+            // Remove preload class to enable transitions
+            setTimeout(() => {
+                document.body.classList.remove('preload');
+            }, 100);
         });
 
         // Utility function to get translation
