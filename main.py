@@ -193,6 +193,69 @@ async def login(
             }
         )
 
+@app.post("/register")
+async def register(
+    request: Request,
+    fullname: str = Form(...),
+    email: str = Form(...),
+    username: str = Form(...),
+    password: str = Form(...),
+    confirm_password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    """Handle user registration"""
+    try:
+        # Validate password confirmation
+        if password != confirm_password:
+            return templates.TemplateResponse(
+                "login.html", 
+                {
+                    "request": request, 
+                    "error": "Passwords do not match"
+                }
+            )
+        
+        # Check if username already exists
+        existing_user = db.query(User).filter(User.username == username).first()
+        if existing_user:
+            return templates.TemplateResponse(
+                "login.html", 
+                {
+                    "request": request, 
+                    "error": "Username already exists"
+                }
+            )
+        
+        # Create new user
+        hashed_password = get_password_hash(password)
+        new_user = User(
+            username=username,
+            hashed_password=hashed_password,
+            is_active=True
+        )
+        
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        
+        # Auto-login the new user
+        request.session.clear()
+        request.session["user_id"] = new_user.id
+        request.session["username"] = new_user.username
+        request.session["authenticated"] = True
+        
+        return RedirectResponse(url="/dashboard", status_code=302)
+        
+    except Exception as e:
+        print(f"Registration error: {e}")
+        return templates.TemplateResponse(
+            "login.html", 
+            {
+                "request": request, 
+                "error": "Registration failed. Please try again."
+            }
+        )
+
 @app.get("/logout")
 async def logout(request: Request):
     """Handle logout"""
