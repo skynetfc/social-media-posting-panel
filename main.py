@@ -251,7 +251,7 @@ async def create_post(
     content: str = Form(...),
     platforms: List[str] = Form(...),
     schedule_time: Optional[str] = Form(None),
-    file: Optional[UploadFile] = File(None),
+    media: Optional[UploadFile] = File(None),
     user: User = Depends(require_auth),
     db: Session = Depends(get_db)
 ):
@@ -267,28 +267,16 @@ async def create_post(
                 content={"success": False, "message": "At least one platform must be selected"}
             )
         
-        # Handle file upload with improved error handling
+        # Handle media upload with improved error handling
         file_path = None
         file_type = None
         
-        if file and file.filename and file.filename.strip():
+        if media and media.filename and media.filename.strip() and media.size > 0:
             try:
-                print(f"Processing file upload: {file.filename}")
+                print(f"Processing media upload: {media.filename}, size: {media.size}")
                 
-                # Read file content
-                file_content = await file.read()
-                file_size = len(file_content)
-                
-                print(f"File read successfully: {file_size} bytes")
-                
-                if file_size == 0:
-                    return JSONResponse(
-                        status_code=400,
-                        content={"success": False, "message": "Uploaded file is empty"}
-                    )
-                
-                # Validate file type and size
-                file_ext = file.filename.split('.')[-1].lower()
+                # Validate file type first
+                file_ext = media.filename.split('.')[-1].lower()
                 
                 if file_ext in ALLOWED_EXTENSIONS['image']:
                     file_type = "image"
@@ -300,10 +288,19 @@ async def create_post(
                         content={"success": False, "message": f"File type .{file_ext} not supported. Use: {', '.join(ALLOWED_EXTENSIONS['image'] + ALLOWED_EXTENSIONS['video'])}"}
                     )
                 
-                if file_size > MAX_FILE_SIZE:
+                # Check file size
+                if media.size > MAX_FILE_SIZE:
                     return JSONResponse(
                         status_code=400,
-                        content={"success": False, "message": f"File size ({file_size} bytes) exceeds 10MB limit"}
+                        content={"success": False, "message": f"File size ({media.size} bytes) exceeds 10MB limit"}
+                    )
+                
+                # Read file content
+                file_content = await media.read()
+                if len(file_content) == 0:
+                    return JSONResponse(
+                        status_code=400,
+                        content={"success": False, "message": "Uploaded file is empty"}
                     )
                 
                 # Generate unique filename and save
@@ -318,13 +315,14 @@ async def create_post(
                     buffer.write(file_content)
                 
                 # Verify file was saved correctly
-                if not os.path.exists(file_path) or os.path.getsize(file_path) != file_size:
+                saved_size = os.path.getsize(file_path)
+                if not os.path.exists(file_path) or saved_size == 0:
                     raise Exception("File save verification failed")
                 
-                print(f"File saved successfully: {file_path} ({file_size} bytes, type: {file_type})")
+                print(f"Media saved successfully: {file_path} ({saved_size} bytes, type: {file_type})")
                 
             except Exception as e:
-                print(f"File upload error: {e}")
+                print(f"Media upload error: {e}")
                 # Clean up any partial file
                 if file_path and os.path.exists(file_path):
                     try:
@@ -336,10 +334,10 @@ async def create_post(
                 
                 return JSONResponse(
                     status_code=500,
-                    content={"success": False, "message": f"File upload failed: {str(e)}"}
+                    content={"success": False, "message": f"Media upload failed: {str(e)}"}
                 )
         else:
-            print("No file provided for upload")
+            print("No media file provided or file is empty")
         
         # Create post log
         post_log = PostLog(
@@ -355,13 +353,18 @@ async def create_post(
         db.commit()
         db.refresh(post_log)
         
+        print(f"Starting to post to platforms: {platforms}")
+        print(f"Content: {content[:50]}...")
+        print(f"Media: {file_path} ({file_type})" if file_path else "No media")
+        
         # Post to platforms
         results = {}
         overall_success = True
-        media_info = f" with {file_type}" if file_path and file_type else ""
         
         for platform in platforms:
             try:
+                print(f"Posting to {platform}...")
+                
                 if platform == 'telegram':
                     success, message = await social_manager.post_to_telegram(content, file_path, file_type)
                 elif platform == 'instagram':
@@ -375,15 +378,15 @@ async def create_post(
                 else:
                     success, message = False, "Unsupported platform"
                 
-                # Add media info to success messages
-                if success and file_path:
-                    message = message + f" (included {file_type})"
+                print(f"{platform} result: {success} - {message}")
                 
                 results[platform] = {"success": success, "message": message}
                 if not success:
                     overall_success = False
                     
             except Exception as e:
+                error_msg = f"Error posting to {platform}: {str(e)}"
+                print(error_msg)
                 results[platform] = {"success": False, "message": str(e)}
                 overall_success = False
         
@@ -393,18 +396,21 @@ async def create_post(
         post_log.completed_at = datetime.utcnow()
         db.commit()
         
+        print(f"Post processing completed. Overall success: {overall_success}")
+        
         return JSONResponse(content={
             "success": overall_success,
             "results": results,
             "message": "Post published successfully!" if overall_success else "Some platforms failed",
-            "post_id": post_log.id
+            "post_id": post_log.id,
+            "media_included": bool(file_path)
         })
         
     except Exception as e:
         print(f"Post creation error: {e}")
         return JSONResponse(
             status_code=500,
-            content={"success": False, "message": "Internal server error. Please try again."}
+            content={"success": False, "message": f"Internal server error: {str(e)}"}
         )
 
 @app.get("/logs", response_class=HTMLResponse)
