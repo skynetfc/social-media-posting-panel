@@ -88,14 +88,62 @@
                     <!-- Controls Section -->
                     <div class="flex items-center gap-3">
                         <!-- Language Toggle -->
-                        <button 
-                            onclick="toggleLanguage()" 
-                            class="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
-                            title="Toggle Language"
-                        >
-                            <span id="lang-icon" class="text-sm">🇺🇸</span>
-                            <span class="ml-2 text-sm font-medium" id="lang-text">EN</span>
-                        </button>
+                        <div class="relative">
+                            <button 
+                                onclick="toggleLanguageDropdown()" 
+                                class="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
+                                title="Select Language"
+                                id="lang-button"
+                            >
+                                <span id="lang-icon" class="text-sm">🇺🇸</span>
+                                <span class="ml-2 text-sm font-medium" id="lang-text">EN</span>
+                                <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                            </button>
+                            <div id="language-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-50">
+                                <div class="py-2">
+                                    <button onclick="setLanguage('en')" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center">
+                                        <span class="mr-3">🇺🇸</span>
+                                        <span>English</span>
+                                    </button>
+                                    <button onclick="setLanguage('ar')" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center">
+                                        <span class="mr-3">🇵🇸</span>
+                                        <span>العربية</span>
+                                    </button>
+                                    <button onclick="setLanguage('es')" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center">
+                                        <span class="mr-3">🇪🇸</span>
+                                        <span>Español</span>
+                                    </button>
+                                    <button onclick="setLanguage('fr')" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center">
+                                        <span class="mr-3">🇫🇷</span>
+                                        <span>Français</span>
+                                    </button>
+                                    <button onclick="setLanguage('de')" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center">
+                                        <span class="mr-3">🇩🇪</span>
+                                        <span>Deutsch</span>
+                                    </button>
+                                    <button onclick="setLanguage('it')" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center">
+                                        <span class="mr-3">🇮🇹</span>
+                                        <span>Italiano</span>
+                                    </button>
+                                    <button onclick="setLanguage('zh')" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center">
+                                        <span class="mr-3">🇨🇳</span>
+                                        <span>中文</span>
+                                    </button>
+                                    <button onclick="setLanguage('ja')" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center">
+                                        <span class="mr-3">🇯🇵</span>
+                                        <span>日本語</span>
+                                    </button>
+                                    <button onclick="setLanguage('ru')" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center">
+                                        <span class="mr-3">🇷🇺</span>
+                                        <span>Русский</span>
+                                    </button>
+                                    <button onclick="setLanguage('hi')" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center">
+                                        <span class="mr-3">🇮🇳</span>
+                                        <span>हिन्दी</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                         
                         <!-- Theme Toggle -->
                         <button 
@@ -459,17 +507,325 @@
                 no_posts: "لا توجد منشورات حديثة",
                 start_creating: "ابدأ في إنشاء المحتوى لرؤية منشوراتك هنا",
                 posting: "جارٍ النشر..."
+            },
+            es: {
+                brand_title: "Creaciones Anónimas",
+                brand_subtitle: "Panel de Redes Sociales",
+                dashboard: "Panel",
+                analytics: "Análisis",
+                settings: "Configuración",
+                welcome: "Bienvenido",
+                logout: "Cerrar Sesión",
+                dark: "Oscuro",
+                light: "Claro",
+                total_posts: "Total de Publicaciones",
+                successful: "Exitosas",
+                failed: "Fallidas",
+                pending: "Pendientes",
+                create_post: "Crear Publicación",
+                content: "Contenido",
+                content_placeholder: "¿Qué estás pensando? Comparte tus ideas con el mundo...",
+                select_platforms: "Seleccionar Plataformas",
+                telegram: "Telegram",
+                instagram: "Instagram",
+                youtube: "YouTube",
+                tiktok: "TikTok",
+                facebook: "Facebook",
+                upload_media: "Subir Medios",
+                upload_file: "Subir archivo",
+                drag_drop: "o arrastra y suelta",
+                file_limit: "Imágenes o Videos hasta 10MB",
+                schedule: "Programar (Opcional)",
+                post_now: "Publicar Ahora",
+                recent_posts: "Publicaciones Recientes",
+                success: "Éxito",
+                no_posts: "No se encontraron publicaciones recientes",
+                start_creating: "Comienza a crear contenido para verlo aquí",
+                posting: "Publicando..."
+            },
+            fr: {
+                brand_title: "Créations Anonymes",
+                brand_subtitle: "Tableau de Bord Réseaux Sociaux",
+                dashboard: "Tableau de Bord",
+                analytics: "Analyses",
+                settings: "Paramètres",
+                welcome: "Bienvenue",
+                logout: "Déconnexion",
+                dark: "Sombre",
+                light: "Clair",
+                total_posts: "Total des Publications",
+                successful: "Réussies",
+                failed: "Échouées",
+                pending: "En Attente",
+                create_post: "Créer une Publication",
+                content: "Contenu",
+                content_placeholder: "À quoi pensez-vous ? Partagez vos idées avec le monde...",
+                select_platforms: "Sélectionner les Plateformes",
+                telegram: "Telegram",
+                instagram: "Instagram",
+                youtube: "YouTube",
+                tiktok: "TikTok",
+                facebook: "Facebook",
+                upload_media: "Télécharger des Médias",
+                upload_file: "Télécharger un fichier",
+                drag_drop: "ou glissez-déposez",
+                file_limit: "Images ou Vidéos jusqu'à 10MB",
+                schedule: "Programmer (Optionnel)",
+                post_now: "Publier Maintenant",
+                recent_posts: "Publications Récentes",
+                success: "Succès",
+                no_posts: "Aucune publication récente trouvée",
+                start_creating: "Commencez à créer du contenu pour le voir ici",
+                posting: "Publication en cours..."
+            },
+            de: {
+                brand_title: "Anonyme Kreationen",
+                brand_subtitle: "Social Media Dashboard",
+                dashboard: "Dashboard",
+                analytics: "Analysen",
+                settings: "Einstellungen",
+                welcome: "Willkommen",
+                logout: "Abmelden",
+                dark: "Dunkel",
+                light: "Hell",
+                total_posts: "Gesamte Beiträge",
+                successful: "Erfolgreich",
+                failed: "Fehlgeschlagen",
+                pending: "Ausstehend",
+                create_post: "Beitrag Erstellen",
+                content: "Inhalt",
+                content_placeholder: "Was denkst du? Teile deine Gedanken mit der Welt...",
+                select_platforms: "Plattformen Auswählen",
+                telegram: "Telegram",
+                instagram: "Instagram",
+                youtube: "YouTube",
+                tiktok: "TikTok",
+                facebook: "Facebook",
+                upload_media: "Medien Hochladen",
+                upload_file: "Datei hochladen",
+                drag_drop: "oder ziehen und ablegen",
+                file_limit: "Bilder oder Videos bis 10MB",
+                schedule: "Planen (Optional)",
+                post_now: "Jetzt Posten",
+                recent_posts: "Kürzliche Beiträge",
+                success: "Erfolg",
+                no_posts: "Keine kürzlichen Beiträge gefunden",
+                start_creating: "Beginne Inhalte zu erstellen, um sie hier zu sehen",
+                posting: "Wird gepostet..."
+            },
+            it: {
+                brand_title: "Creazioni Anonime",
+                brand_subtitle: "Dashboard Social Media",
+                dashboard: "Dashboard",
+                analytics: "Analytics",
+                settings: "Impostazioni",
+                welcome: "Benvenuto",
+                logout: "Logout",
+                dark: "Scuro",
+                light: "Chiaro",
+                total_posts: "Post Totali",
+                successful: "Riusciti",
+                failed: "Falliti",
+                pending: "In Sospeso",
+                create_post: "Crea Post",
+                content: "Contenuto",
+                content_placeholder: "A cosa stai pensando? Condividi i tuoi pensieri con il mondo...",
+                select_platforms: "Seleziona Piattaforme",
+                telegram: "Telegram",
+                instagram: "Instagram",
+                youtube: "YouTube",
+                tiktok: "TikTok",
+                facebook: "Facebook",
+                upload_media: "Carica Media",
+                upload_file: "Carica file",
+                drag_drop: "o trascina e rilascia",
+                file_limit: "Immagini o Video fino a 10MB",
+                schedule: "Programma (Opzionale)",
+                post_now: "Posta Ora",
+                recent_posts: "Post Recenti",
+                success: "Successo",
+                no_posts: "Nessun post recente trovato",
+                start_creating: "Inizia a creare contenuti per vederli qui",
+                posting: "Pubblicando..."
+            },
+            zh: {
+                brand_title: "匿名创作",
+                brand_subtitle: "社交媒体仪表板",
+                dashboard: "仪表板",
+                analytics: "分析",
+                settings: "设置",
+                welcome: "欢迎",
+                logout: "登出",
+                dark: "深色",
+                light: "浅色",
+                total_posts: "总帖子数",
+                successful: "成功",
+                failed: "失败",
+                pending: "待处理",
+                create_post: "创建帖子",
+                content: "内容",
+                content_placeholder: "你在想什么？与世界分享你的想法...",
+                select_platforms: "选择平台",
+                telegram: "电报",
+                instagram: "Instagram",
+                youtube: "YouTube",
+                tiktok: "抖音",
+                facebook: "Facebook",
+                upload_media: "上传媒体",
+                upload_file: "上传文件",
+                drag_drop: "或拖放",
+                file_limit: "图像或视频最大10MB",
+                schedule: "计划（可选）",
+                post_now: "立即发布",
+                recent_posts: "最近的帖子",
+                success: "成功",
+                no_posts: "未找到最近的帖子",
+                start_creating: "开始创建内容以在此处查看",
+                posting: "发布中..."
+            },
+            ja: {
+                brand_title: "匿名クリエーションズ",
+                brand_subtitle: "ソーシャルメディアダッシュボード",
+                dashboard: "ダッシュボード",
+                analytics: "分析",
+                settings: "設定",
+                welcome: "ようこそ",
+                logout: "ログアウト",
+                dark: "ダーク",
+                light: "ライト",
+                total_posts: "総投稿数",
+                successful: "成功",
+                failed: "失敗",
+                pending: "保留中",
+                create_post: "投稿を作成",
+                content: "コンテンツ",
+                content_placeholder: "何を考えていますか？あなたの考えを世界と共有しましょう...",
+                select_platforms: "プラットフォームを選択",
+                telegram: "テレグラム",
+                instagram: "インスタグラム",
+                youtube: "ユーチューブ",
+                tiktok: "ティックトック",
+                facebook: "フェイスブック",
+                upload_media: "メディアをアップロード",
+                upload_file: "ファイルをアップロード",
+                drag_drop: "またはドラッグ＆ドロップ",
+                file_limit: "画像または動画は10MBまで",
+                schedule: "スケジュール（オプション）",
+                post_now: "今すぐ投稿",
+                recent_posts: "最近の投稿",
+                success: "成功",
+                no_posts: "最近の投稿が見つかりません",
+                start_creating: "コンテンツの作成を開始してここで確認",
+                posting: "投稿中..."
+            },
+            ru: {
+                brand_title: "Анонимные Творения",
+                brand_subtitle: "Панель Социальных Сетей",
+                dashboard: "Панель",
+                analytics: "Аналитика",
+                settings: "Настройки",
+                welcome: "Добро пожаловать",
+                logout: "Выйти",
+                dark: "Тёмная",
+                light: "Светлая",
+                total_posts: "Всего Постов",
+                successful: "Успешные",
+                failed: "Неудачные",
+                pending: "Ожидающие",
+                create_post: "Создать Пост",
+                content: "Содержание",
+                content_placeholder: "О чём вы думаете? Поделитесь своими мыслями с миром...",
+                select_platforms: "Выберите Платформы",
+                telegram: "Телеграм",
+                instagram: "Инстаграм",
+                youtube: "Ютуб",
+                tiktok: "ТикТок",
+                facebook: "Фейсбук",
+                upload_media: "Загрузить Медиа",
+                upload_file: "Загрузить файл",
+                drag_drop: "или перетащите",
+                file_limit: "Изображения или Видео до 10МБ",
+                schedule: "Запланировать (Опционально)",
+                post_now: "Опубликовать Сейчас",
+                recent_posts: "Недавние Посты",
+                success: "Успех",
+                no_posts: "Недавние посты не найдены",
+                start_creating: "Начните создавать контент, чтобы увидеть его здесь",
+                posting: "Публикация..."
+            },
+            hi: {
+                brand_title: "गुमनाम रचनाएं",
+                brand_subtitle: "सोशल मीडिया डैशबोर्ड",
+                dashboard: "डैशबोर्ड",
+                analytics: "विश्लेषण",
+                settings: "सेटिंग्स",
+                welcome: "स्वागत",
+                logout: "लॉगआउट",
+                dark: "डार्क",
+                light: "लाइट",
+                total_posts: "कुल पोस्ट",
+                successful: "सफल",
+                failed: "असफल",
+                pending: "लंबित",
+                create_post: "पोस्ट बनाएं",
+                content: "सामग्री",
+                content_placeholder: "आप क्या सोच रहे हैं? दुनिया के साथ अपने विचार साझा करें...",
+                select_platforms: "प्लेटफॉर्म चुनें",
+                telegram: "टेलीग्राम",
+                instagram: "इंस्टाग्राम",
+                youtube: "यूट्यूब",
+                tiktok: "टिकटॉक",
+                facebook: "फेसबुक",
+                upload_media: "मीडिया अपलोड करें",
+                upload_file: "फाइल अपलोड करें",
+                drag_drop: "या खींचें और छोड़ें",
+                file_limit: "छवियां या वीडियो 10MB तक",
+                schedule: "शेड्यूल (वैकल्पिक)",
+                post_now: "अभी पोस्ट करें",
+                recent_posts: "हाल की पोस्ट",
+                success: "सफलता",
+                no_posts: "कोई हाल की पोस्ट नहीं मिली",
+                start_creating: "यहां देखने के लिए सामग्री बनाना शुरू करें",
+                posting: "पोस्ट हो रहा है..."
             }
         };
 
         let currentLang = localStorage.getItem('language') || 'en';
         let currentTheme = localStorage.getItem('theme') || 'light';
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'ar' : 'en';
+        const languageInfo = {
+            en: { flag: '🇺🇸', name: 'EN', fullName: 'English', direction: 'ltr' },
+            ar: { flag: '🇵🇸', name: 'العربية', fullName: 'العربية', direction: 'rtl' },
+            es: { flag: '🇪🇸', name: 'ES', fullName: 'Español', direction: 'ltr' },
+            fr: { flag: '🇫🇷', name: 'FR', fullName: 'Français', direction: 'ltr' },
+            de: { flag: '🇩🇪', name: 'DE', fullName: 'Deutsch', direction: 'ltr' },
+            it: { flag: '🇮🇹', name: 'IT', fullName: 'Italiano', direction: 'ltr' },
+            zh: { flag: '🇨🇳', name: '中文', fullName: '中文', direction: 'ltr' },
+            ja: { flag: '🇯🇵', name: 'JP', fullName: '日本語', direction: 'ltr' },
+            ru: { flag: '🇷🇺', name: 'RU', fullName: 'Русский', direction: 'ltr' },
+            hi: { flag: '🇮🇳', name: 'HI', fullName: 'हिन्दी', direction: 'ltr' }
+        };
+
+        function toggleLanguageDropdown() {
+            const dropdown = document.getElementById('language-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
             localStorage.setItem('language', currentLang);
             updateLanguage();
+            document.getElementById('language-dropdown').classList.add('hidden');
         }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('language-dropdown');
+            const button = document.getElementById('lang-button');
+            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
 
         function toggleTheme() {
             currentTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -483,28 +839,32 @@
             const langIcon = document.getElementById('lang-icon');
             const langText = document.getElementById('lang-text');
             
+            const langInfo = languageInfo[currentLang] || languageInfo['en'];
+            
+            // Set direction and language
+            html.dir = langInfo.direction;
+            html.lang = currentLang;
+            
+            // Update font classes
             if (currentLang === 'ar') {
-                html.dir = 'rtl';
-                html.lang = 'ar';
                 html.className = html.className.replace('font-english', '').replace('font-arabic', '') + ' font-arabic';
                 body.classList.add('font-arabic');
                 body.classList.remove('font-english');
-                if (langIcon) langIcon.textContent = '🇵🇸';
-                if (langText) langText.textContent = 'العربية';
-                
-                // Add RTL styles
-                document.documentElement.style.direction = 'rtl';
-                document.body.style.textAlign = 'right';
             } else {
-                html.dir = 'ltr';
-                html.lang = 'en';
                 html.className = html.className.replace('font-arabic', '').replace('font-english', '') + ' font-english';
                 body.classList.add('font-english');
                 body.classList.remove('font-arabic');
-                if (langIcon) langIcon.textContent = '🇺🇸';
-                if (langText) langText.textContent = 'EN';
-                
-                // Remove RTL styles
+            }
+            
+            // Update language indicator
+            if (langIcon) langIcon.textContent = langInfo.flag;
+            if (langText) langText.textContent = langInfo.name;
+            
+            // Set text direction styles
+            if (langInfo.direction === 'rtl') {
+                document.documentElement.style.direction = 'rtl';
+                document.body.style.textAlign = 'right';
+            } else {
                 document.documentElement.style.direction = 'ltr';
                 document.body.style.textAlign = 'left';
             }
