@@ -34,12 +34,18 @@ class SocialMediaManager:
             print(f"Telegram posting - Content: {content[:50]}...")
             print(f"File path: {file_path}")
             print(f"File type: {file_type}")
-            print(f"File exists: {os.path.exists(file_path) if file_path else 'No file'}")
             
             # Handle media posting
-            if file_path and file_type and os.path.exists(file_path):
+            if file_path and file_type:
+                if not os.path.exists(file_path):
+                    return False, f"Media file not found: {file_path}"
+                
                 abs_file_path = os.path.abspath(file_path)
                 file_size = os.path.getsize(abs_file_path)
+                
+                if file_size == 0:
+                    return False, "Media file is empty"
+                
                 print(f"Telegram: Processing media file {abs_file_path} (type: {file_type}, size: {file_size} bytes)")
                 
                 if not self.telegram_token:
@@ -111,20 +117,27 @@ class SocialMediaManager:
         """Post to Instagram with proper media handling"""
         try:
             # Instagram requires media content
-            if not file_path or not os.path.exists(file_path):
+            if not file_path:
                 return False, "Instagram requires media (image/video) content"
+            
+            if not os.path.exists(file_path):
+                return False, f"Media file not found: {file_path}"
             
             abs_file_path = os.path.abspath(file_path)
             file_size = os.path.getsize(abs_file_path)
+            
+            if file_size == 0:
+                return False, "Media file is empty"
+                
             print(f"Instagram: Processing media {abs_file_path} (type: {file_type}, size: {file_size} bytes)")
             
             if not self.instagram_token or not self.instagram_account_id:
                 # Simulate processing with detailed feedback
                 await asyncio.sleep(1.5)
                 if file_type == "image":
-                    return True, f"✅ Posted image to Instagram ({file_size} bytes processed) [TEST MODE]"
+                    return True, f"✅ Posted image to Instagram ({file_size} bytes) [TEST MODE]"
                 elif file_type == "video":
-                    return True, f"✅ Posted video to Instagram ({file_size} bytes processed) [TEST MODE]"
+                    return True, f"✅ Posted video to Instagram ({file_size} bytes) [TEST MODE]"
                 else:
                     return False, f"Unsupported media type: {file_type}"
             
@@ -198,9 +211,16 @@ class SocialMediaManager:
         """Post to Facebook with proper media handling"""
         try:
             # Handle media processing
-            if file_path and file_type and os.path.exists(file_path):
+            if file_path and file_type:
+                if not os.path.exists(file_path):
+                    return False, f"Media file not found: {file_path}"
+                
                 abs_file_path = os.path.abspath(file_path)
                 file_size = os.path.getsize(abs_file_path)
+                
+                if file_size == 0:
+                    return False, "Media file is empty"
+                    
                 print(f"Facebook: Processing media {abs_file_path} (type: {file_type}, size: {file_size} bytes)")
                 
                 if not self.facebook_access_token:

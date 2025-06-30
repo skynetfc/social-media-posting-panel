@@ -267,85 +267,79 @@ async def create_post(
                 content={"success": False, "message": "At least one platform must be selected"}
             )
         
-        # Handle file upload
+        # Handle file upload with improved error handling
         file_path = None
         file_type = None
         
-        print(f"File upload debug - File object: {file}")
-        print(f"File filename: {file.filename if file else 'No file'}")
-        print(f"File size: {file.size if file else 'No size'}")
-        
-        if file and hasattr(file, 'filename') and file.filename and file.filename.strip():
-            print(f"Processing file upload: {file.filename}")
-            
-            # Read file content first
-            file_content = await file.read()
-            file_size = len(file_content)
-            
-            if file_size == 0:
-                return JSONResponse(
-                    status_code=400,
-                    content={"success": False, "message": "Uploaded file is empty"}
-                )
-            
-            print(f"File size: {file_size} bytes")
-            
-            # Create a temporary file object for validation
-            class TempFile:
-                def __init__(self, filename, size):
-                    self.filename = filename
-                    self.size = size
-            
-            temp_file = TempFile(file.filename, file_size)
-            is_valid, error_msg, detected_type = validate_file(temp_file)
-            
-            if not is_valid:
-                print(f"File validation failed: {error_msg}")
-                return JSONResponse(
-                    status_code=400,
-                    content={"success": False, "message": error_msg}
-                )
-            
-            # Save file
-            file_extension = file.filename.split('.')[-1].lower()
-            unique_filename = f"{uuid.uuid4()}.{file_extension}"
-            file_path = f"uploads/{unique_filename}"
-            file_type = detected_type
-            
-            print(f"Saving file as: {file_path} (type: {file_type})")
-            
+        if file and file.filename and file.filename.strip():
             try:
+                print(f"Processing file upload: {file.filename}")
+                
+                # Read file content
+                file_content = await file.read()
+                file_size = len(file_content)
+                
+                print(f"File read successfully: {file_size} bytes")
+                
+                if file_size == 0:
+                    return JSONResponse(
+                        status_code=400,
+                        content={"success": False, "message": "Uploaded file is empty"}
+                    )
+                
+                # Validate file type and size
+                file_ext = file.filename.split('.')[-1].lower()
+                
+                if file_ext in ALLOWED_EXTENSIONS['image']:
+                    file_type = "image"
+                elif file_ext in ALLOWED_EXTENSIONS['video']:
+                    file_type = "video"
+                else:
+                    return JSONResponse(
+                        status_code=400,
+                        content={"success": False, "message": f"File type .{file_ext} not supported. Use: {', '.join(ALLOWED_EXTENSIONS['image'] + ALLOWED_EXTENSIONS['video'])}"}
+                    )
+                
+                if file_size > MAX_FILE_SIZE:
+                    return JSONResponse(
+                        status_code=400,
+                        content={"success": False, "message": f"File size ({file_size} bytes) exceeds 10MB limit"}
+                    )
+                
+                # Generate unique filename and save
+                unique_filename = f"{uuid.uuid4()}.{file_ext}"
+                file_path = f"uploads/{unique_filename}"
+                
                 # Ensure uploads directory exists
                 os.makedirs("uploads", exist_ok=True)
                 
-                # Save the file content
+                # Save file
                 with open(file_path, "wb") as buffer:
                     buffer.write(file_content)
                 
-                # Verify file was saved
-                if not os.path.exists(file_path):
-                    raise Exception("File upload failed - file not saved properly")
+                # Verify file was saved correctly
+                if not os.path.exists(file_path) or os.path.getsize(file_path) != file_size:
+                    raise Exception("File save verification failed")
                 
-                saved_size = os.path.getsize(file_path)
-                if saved_size == 0:
-                    raise Exception("File upload failed - saved file is empty")
+                print(f"File saved successfully: {file_path} ({file_size} bytes, type: {file_type})")
                 
-                print(f"File saved successfully: {file_path} ({saved_size} bytes)")
-                    
             except Exception as e:
                 print(f"File upload error: {e}")
-                # Clean up failed upload
-                if os.path.exists(file_path):
+                # Clean up any partial file
+                if file_path and os.path.exists(file_path):
                     try:
                         os.remove(file_path)
                     except:
                         pass
+                    file_path = None
+                    file_type = None
+                
                 return JSONResponse(
                     status_code=500,
                     content={"success": False, "message": f"File upload failed: {str(e)}"}
                 )
         else:
-            print("No valid file provided for upload")
+            print("No file provided for upload")
         
         # Create post log
         post_log = PostLog(
