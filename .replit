@@ -5,7 +5,7 @@ channel = "stable-24_05"
 packages = ["cargo", "libiconv", "rustc"]
 
 [workflows]
-runButton = "Project"
+runButton = "Run Dashboard"
 
 [[workflows.workflow]]
 name = "Run Dashboard"

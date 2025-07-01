@@ -4,6 +4,105 @@
 let currentLang = localStorage.getItem('language') || 'en';
 let currentTheme = localStorage.getItem('theme') || 'light';
 
+// Language translations
+const translations = {
+    en: {
+        brand_title: "Anonymous Creations",
+        brand_subtitle: "Social Media Dashboard",
+        dashboard: "Dashboard",
+        analytics: "Analytics",
+        settings: "Settings",
+        welcome: "Welcome",
+        logout: "Logout",
+        dark: "Dark",
+        light: "Light",
+        total_posts: "Total Posts",
+        successful: "Successful",
+        failed: "Failed",
+        pending: "Pending",
+        create_post: "Create Post",
+        content: "Content",
+        content_placeholder: "What's on your mind? Share your thoughts with the world...",
+        select_platforms: "Select Platforms",
+        telegram: "Telegram",
+        instagram: "Instagram",
+        youtube: "YouTube",
+        tiktok: "TikTok",
+        facebook: "Facebook",
+        twitter: "Twitter",
+        linkedin: "LinkedIn",
+        snapchat: "Snapchat",
+        pinterest: "Pinterest",
+        reddit: "Reddit",
+        discord: "Discord",
+        whatsapp: "WhatsApp",
+        threads: "Threads",
+        medium: "Medium",
+        tumblr: "Tumblr",
+        upload_media: "Upload Media",
+        upload_file: "Upload a file",
+        drag_drop: "or drag and drop",
+        file_limit: "Images or Videos up to 10MB",
+        schedule: "Schedule (Optional)",
+        post_now: "Post Now",
+        recent_posts: "Recent Posts",
+        success: "Success",
+        no_posts: "No recent posts found",
+        start_creating: "Start creating content to see your posts here",
+        posting: "Posting..."
+    },
+    ar: {
+        brand_title: "إبداعات مجهولة",
+        brand_subtitle: "لوحة تحكم وسائل التواصل",
+        dashboard: "لوحة التحكم",
+        analytics: "التحليلات",
+        settings: "الإعدادات",
+        welcome: "مرحباً",
+        logout: "تسجيل الخروج",
+        dark: "مظلم",
+        light: "فاتح",
+        total_posts: "إجمالي المنشورات",
+        successful: "نجح",
+        failed: "فشل",
+        pending: "قيد الانتظار",
+        create_post: "إنشاء منشور",
+        content: "المحتوى",
+        content_placeholder: "ما الذي تفكر به؟ شارك أفكارك مع العالم...",
+        select_platforms: "اختر المنصات",
+        telegram: "تيليجرام",
+        instagram: "انستجرام",
+        youtube: "يوتيوب",
+        tiktok: "تيك توك",
+        facebook: "فيسبوك",
+        twitter: "تويتر",
+        linkedin: "لينكد إن",
+        snapchat: "سناب شات",
+        pinterest: "بينتيريست",
+        reddit: "ريديت",
+        discord: "ديسكورد",
+        whatsapp: "واتساب",
+        threads: "ثريدز",
+        medium: "ميديوم",
+        tumblr: "تمبلر",
+        upload_media: "رفع الوسائط",
+        upload_file: "رفع ملف",
+        drag_drop: "أو اسحب وأفلت",
+        file_limit: "صور أو فيديوهات حتى 10 ميجابايت",
+        schedule: "الجدولة (اختياري)",
+        post_now: "انشر الآن",
+        recent_posts: "المنشورات الأخيرة",
+        success: "نجح",
+        no_posts: "لا توجد منشورات حديثة",
+        start_creating: "ابدأ في إنشاء المحتوى لرؤية منشوراتك هنا",
+        posting: "جارٍ النشر..."
+    }
+};
+
+const languageInfo = {
+    en: { flag: '🇺🇸', name: 'EN', fullName: 'English', direction: 'ltr' },
+    ar: { flag: '🇵🇸', name: 'العربية', fullName: 'العربية', direction: 'rtl' }
+};
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Initializing Dashboard...');
@@ -14,6 +113,33 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeFileUpload();
     loadDraft();
     console.log('Dashboard initialized successfully');
+});
+
+// Language dropdown functions
+function toggleLanguageDropdown() {
+    const dropdown = document.getElementById('language-dropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('hidden');
+    }
+}
+
+function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('language', currentLang);
+    updateLanguage();
+    const dropdown = document.getElementById('language-dropdown');
+    if (dropdown) {
+        dropdown.classList.add('hidden');
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('language-dropdown');
+    const button = document.getElementById('lang-button');
+    if (dropdown && button && !button.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.add('hidden');
+    }
 });
 
 // Language and theme management
@@ -32,19 +158,18 @@ function updateTheme() {
     if (currentTheme === 'dark') {
         html.classList.add('dark');
         if (themeIcon) themeIcon.className = 'fas fa-sun text-sm';
-        if (themeText) themeText.textContent = 'Light';
+        if (themeText) {
+            themeText.textContent = translations[currentLang]['light'] || 'Light';
+            themeText.setAttribute('data-translate', 'light');
+        }
     } else {
         html.classList.remove('dark');
         if (themeIcon) themeIcon.className = 'fas fa-moon text-sm';
-        if (themeText) themeText.textContent = 'Dark';
+        if (themeText) {
+            themeText.textContent = translations[currentLang]['dark'] || 'Dark';
+            themeText.setAttribute('data-translate', 'dark');
+        }
     }
-}
-
-function toggleLanguage() {
-    currentLang = currentLang === 'en' ? 'ar' : 'en';
-    localStorage.setItem('language', currentLang);
-    updateLanguage();
-    console.log('Language toggled to:', currentLang);
 }
 
 function updateLanguage() {
@@ -53,25 +178,64 @@ function updateLanguage() {
     const langIcon = document.getElementById('lang-icon');
     const langText = document.getElementById('lang-text');
 
+    const langInfo = languageInfo[currentLang] || languageInfo['en'];
+
+    // Set direction and language
+    html.dir = langInfo.direction;
+    html.lang = currentLang;
+
+    // Update font classes
     if (currentLang === 'ar') {
-        html.dir = 'rtl';
-        html.lang = 'ar';
+        html.className = html.className.replace('font-english', '').replace('font-arabic', '') + ' font-arabic';
         if (body) {
             body.classList.add('font-arabic');
             body.classList.remove('font-english');
         }
-        if (langIcon) langIcon.textContent = '🇵🇸';
-        if (langText) langText.textContent = 'العربية';
     } else {
-        html.dir = 'ltr';
-        html.lang = 'en';
+        html.className = html.className.replace('font-arabic', '').replace('font-english', '') + ' font-english';
         if (body) {
             body.classList.add('font-english');
             body.classList.remove('font-arabic');
         }
-        if (langIcon) langIcon.textContent = '🇺🇸';
-        if (langText) langText.textContent = 'EN';
     }
+
+    // Update language indicator
+    if (langIcon) langIcon.textContent = langInfo.flag;
+    if (langText) langText.textContent = langInfo.name;
+
+    // Set text direction styles
+    if (langInfo.direction === 'rtl') {
+        document.documentElement.style.direction = 'rtl';
+        document.body.style.textAlign = 'right';
+    } else {
+        document.documentElement.style.direction = 'ltr';
+        document.body.style.textAlign = 'left';
+    }
+
+    // Update all translatable elements
+    document.querySelectorAll('[data-translate]').forEach(element => {
+        const key = element.getAttribute('data-translate');
+        if (translations[currentLang] && translations[currentLang][key]) {
+            element.textContent = translations[currentLang][key];
+        }
+    });
+
+    // Update placeholders
+    document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+        const key = element.getAttribute('data-translate-placeholder');
+        if (translations[currentLang] && translations[currentLang][key]) {
+            element.placeholder = translations[currentLang][key];
+        }
+    });
+
+    // Update submit button text
+    const submitText = document.getElementById('submitText');
+    if (submitText) {
+        submitText.textContent = translations[currentLang]['post_now'] || 'Post Now';
+    }
+
+    // Update theme text
+    updateTheme();
 }
 
 // Platform selection handling
@@ -84,23 +248,32 @@ function initializePlatformSelection() {
         const checkIcon = card.querySelector('.platform-check');
 
         if (checkbox && label) {
+            // Remove any existing event listeners
+            card.replaceWith(card.cloneNode(true));
+
+            // Get the new card reference after cloning
+            const newCard = document.querySelector(`label[for="${checkbox.id}"]`).closest('.platform-card');
+            const newCheckbox = newCard.querySelector('input[type="checkbox"]');
+            const newLabel = newCard.querySelector('label');
+
             // Handle click on the entire card
-            card.addEventListener('click', function(e) {
+            newCard.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
 
-                checkbox.checked = !checkbox.checked;
-                updatePlatformCardAppearance(card, checkbox.checked);
-                console.log('Platform toggled:', checkbox.value, checkbox.checked);
+                newCheckbox.checked = !newCheckbox.checked;
+                updatePlatformCardAppearance(newCard, newCheckbox.checked);
+                console.log('Platform toggled:', newCheckbox.value, newCheckbox.checked);
             });
 
             // Handle direct checkbox change
-            checkbox.addEventListener('change', function() {
-                updatePlatformCardAppearance(card, this.checked);
+            newCheckbox.addEventListener('change', function(e) {
+                e.stopPropagation();
+                updatePlatformCardAppearance(newCard, this.checked);
             });
 
             // Initialize appearance
-            updatePlatformCardAppearance(card, checkbox.checked);
+            updatePlatformCardAppearance(newCard, newCheckbox.checked);
         }
     });
 }
@@ -179,6 +352,7 @@ function initializeFileUpload() {
 function handleFileSelect(event) {
     const file = event.target.files[0];
     const filePreview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
     const fileInfo = document.getElementById('fileInfo');
 
     if (!file) {
@@ -200,8 +374,13 @@ function handleFileSelect(event) {
         return;
     }
 
+    // Show file name and size
+    if (fileName) {
+        fileName.textContent = `${file.name} (${formatFileSize(file.size)})`;
+    }
+
     // Show preview
-    if (filePreview && fileInfo) {
+    if (fileInfo) {
         const reader = new FileReader();
 
         reader.onload = function(e) {
@@ -209,32 +388,34 @@ function handleFileSelect(event) {
 
             if (fileType === 'image') {
                 fileInfo.innerHTML = `
-                    <div class="flex items-center space-x-3">
+                    <div class="flex items-center space-x-3 mt-2">
                         <img src="${e.target.result}" class="w-16 h-16 object-cover rounded-lg" alt="Preview">
                         <div>
-                            <p class="font-medium text-gray-900 dark:text-white">${file.name}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">${formatFileSize(file.size)}</p>
+                            <p class="font-medium text-gray-900 dark:text-white text-sm">${file.name}</p>
+                            <p class="text-xs text-gray-600 dark:text-gray-400">${formatFileSize(file.size)} • Image</p>
                         </div>
                     </div>
                 `;
             } else {
                 fileInfo.innerHTML = `
-                    <div class="flex items-center space-x-3">
+                    <div class="flex items-center space-x-3 mt-2">
                         <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
                             <i class="fas fa-video text-2xl text-gray-600 dark:text-gray-400"></i>
                         </div>
                         <div>
-                            <p class="font-medium text-gray-900 dark:text-white">${file.name}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">${formatFileSize(file.size)}</p>
+                            <p class="font-medium text-gray-900 dark:text-white text-sm">${file.name}</p>
+                            <p class="text-xs text-gray-600 dark:text-gray-400">${formatFileSize(file.size)} • Video</p>
                         </div>
                     </div>
                 `;
             }
-
-            filePreview.classList.remove('hidden');
         };
 
         reader.readAsDataURL(file);
+    }
+
+    if (filePreview) {
+        filePreview.classList.remove('hidden');
     }
 
     console.log('File selected:', file.name, formatFileSize(file.size));
@@ -243,9 +424,11 @@ function handleFileSelect(event) {
 function clearFilePreview() {
     const fileInput = document.getElementById('media');
     const filePreview = document.getElementById('filePreview');
+    const fileInfo = document.getElementById('fileInfo');
 
     if (fileInput) fileInput.value = '';
     if (filePreview) filePreview.classList.add('hidden');
+    if (fileInfo) fileInfo.innerHTML = '';
 
     console.log('File preview cleared');
 }
@@ -291,12 +474,15 @@ function initializeFormHandlers() {
 
 async function submitPost(formData) {
     const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const submitSpinner = document.getElementById('submitSpinner');
 
     try {
         // Show loading state
         if (submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Publishing...';
+            if (submitText) submitText.textContent = translations[currentLang]['posting'] || 'Posting...';
+            if (submitSpinner) submitSpinner.classList.remove('hidden');
         }
 
         const response = await fetch('/post', {
@@ -329,6 +515,9 @@ async function submitPost(formData) {
                 }
             });
 
+            // Refresh page to update stats
+            setTimeout(() => location.reload(), 1000);
+
         } else {
             Swal.fire({
                 icon: 'error',
@@ -352,7 +541,8 @@ async function submitPost(formData) {
         // Reset button state
         if (submitBtn) {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Publish Post';
+            if (submitText) submitText.textContent = translations[currentLang]['post_now'] || 'Post Now';
+            if (submitSpinner) submitSpinner.classList.add('hidden');
         }
     }
 }
@@ -445,20 +635,9 @@ function toggleMobileMenu() {
     }
 }
 
-// Utility functions
-function showToast(message, type = 'info') {
-    const toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true
-    });
-
-    toast.fire({
-        icon: type,
-        title: message
-    });
+// Utility function to get translation
+function t(key) {
+    return translations[currentLang][key] || key;
 }
 
 // Initialize all functionality when DOM is loaded
@@ -768,7 +947,7 @@ function enhanceMobileModals() {
     const modals = document.querySelectorAll('[id*="Modal"]');
     modals.forEach(modal => {
         const content = modal.querySelector('div');
-        if (content && window.innerWidth < 768) {
+                if (content && window.innerWidth < 768) {
             content.classList.add('modal-content');
         }
     });
@@ -889,11 +1068,4 @@ const platformIcons_all = {
     tumblr: 'fab fa-tumblr'
 };
 
-// Initialize app on page load
-// document.addEventListener('DOMContentLoaded', function() {
-//     updateLanguage();
-//     updateTheme();
-//     console.log('Anonymous Creations Dashboard initialized');
-// });
-
-console.log('Anonymous Creations Dashboard initialized');
+console.log('Anonymous Creations Dashboard JavaScript loaded');

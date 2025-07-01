@@ -890,8 +890,7 @@ async def analytics_page(
         total_comments = sum(getattr(post, 'comments', 0) or 0 for post in posts)
         total_clicks = sum(getattr(post, 'clicks', 0) or 0 for post in posts)
         total_reach = sum(getattr(post, 'reach', 0) or 0 for post in posts)
-        total_impressions = sum(```python
-getattr(post, 'impressions', 0) or 0 for post in posts)
+        total_impressions = sum(getattr(post, 'impressions', 0) or 0 for post in posts)
 
         # Calculate engagement rate
         avg_engagement_rate = sum(getattr(post, 'engagement_rate', 0) or 0 for post in posts) / len(posts) if posts else 0
