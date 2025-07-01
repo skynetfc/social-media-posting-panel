@@ -64,7 +64,7 @@
                             <span id="lang-icon" class="text-sm">🇺🇸</span>
                             <span class="ml-2 text-sm font-medium" id="lang-text">EN</span>
                         </button>
-                        
+
                         <!-- Theme Toggle -->
                         <button 
                             onclick="toggleTheme()" 
@@ -74,7 +74,7 @@
                             <i id="theme-icon" class="fas fa-moon text-sm"></i>
                             <span class="ml-2 text-sm font-medium" id="theme-text">Dark</span>
                         </button>
-                        
+
                         <span class="text-sm text-gray-600 dark:text-gray-400">Welcome, {{ user.username }}</span>
                         <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
                             <i class="fas fa-sign-out-alt mr-2"></i>Logout
@@ -435,7 +435,7 @@
                                 Enable
                             </button>
                         </div>
-                        
+
                         <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
                             <div>
                                 <h4 class="font-medium text-gray-900 dark:text-white">Session Timeout</h4>
@@ -443,7 +443,7 @@
                             </div>
                             <span class="text-sm text-green-600 dark:text-green-400">Active</span>
                         </div>
-                        
+
                         <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
                             <div>
                                 <h4 class="font-medium text-gray-900 dark:text-white">Password Encryption</h4>
@@ -485,12 +485,11 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
                             <div class="flex items-center">
                                 <i class="fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-400 mr-2"></i>
-                                <p class="text-sm text-yellow-800 dark:text-yellow-200">
-                                    API keys are managed through environment variables for security
+                                <p class="text-sm text-yellow-800 dark:text-yellow-200">                                    API keys are managed through environment variables for security
                                 </p>
                             </div>
                         </div>
@@ -791,7 +790,7 @@
             const html = document.documentElement;
             const themeIcon = document.getElementById('theme-icon');
             const themeText = document.getElementById('theme-text');
-            
+
             if (currentTheme === 'dark') {
                 html.classList.add('dark');
                 if (themeIcon) themeIcon.className = 'fas fa-sun text-sm';
@@ -814,7 +813,7 @@
             const body = document.body;
             const langIcon = document.getElementById('lang-icon');
             const langText = document.getElementById('lang-text');
-            
+
             if (currentLang === 'ar') {
                 html.dir = 'rtl';
                 html.lang = 'ar';
@@ -837,7 +836,7 @@
             const value = type === 'rate-limit' ? 
                 document.getElementById('api-rate-limit').value : 
                 document.getElementById('api-version').value;
-            
+
             showLoading('Saving API setting...');
             setTimeout(() => {
                 Swal.fire({
@@ -854,7 +853,7 @@
             const value = type === 'file-size' ? 
                 document.getElementById('max-file-size').value : 
                 document.getElementById('allowed-types').value;
-            
+
             showLoading('Saving system setting...');
             setTimeout(() => {
                 Swal.fire({
@@ -871,7 +870,7 @@
             const value = type === 'concurrent' ? 
                 document.getElementById('concurrent-posts').value : 
                 document.getElementById('cache-duration').value;
-            
+
             showLoading('Saving performance setting...');
             setTimeout(() => {
                 Swal.fire({

@@ -1,62 +1,22 @@
 
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+#!/usr/bin/env python3
+"""
+Database migration script to add missing columns to existing tables
+"""
+
+import sqlite3
 import os
+from datetime import datetime
 
-# Database URL - Use SQLite for reliability
-DATABASE_URL = "sqlite:///./dashboard.db"
-print(f"Using database: {DATABASE_URL}")
-
-# Create engine with proper configuration
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False},
-    pool_pre_ping=True,
-    pool_recycle=300
-)
-
-# Session
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Base class
-Base = declarative_base()
-
-def get_db():
-    """Database dependency"""
-    db = SessionLocal()
-    try:
-        yield db
-    except Exception as e:
-        print(f"Database error: {e}")
-        db.rollback()
-        raise
-    finally:
-        db.close()
-
-def init_db():
-    """Initialize database"""
-    try:
-        from models import User, PostLog
-        
-        # Run migration first for existing databases
-        migrate_existing_db()
-        
-        # Create all tables
-        Base.metadata.create_all(bind=engine)
-        print("Database initialized successfully")
-    except Exception as e:
-        print(f"Database initialization error: {e}")
-
-def migrate_existing_db():
-    """Migrate existing database to add missing columns"""
-    import sqlite3
-    import os
-    
+def migrate_database():
+    """Add missing columns to the database"""
     db_path = "dashboard.db"
     
     if not os.path.exists(db_path):
+        print("Database doesn't exist, will be created on startup")
         return
+    
+    print("🔄 Starting database migration...")
     
     try:
         conn = sqlite3.connect(db_path)
@@ -69,7 +29,7 @@ def migrate_existing_db():
         # Analytics columns to add
         analytics_columns = [
             ("views", "INTEGER DEFAULT 0"),
-            ("likes", "INTEGER DEFAULT 0"), 
+            ("likes", "INTEGER DEFAULT 0"),
             ("shares", "INTEGER DEFAULT 0"),
             ("comments", "INTEGER DEFAULT 0"),
             ("clicks", "INTEGER DEFAULT 0"),
@@ -95,17 +55,25 @@ def migrate_existing_db():
             if column_name not in columns:
                 try:
                     cursor.execute(f"ALTER TABLE post_logs ADD COLUMN {column_name} {column_type}")
-                    print(f"✅ Added missing column: {column_name}")
+                    print(f"✅ Added column: {column_name}")
                 except sqlite3.OperationalError as e:
                     if "duplicate column name" not in str(e):
                         print(f"❌ Error adding column {column_name}: {e}")
+                    else:
+                        print(f"⚠️ Column {column_name} already exists")
+            else:
+                print(f"⚠️ Column {column_name} already exists")
         
         conn.commit()
+        print("✅ Database migration completed successfully!")
         
     except Exception as e:
-        print(f"Migration error: {e}")
+        print(f"❌ Migration error: {e}")
         if conn:
             conn.rollback()
     finally:
         if conn:
             conn.close()
+
+if __name__ == "__main__":
+    migrate_database()
