@@ -15,7 +15,7 @@ function updateTheme() {
     const html = document.documentElement;
     const themeIcon = document.getElementById('theme-icon');
     const themeText = document.getElementById('theme-text');
-    
+
     if (currentTheme === 'dark') {
         html.classList.add('dark');
         if (themeIcon) themeIcon.className = 'fas fa-sun text-sm';
@@ -49,19 +49,19 @@ function updateLanguage() {
     const body = document.getElementById('body-root');
     const langIcon = document.getElementById('lang-icon');
     const langText = document.getElementById('lang-text');
-    
+
     const languageInfo = {
         en: { flag: '🇺🇸', name: 'EN', direction: 'ltr' },
         ar: { flag: '🇵🇸', name: 'العربية', direction: 'rtl' }
     };
-    
+
     const langInfo = languageInfo[currentLang] || languageInfo['en'];
-    
+
     if (html) {
         html.dir = langInfo.direction;
         html.lang = currentLang;
     }
-    
+
     if (currentLang === 'ar') {
         if (body) {
             body.classList.add('font-arabic');
@@ -73,7 +73,7 @@ function updateLanguage() {
             body.classList.remove('font-arabic');
         }
     }
-    
+
     if (langIcon) langIcon.textContent = langInfo.flag;
     if (langText) langText.textContent = langInfo.name;
 }
@@ -118,26 +118,26 @@ function showToast(message, type = 'info') {
 function validateFile(file) {
     const maxSize = 10 * 1024 * 1024; // 10MB
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/mov', 'video/avi', 'video/mkv', 'video/webm'];
-    
+
     if (file.size > maxSize) {
         return { valid: false, message: t('file_too_large') };
     }
-    
+
     if (!allowedTypes.includes(file.type)) {
         return { valid: false, message: t('invalid_file') };
     }
-    
+
     return { valid: true, message: '' };
 }
 
 // Format file size
 function formatFileSize(bytes) {
     if (bytes === 0) return '0 Bytes';
-    
+
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
+
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
@@ -173,7 +173,7 @@ const platformColors = {
 function createPlatformBadge(platform) {
     const icon = platformIcons[platform] || 'fas fa-globe';
     const color = platformColors[platform] || 'text-gray-500';
-    
+
     return `
         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
             <i class="${icon} ${color} mr-1"></i>
@@ -208,16 +208,16 @@ async function apiCall(url, options = {}) {
             'Content-Type': 'application/json',
         },
     };
-    
+
     const config = { ...defaultOptions, ...options };
-    
+
     try {
         const response = await fetch(url, config);
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         return await response.json();
     } catch (error) {
         console.error('API call failed:', error);
@@ -229,7 +229,7 @@ async function apiCall(url, options = {}) {
 function serializeForm(form) {
     const formData = new FormData(form);
     const data = {};
-    
+
     for (let [key, value] of formData.entries()) {
         if (data[key]) {
             if (Array.isArray(data[key])) {
@@ -241,7 +241,7 @@ function serializeForm(form) {
             data[key] = value;
         }
     }
-    
+
     return data;
 }
 
@@ -249,13 +249,13 @@ function resetForm(formId) {
     const form = document.getElementById(formId);
     if (form) {
         form.reset();
-        
+
         // Clear any custom file previews
         const filePreview = document.getElementById('filePreview');
         if (filePreview) {
             filePreview.classList.add('hidden');
         }
-        
+
         // Reset any error states
         form.querySelectorAll('.form-error').forEach(el => {
             el.classList.remove('form-error');
@@ -267,7 +267,7 @@ function resetForm(formId) {
 function setLoading(elementId, loading = true) {
     const element = document.getElementById(elementId);
     if (!element) return;
-    
+
     if (loading) {
         element.disabled = true;
         const originalText = element.textContent;
@@ -319,7 +319,7 @@ document.addEventListener('keydown', function(e) {
             postForm.dispatchEvent(new Event('submit'));
         }
     }
-    
+
     // Escape to close modals (handled by SweetAlert2)
     if (e.key === 'Escape') {
         Swal.close();
@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (contentEl) {
         // Load draft on page load
         loadDraft();
-        
+
         // Auto-save as user types
         contentEl.addEventListener('input', function() {
             clearTimeout(draftTimer);
@@ -389,14 +389,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('button[title]:not([aria-label])').forEach(btn => {
         btn.setAttribute('aria-label', btn.getAttribute('title'));
     });
-    
+
     // Add focus indicators for keyboard navigation
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Tab') {
             document.body.classList.add('keyboard-nav');
         }
     });
-    
+
     document.addEventListener('mousedown', function() {
         document.body.classList.remove('keyboard-nav');
     });
@@ -407,11 +407,11 @@ const performanceMonitor = {
     start: function(name) {
         performance.mark(`${name}-start`);
     },
-    
+
     end: function(name) {
         performance.mark(`${name}-end`);
         performance.measure(name, `${name}-start`, `${name}-end`);
-        
+
         const measure = performance.getEntriesByName(name)[0];
         if (measure.duration > 1000) {
             console.warn(`Slow operation detected: ${name} took ${measure.duration}ms`);
@@ -518,13 +518,13 @@ function enhanceFileUpload() {
             wrapper.addEventListener('click', () => {
                 input.click();
             });
-            
+
             // Improve mobile drag and drop feedback
             wrapper.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 this.classList.add('border-primary-400', 'bg-primary-50');
             });
-            
+
             wrapper.addEventListener('dragleave', function() {
                 this.classList.remove('border-primary-400', 'bg-primary-50');
             });
@@ -540,6 +540,89 @@ document.addEventListener('DOMContentLoaded', function() {
     enhanceFileUpload();
 });
 
+// Initialize dark mode
+function initDarkMode() {
+    const savedMode = getStorage('darkMode', 'false');
+    const html = document.documentElement;
+
+    if (savedMode === 'true') {
+        html.classList.add('dark');
+    } else {
+        html.classList.remove('dark');
+    }
+
+    updateDarkModeIcon();
+}
+
+// Update dark mode icon
+function updateDarkModeIcon() {
+    const toggleBtn = document.getElementById('darkModeToggle');
+    const html = document.documentElement;
+
+    if (toggleBtn) {
+        const icon = toggleBtn.querySelector('i');
+        if (icon) {
+            if (html.classList.contains('dark')) {
+                icon.className = 'fas fa-sun';
+            } else {
+                icon.className = 'fas fa-moon';
+            }
+        }
+    }
+}
+// Dark mode toggle
+function toggleDarkMode() {
+    const html = document.documentElement;
+    const isDark = html.classList.contains('dark');
+
+    if (isDark) {
+        html.classList.remove('dark');
+        setStorage('darkMode', 'false');
+    } else {
+        html.classList.add('dark');
+        setStorage('darkMode', 'true');
+    }
+
+    // Update toggle button icon
+    updateDarkModeIcon();
+}
+// Platform colors for badges
+const platformColors = {
+    telegram: 'text-blue-500',
+    instagram: 'text-pink-500',
+    youtube: 'text-red-500',
+    tiktok: 'text-gray-900',
+    facebook: 'text-blue-600',
+    twitter: 'text-blue-400',
+    linkedin: 'text-blue-700',
+    snapchat: 'text-yellow-400',
+    pinterest: 'text-red-600',
+    reddit: 'text-orange-500',
+    discord: 'text-indigo-500',
+    whatsapp: 'text-green-500',
+    threads: 'text-gray-600',
+    medium: 'text-gray-700',
+    tumblr: 'text-blue-800'
+};
+
+// Platform icons
+const platformIcons = {
+    telegram: 'fab fa-telegram-plane',
+    instagram: 'fab fa-instagram',
+    youtube: 'fab fa-youtube',
+    tiktok: 'fab fa-tiktok',
+    facebook: 'fab fa-facebook',
+    twitter: 'fab fa-twitter',
+    linkedin: 'fab fa-linkedin',
+    snapchat: 'fab fa-snapchat',
+    pinterest: 'fab fa-pinterest',
+    reddit: 'fab fa-reddit',
+    discord: 'fab fa-discord',
+    whatsapp: 'fab fa-whatsapp',
+    threads: 'fas fa-at',
+    medium: 'fab fa-medium',
+    tumblr: 'fab fa-tumblr'
+};
 // Initialize app on page load
 document.addEventListener('DOMContentLoaded', function() {
     updateLanguage();

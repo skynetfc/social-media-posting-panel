@@ -360,15 +360,34 @@ async def logout(request: Request):
 async def dashboard(request: Request, db: Session = Depends(get_db)):
     """Dashboard page"""
     try:
-        user = get_current_user(request, db)
-        if not user:
+        # Enhanced session validation
+        if not hasattr(request, 'session') or not request.session:
+            return RedirectResponse(url="/login?error=session_expired", status_code=302)
+
+        user_id = request.session.get("user_id")
+        authenticated = request.session.get("authenticated", False)
+
+        if not user_id or not authenticated:
             try:
                 request.session.clear()
             except:
                 pass
             return RedirectResponse(url="/login?error=authentication_required", status_code=302)
 
-        # Get recent posts with error handling
+        # Get user from database
+        try:
+            user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
+            if not user:
+                try:
+                    request.session.clear()
+                except:
+                    pass
+                return RedirectResponse(url="/login?error=user_not_found", status_code=302)
+        except Exception as db_error:
+            print(f"User query error: {db_error}")
+            return RedirectResponse(url="/login?error=database_error", status_code=302)
+
+        # Get recent posts with comprehensive error handling
         recent_posts = []
         total_posts = 0
         successful_posts = 0
@@ -392,6 +411,7 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
             ).count()
         except Exception as db_error:
             print(f"Database query error: {db_error}")
+            # Continue with default values
 
         return templates.TemplateResponse(
             "dashboard.html", 
@@ -408,6 +428,8 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
 
     except Exception as e:
         print(f"Dashboard error: {e}")
+        import traceback
+        traceback.print_exc()
         try:
             request.session.clear()
         except:
@@ -610,7 +632,12 @@ async def logs_page(
 ):
     """Logs page"""
     try:
-        logs = db.query(PostLog).filter(PostLog.user_id == user.id).order_by(PostLog.created_at.desc()).all()
+        logs = []
+        try:
+            logs = db.query(PostLog).filter(PostLog.user_id == user.id).order_by(PostLog.created_at.desc()).all()
+        except Exception as db_error:
+            print(f"Database error in logs: {db_error}")
+            logs = []
         
         return templates.TemplateResponse(
             "logs.html",
@@ -622,7 +649,17 @@ async def logs_page(
         )
     except Exception as e:
         print(f"Logs page error: {e}")
-        return HTMLResponse(content="<h1>Logs Error</h1><p>Unable to load logs.</p>", status_code=500)
+        import traceback
+        traceback.print_exc()
+        return templates.TemplateResponse(
+            "logs.html",
+            {
+                "request": request,
+                "user": user,
+                "logs": [],
+                "error": "Unable to load logs"
+            }
+        )
 
 @app.get("/api/logs")
 async def get_logs(
@@ -838,39 +875,49 @@ async def analytics_page(
 ):
     """Analytics dashboard page"""
     try:
-        # Get all posts for analytics
-        posts = db.query(PostLog).filter(PostLog.user_id == user.id).order_by(PostLog.created_at.desc()).all()
+        # Get all posts for analytics with error handling
+        posts = []
+        try:
+            posts = db.query(PostLog).filter(PostLog.user_id == user.id).order_by(PostLog.created_at.desc()).all()
+        except Exception as db_error:
+            print(f"Database error in analytics: {db_error}")
+            posts = []
         
-        # Calculate overall analytics
-        total_views = sum(post.views or 0 for post in posts)
-        total_likes = sum(post.likes or 0 for post in posts)
-        total_shares = sum(post.shares or 0 for post in posts)
-        total_comments = sum(post.comments or 0 for post in posts)
-        total_clicks = sum(post.clicks or 0 for post in posts)
-        total_reach = sum(post.reach or 0 for post in posts)
-        total_impressions = sum(post.impressions or 0 for post in posts)
+        # Calculate overall analytics with safe defaults
+        total_views = sum(getattr(post, 'views', 0) or 0 for post in posts)
+        total_likes = sum(getattr(post, 'likes', 0) or 0 for post in posts)
+        total_shares = sum(getattr(post, 'shares', 0) or 0 for post in posts)
+        total_comments = sum(getattr(post, 'comments', 0) or 0 for post in posts)
+        total_clicks = sum(getattr(post, 'clicks', 0) or 0 for post in posts)
+        total_reach = sum(getattr(post, 'reach', 0) or 0 for post in posts)
+        total_impressions = sum(getattr(post, 'impressions', 0) or 0 for post in posts)
         
         # Calculate engagement rate
-        avg_engagement_rate = sum(post.engagement_rate or 0 for post in posts) / len(posts) if posts else 0
+        avg_engagement_rate = sum(getattr(post, 'engagement_rate', 0) or 0 for post in posts) / len(posts) if posts else 0
         
         # Get top performing posts
-        top_posts = sorted(posts, key=lambda x: (x.views or 0) + (x.likes or 0) + (x.shares or 0), reverse=True)[:5]
+        top_posts = sorted(posts, key=lambda x: (getattr(x, 'views', 0) or 0) + (getattr(x, 'likes', 0) or 0) + (getattr(x, 'shares', 0) or 0), reverse=True)[:5]
         
         # Platform performance
         platform_stats = {}
         for post in posts:
-            platforms = post.platforms.split(', ')
-            for platform in platforms:
-                if platform not in platform_stats:
-                    platform_stats[platform] = {'posts': 0, 'views': 0, 'likes': 0, 'shares': 0}
-                platform_stats[platform]['posts'] += 1
-                platform_stats[platform]['views'] += post.views or 0
-                platform_stats[platform]['likes']+= post.likes or 0
-                platform_stats[platform]['shares'] += post.shares or 0
+            try:
+                platforms = post.platforms.split(',') if post.platforms else []
+                for platform in platforms:
+                    platform = platform.strip()
+                    if platform not in platform_stats:
+                        platform_stats[platform] = {'posts': 0, 'views': 0, 'likes': 0, 'shares': 0}
+                    platform_stats[platform]['posts'] += 1
+                    platform_stats[platform]['views'] += getattr(post, 'views', 0) or 0
+                    platform_stats[platform]['likes'] += getattr(post, 'likes', 0) or 0
+                    platform_stats[platform]['shares'] += getattr(post, 'shares', 0) or 0
+            except Exception as platform_error:
+                print(f"Platform stats error: {platform_error}")
+                continue
         
         # SEO performance
-        avg_seo_score = sum(post.seo_score or 0 for post in posts) / len(posts) if posts else 0
-        avg_readability = sum(post.readability_score or 0 for post in posts) / len(posts) if posts else 0
+        avg_seo_score = sum(getattr(post, 'seo_score', 0) or 0 for post in posts) / len(posts) if posts else 0
+        avg_readability = sum(getattr(post, 'readability_score', 0) or 0 for post in posts) / len(posts) if posts else 0
         
         return templates.TemplateResponse(
             "analytics.html",
@@ -894,7 +941,29 @@ async def analytics_page(
         )
     except Exception as e:
         print(f"Analytics page error: {e}")
-        return HTMLResponse(content="<h1>Analytics Error</h1><p>Unable to load analytics.</p>", status_code=500)
+        import traceback
+        traceback.print_exc()
+        return templates.TemplateResponse(
+            "analytics.html",
+            {
+                "request": request,
+                "user": user,
+                "posts": [],
+                "total_views": 0,
+                "total_likes": 0,
+                "total_shares": 0,
+                "total_comments": 0,
+                "total_clicks": 0,
+                "total_reach": 0,
+                "total_impressions": 0,
+                "avg_engagement_rate": 0,
+                "top_posts": [],
+                "platform_stats": {},
+                "avg_seo_score": 0,
+                "avg_readability": 0,
+                "error": "Unable to load analytics data"
+            }
+        )
 
 @app.post("/api/analyze-seo")
 async def analyze_seo(
@@ -1288,11 +1357,19 @@ async def settings_page(
 ):
     """Settings page"""
     try:
-        total_posts = db.query(PostLog).filter(PostLog.user_id == user.id).count()
-        successful_posts = db.query(PostLog).filter(
-            PostLog.user_id == user.id, 
-            PostLog.status == "completed"
-        ).count()
+        total_posts = 0
+        successful_posts = 0
+        
+        try:
+            total_posts = db.query(PostLog).filter(PostLog.user_id == user.id).count()
+            successful_posts = db.query(PostLog).filter(
+                PostLog.user_id == user.id, 
+                PostLog.status == "completed"
+            ).count()
+        except Exception as db_error:
+            print(f"Database error in settings: {db_error}")
+            total_posts = 0
+            successful_posts = 0
 
         success_rate = f"{(successful_posts / total_posts * 100):.1f}%" if total_posts > 0 else "0%"
 
@@ -1307,7 +1384,18 @@ async def settings_page(
         )
     except Exception as e:
         print(f"Settings page error: {e}")
-        return HTMLResponse(content="<h1>Settings Error</h1><p>Unable to load settings.</p>", status_code=500)
+        import traceback
+        traceback.print_exc()
+        return templates.TemplateResponse(
+            "settings.html",
+            {
+                "request": request,
+                "user": user,
+                "total_posts": 0,
+                "success_rate": "0%",
+                "error": "Unable to load settings"
+            }
+        )
 
 if __name__ == "__main__":
     import uvicorn
