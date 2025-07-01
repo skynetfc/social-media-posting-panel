@@ -22,15 +22,27 @@ import openai
 from typing import Dict, List
 
 # Load environment variables
+print("🔑 Loading environment variables...")
 load_dotenv()
 
 # Initialize OpenAI client
+print("🤖 Setting up OpenAI client...")
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-from database import get_db, init_db
-from models import PostLog, User
-from auth import verify_password, get_password_hash, create_access_token, verify_token
-from social_platforms import SocialMediaManager
+try:
+    print("📦 Importing database modules...")
+    from database import get_db, init_db
+    from models import PostLog, User
+    print("🔐 Importing authentication modules...")
+    from auth import verify_password, get_password_hash, create_access_token, verify_token
+    print("📱 Importing social media modules...")
+    from social_platforms import SocialMediaManager
+    print("✅ All modules imported successfully")
+except ImportError as e:
+    print(f"❌ Import error: {e}")
+    import traceback
+    traceback.print_exc()
+    raise
 
 app = FastAPI(title="Anonymous Creations Dashboard")
 
@@ -120,14 +132,19 @@ def validate_file(file: UploadFile) -> tuple[bool, str, str]:
 @app.on_event("startup")
 async def startup_event():
     """Initialize application on startup"""
+    print("🔧 Running startup tasks...")
+    
     # Create uploads directory if it doesn't exist
+    print("📁 Creating uploads directory...")
     os.makedirs("uploads", exist_ok=True)
     
     # Create default admin user if it doesn't exist
     try:
+        print("👤 Setting up admin user...")
         db = next(get_db())
         admin_user = db.query(User).filter(User.username == "admin").first()
         if not admin_user:
+            print("🆕 Creating default admin user...")
             hashed_password = get_password_hash(os.getenv("ADMIN_PASSWORD", "admin123"))
             admin_user = User(
                 username="admin",
@@ -136,9 +153,16 @@ async def startup_event():
             )
             db.add(admin_user)
             db.commit()
+            print("✅ Admin user created successfully")
+        else:
+            print("✅ Admin user already exists")
         db.close()
     except Exception as e:
-        print(f"Startup error: {e}")
+        print(f"❌ Startup error: {e}")
+        import traceback
+        traceback.print_exc()
+    
+    print("🎉 Application startup completed!")
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request, db: Session = Depends(get_db)):
@@ -1182,4 +1206,19 @@ async def optimize_hashtags(
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+    print("🚀 Starting Anonymous Creations Dashboard...")
+    print("📱 Server will be available at http://0.0.0.0:5000")
+    print("🔧 Initializing application...")
+    
+    try:
+        uvicorn.run(
+            app, 
+            host="0.0.0.0", 
+            port=5000,
+            log_level="info",
+            access_log=True
+        )
+    except Exception as e:
+        print(f"❌ Failed to start server: {e}")
+        import traceback
+        traceback.print_exc()
