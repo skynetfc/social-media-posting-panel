@@ -351,3 +351,150 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('Dashboard script initialization complete');
 });
+
+// Dashboard specific functionality
+function initDashboardFeatures() {
+    // Platform selection
+    const platformCheckboxes = document.querySelectorAll('input[name="platforms"]');
+    platformCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const label = this.nextElementSibling;
+            const check = label.querySelector('.platform-check');
+
+            if (this.checked) {
+                label.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+                label.classList.remove('border-gray-200', 'dark:border-gray-600');
+                check.classList.remove('opacity-0');
+            } else {
+                label.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+                label.classList.add('border-gray-200', 'dark:border-gray-600');
+                check.classList.add('opacity-0');
+            }
+        });
+    });
+
+    // File upload functionality
+    const fileInput = document.getElementById('media');
+    const filePreview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
+    const removeFile = document.getElementById('removeFile');
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file
+                const validation = validateFile(file);
+                if (!validation.valid) {
+                    showToast(validation.message, 'error');
+                    fileInput.value = '';
+                    return;
+                }
+
+                fileName.textContent = `${file.name} (${formatFileSize(file.size)})`;
+                filePreview.classList.remove('hidden');
+            }
+        });
+    }
+
+    if (removeFile) {
+        removeFile.addEventListener('click', function() {
+            fileInput.value = '';
+            filePreview.classList.add('hidden');
+        });
+    }
+
+    // Form submission
+    const postForm = document.getElementById('postForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const submitSpinner = document.getElementById('submitSpinner');
+
+    if (postForm) {
+        postForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const selectedPlatforms = Array.from(document.querySelectorAll('input[name="platforms"]:checked')).map(cb => cb.value);
+
+            if (selectedPlatforms.length === 0) {
+                showToast('Please select at least one platform to post to.', 'warning');
+                return;
+            }
+
+            // Clear existing platform values and add selected ones
+            formData.delete('platforms');
+            selectedPlatforms.forEach(platform => {
+                formData.append('platforms', platform);
+            });
+
+            // Update button state
+            submitBtn.disabled = true;
+            submitText.textContent = t('posting');
+            submitSpinner.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/post', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Show detailed success message
+                    let successMessage = 'Your content has been published successfully!';
+                    if (result.results) {
+                        const successfulPlatforms = Object.entries(result.results)
+                            .filter(([platform, data]) => data.success)
+                            .map(([platform]) => platform);
+                        if (successfulPlatforms.length > 0) {
+                            successMessage += `\n\nSuccessfully posted to: ${successfulPlatforms.join(', ')}`;
+                        }
+                    }
+
+                    showToast(successMessage, 'success');
+                    
+                    // Reset form
+                    postForm.reset();
+                    if (filePreview) filePreview.classList.add('hidden');
+                    // Uncheck all platforms
+                    platformCheckboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                        const label = checkbox.nextElementSibling;
+                        const check = label.querySelector('.platform-check');
+                        label.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+                        label.classList.add('border-gray-200', 'dark:border-gray-600');
+                        check.classList.add('opacity-0');
+                    });
+                    // Refresh page to update stats
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    throw new Error(result.message || 'Failed to publish post');
+                }
+            } catch (error) {
+                console.error('Post submission error:', error);
+                let errorMessage = 'Failed to publish content. ';
+
+                if (error.message.includes('HTTP error')) {
+                    errorMessage += 'Server connection issue. Please try again.';
+                } else if (error.message.includes('JSON')) {
+                    errorMessage += 'Invalid response from server.';
+                } else {
+                    errorMessage += error.message || 'Unknown error occurred.';
+                }
+
+                showToast(errorMessage, 'error');
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitText.textContent = t('post_now');
+                submitSpinner.classList.add('hidden');
+            }
+        });
+    }
+}
