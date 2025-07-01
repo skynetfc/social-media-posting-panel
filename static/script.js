@@ -106,12 +106,26 @@ const languageInfo = {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Initializing Dashboard...');
+
+    // Initialize core functionality
     updateTheme();
     updateLanguage();
-    initializeFormHandlers();
+
+    // Initialize platform selection
     initializePlatformSelection();
+
+    // Initialize file upload
     initializeFileUpload();
+
+    // Initialize form handlers
+    initializeFormHandlers();
+
+    // Load draft
     loadDraft();
+
+    // Initialize draft functionality
+    initializeDraftFunctionality();
+
     console.log('Dashboard initialized successfully');
 });
 
@@ -240,42 +254,55 @@ function updateLanguage() {
 
 // Platform selection handling
 function initializePlatformSelection() {
-    const platformCards = document.querySelectorAll('.platform-card');
+    console.log('Initializing platform selection...');
 
-    platformCards.forEach(card => {
+    const platformCards = document.querySelectorAll('.platform-card');
+    console.log(`Found ${platformCards.length} platform cards`);
+
+    platformCards.forEach((card, index) => {
         const checkbox = card.querySelector('input[type="checkbox"]');
         const label = card.querySelector('label');
-        const checkIcon = card.querySelector('.platform-check');
 
-        if (checkbox && label) {
-            // Remove any existing event listeners
-            card.replaceWith(card.cloneNode(true));
-
-            // Get the new card reference after cloning
-            const newCard = document.querySelector(`label[for="${checkbox.id}"]`).closest('.platform-card');
-            const newCheckbox = newCard.querySelector('input[type="checkbox"]');
-            const newLabel = newCard.querySelector('label');
-
-            // Handle click on the entire card
-            newCard.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                newCheckbox.checked = !newCheckbox.checked;
-                updatePlatformCardAppearance(newCard, newCheckbox.checked);
-                console.log('Platform toggled:', newCheckbox.value, newCheckbox.checked);
-            });
-
-            // Handle direct checkbox change
-            newCheckbox.addEventListener('change', function(e) {
-                e.stopPropagation();
-                updatePlatformCardAppearance(newCard, this.checked);
-            });
-
-            // Initialize appearance
-            updatePlatformCardAppearance(newCard, newCheckbox.checked);
+        if (!checkbox || !label) {
+            console.log(`Missing checkbox or label for card ${index}`);
+            return;
         }
+
+        console.log(`Setting up platform: ${checkbox.value}`);
+
+        // Remove any existing event listeners by cloning
+        const newCard = card.cloneNode(true);
+        card.parentNode.replaceChild(newCard, card);
+
+        // Get references to new elements
+        const newCheckbox = newCard.querySelector('input[type="checkbox"]');
+        const newLabel = newCard.querySelector('label');
+
+        // Handle click on the entire card
+        newCard.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            console.log(`Card clicked: ${newCheckbox.value}, current state: ${newCheckbox.checked}`);
+
+            newCheckbox.checked = !newCheckbox.checked;
+            updatePlatformCardAppearance(newCard, newCheckbox.checked);
+
+            console.log(`Platform ${newCheckbox.value} toggled to: ${newCheckbox.checked}`);
+        });
+
+        // Handle direct checkbox change
+        newCheckbox.addEventListener('change', function(e) {
+            e.stopPropagation();
+            console.log(`Checkbox changed: ${this.value} = ${this.checked}`);
+            updatePlatformCardAppearance(newCard, this.checked);
+        });
+
+        // Initialize appearance
+        updatePlatformCardAppearance(newCard, newCheckbox.checked);
     });
+
+    console.log('Platform selection initialized');
 }
 
 function updatePlatformCardAppearance(card, isSelected) {
@@ -301,75 +328,88 @@ function updatePlatformCardAppearance(card, isSelected) {
 
 // File upload handling
 function initializeFileUpload() {
+    console.log('Initializing file upload...');
+
     const fileInput = document.getElementById('media');
     const filePreview = document.getElementById('filePreview');
     const fileInfo = document.getElementById('fileInfo');
     const removeFileBtn = document.getElementById('removeFile');
     const dropZone = document.querySelector('.border-dashed');
 
-    if (fileInput) {
-        fileInput.addEventListener('change', handleFileSelect);
+    if (!fileInput) {
+        console.log('File input not found');
+        return;
+    }
 
-        // Drag and drop functionality
-        if (dropZone) {
-            dropZone.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                this.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
-            });
+    console.log('File input found, setting up handlers...');
 
-            dropZone.addEventListener('dragleave', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                this.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
-            });
+    fileInput.addEventListener('change', handleFileSelect);
 
-            dropZone.addEventListener('drop', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                this.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+    // Drag and drop functionality
+    if (dropZone) {
+        console.log('Setting up drag and drop...');
 
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    fileInput.files = files;
-                    handleFileSelect({ target: fileInput });
-                }
-            });
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+        });
 
-            dropZone.addEventListener('click', function() {
-                fileInput.click();
-            });
-        }
+        dropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect({ target: fileInput });
+            }
+        });
+
+        dropZone.addEventListener('click', function(e) {
+            e.preventDefault();
+            fileInput.click();
+        });
     }
 
     if (removeFileBtn) {
-        removeFileBtn.addEventListener('click', function() {
+        removeFileBtn.addEventListener('click', function(e) {
+            e.preventDefault();
             clearFilePreview();
         });
     }
+
+    console.log('File upload initialized');
 }
 
 function handleFileSelect(event) {
+    console.log('File selection triggered');
+
     const file = event.target.files[0];
     const filePreview = document.getElementById('filePreview');
     const fileName = document.getElementById('fileName');
     const fileInfo = document.getElementById('fileInfo');
 
     if (!file) {
+        console.log('No file selected');
         clearFilePreview();
         return;
     }
 
+    console.log(`File selected: ${file.name}, size: ${file.size}, type: ${file.type}`);
+
     // Validate file
     const validation = validateFile(file);
     if (!validation.valid) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid File',
-            text: validation.message,
-            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
-            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
-        });
+        console.log(`File validation failed: ${validation.message}`);
+        showAlert('error', 'Invalid File', validation.message);
         clearFilePreview();
         return;
     }
@@ -377,6 +417,7 @@ function handleFileSelect(event) {
     // Show file name and size
     if (fileName) {
         fileName.textContent = `${file.name} (${formatFileSize(file.size)})`;
+        console.log(`File name set: ${fileName.textContent}`);
     }
 
     // Show preview
@@ -385,6 +426,7 @@ function handleFileSelect(event) {
 
         reader.onload = function(e) {
             const fileType = file.type.startsWith('image/') ? 'image' : 'video';
+            console.log(`Displaying preview for ${fileType}`);
 
             if (fileType === 'image') {
                 fileInfo.innerHTML = `
@@ -416,12 +458,13 @@ function handleFileSelect(event) {
 
     if (filePreview) {
         filePreview.classList.remove('hidden');
+        console.log('File preview shown');
     }
-
-    console.log('File selected:', file.name, formatFileSize(file.size));
 }
 
 function clearFilePreview() {
+    console.log('Clearing file preview');
+
     const fileInput = document.getElementById('media');
     const filePreview = document.getElementById('filePreview');
     const fileInfo = document.getElementById('fileInfo');
@@ -429,47 +472,60 @@ function clearFilePreview() {
     if (fileInput) fileInput.value = '';
     if (filePreview) filePreview.classList.add('hidden');
     if (fileInfo) fileInfo.innerHTML = '';
-
-    console.log('File preview cleared');
 }
 
 // Form handling
 function initializeFormHandlers() {
+    console.log('Initializing form handlers...');
+
     const postForm = document.getElementById('postForm');
 
-    if (postForm) {
-        postForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const formData = new FormData(this);
-            const platforms = formData.getAll('platforms');
-
-            if (platforms.length === 0) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'No Platforms Selected',
-                    text: 'Please select at least one platform to post to.',
-                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
-                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
-                });
-                return;
-            }
-
-            const content = formData.get('content');
-            if (!content || content.trim().length === 0) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'No Content',
-                    text: 'Please enter some content to post.',
-                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
-                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
-                });
-                return;
-            }
-
-            await submitPost(formData);
-        });
+    if (!postForm) {
+        console.log('Post form not found');
+        return;
     }
+
+    console.log('Post form found, setting up handler...');
+
+    postForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        console.log('Form submission triggered');
+
+        const formData = new FormData(this);
+
+        // Get selected platforms
+        const selectedPlatforms = [];
+        const platformCheckboxes = document.querySelectorAll('input[name="platforms"]:checked');
+        platformCheckboxes.forEach(checkbox => {
+            selectedPlatforms.push(checkbox.value);
+        });
+
+        console.log(`Selected platforms: ${selectedPlatforms.join(', ')}`);
+
+        if (selectedPlatforms.length === 0) {
+            showAlert('warning', 'No Platforms Selected', 'Please select at least one platform to post to.');
+            return;
+        }
+
+        const content = formData.get('content');
+        if (!content || content.trim().length === 0) {
+            showAlert('warning', 'No Content', 'Please enter some content to post.');
+            return;
+        }
+
+        // Clear existing platform values and add selected ones
+        formData.delete('platforms');
+        selectedPlatforms.forEach(platform => {
+            formData.append('platforms', platform);
+        });
+
+        console.log('Submitting post...');
+        await submitPost(formData);
+    });
+
+    console.log('Form handlers initialized');
 }
 
 async function submitPost(formData) {
@@ -478,6 +534,8 @@ async function submitPost(formData) {
     const submitSpinner = document.getElementById('submitSpinner');
 
     try {
+        console.log('Starting post submission...');
+
         // Show loading state
         if (submitBtn) {
             submitBtn.disabled = true;
@@ -490,53 +548,45 @@ async function submitPost(formData) {
             body: formData
         });
 
+        console.log(`Response status: ${response.status}`);
+
         const result = await response.json();
+        console.log('Response:', result);
 
         if (result.success) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Posted Successfully!',
-                text: result.message,
-                background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
-                color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
-            });
+            showAlert('success', 'Posted Successfully!', result.message);
 
-            // Clear form and draft
-            document.getElementById('postForm').reset();
+            // Clear form and reset everything
+            const postForm = document.getElementById('postForm');
+            if (postForm) {
+                postForm.reset();
+            }
+
             clearFilePreview();
             clearDraft();
 
             // Reset platform selections
-            document.querySelectorAll('.platform-card').forEach(card => {
-                const checkbox = card.querySelector('input[type="checkbox"]');
-                if (checkbox) {
-                    checkbox.checked = false;
+            const platformCheckboxes = document.querySelectorAll('input[name="platforms"]');
+            platformCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                const card = checkbox.closest('.platform-card');
+                if (card) {
                     updatePlatformCardAppearance(card, false);
                 }
             });
 
-            // Refresh page to update stats
-            setTimeout(() => location.reload(), 1000);
+            // Refresh page to update stats after a delay
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
 
         } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Posting Failed',
-                text: result.message || 'An error occurred while posting.',
-                background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
-                color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
-            });
+            showAlert('error', 'Posting Failed', result.message || 'An error occurred while posting.');
         }
 
     } catch (error) {
         console.error('Post submission error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Network Error',
-            text: 'Failed to connect to the server. Please try again.',
-            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
-            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
-        });
+        showAlert('error', 'Network Error', 'Failed to connect to the server. Please try again.');
     } finally {
         // Reset button state
         if (submitBtn) {
@@ -575,6 +625,17 @@ function formatFileSize(bytes) {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Alert helper function
+function showAlert(type, title, message) {
+    Swal.fire({
+        icon: type,
+        title: title,
+        text: message,
+        background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+        color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+    });
 }
 
 // Auto-save draft functionality
