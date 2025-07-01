@@ -1,5 +1,99 @@
 // Global JavaScript functions for Anonymous Creations Dashboard
 
+// Initialize variables
+let currentLang = localStorage.getItem('language') || 'en';
+let currentTheme = localStorage.getItem('theme') || 'light';
+
+// Language and theme management
+function toggleTheme() {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    localStorage.setItem('theme', currentTheme);
+    updateTheme();
+}
+
+function updateTheme() {
+    const html = document.documentElement;
+    const themeIcon = document.getElementById('theme-icon');
+    const themeText = document.getElementById('theme-text');
+    
+    if (currentTheme === 'dark') {
+        html.classList.add('dark');
+        if (themeIcon) themeIcon.className = 'fas fa-sun text-sm';
+        if (themeText) themeText.textContent = 'Light';
+    } else {
+        html.classList.remove('dark');
+        if (themeIcon) themeIcon.className = 'fas fa-moon text-sm';
+        if (themeText) themeText.textContent = 'Dark';
+    }
+}
+
+function toggleLanguageDropdown() {
+    const dropdown = document.getElementById('language-dropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('hidden');
+    }
+}
+
+function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('language', currentLang);
+    updateLanguage();
+    const dropdown = document.getElementById('language-dropdown');
+    if (dropdown) {
+        dropdown.classList.add('hidden');
+    }
+}
+
+function updateLanguage() {
+    const html = document.getElementById('html-root');
+    const body = document.getElementById('body-root');
+    const langIcon = document.getElementById('lang-icon');
+    const langText = document.getElementById('lang-text');
+    
+    const languageInfo = {
+        en: { flag: '🇺🇸', name: 'EN', direction: 'ltr' },
+        ar: { flag: '🇵🇸', name: 'العربية', direction: 'rtl' }
+    };
+    
+    const langInfo = languageInfo[currentLang] || languageInfo['en'];
+    
+    if (html) {
+        html.dir = langInfo.direction;
+        html.lang = currentLang;
+    }
+    
+    if (currentLang === 'ar') {
+        if (body) {
+            body.classList.add('font-arabic');
+            body.classList.remove('font-english');
+        }
+    } else {
+        if (body) {
+            body.classList.add('font-english');
+            body.classList.remove('font-arabic');
+        }
+    }
+    
+    if (langIcon) langIcon.textContent = langInfo.flag;
+    if (langText) langText.textContent = langInfo.name;
+}
+
+function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenu) {
+        mobileMenu.classList.toggle('hidden');
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('language-dropdown');
+    const button = document.getElementById('lang-button');
+    if (dropdown && button && !button.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.add('hidden');
+    }
+});
+
 // Utility functions
 function showToast(message, type = 'info') {
     const toast = Swal.mixin({
@@ -444,6 +538,13 @@ document.addEventListener('DOMContentLoaded', function() {
     makeTablesResponsive();
     enhanceMobileModals();
     enhanceFileUpload();
+});
+
+// Initialize app on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateLanguage();
+    updateTheme();
+    console.log('Anonymous Creations Dashboard initialized');
 });
 
 console.log('Anonymous Creations Dashboard initialized');

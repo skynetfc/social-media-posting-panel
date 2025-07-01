@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI, Request, Depends, HTTPException, status, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -87,43 +86,24 @@ MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 def get_current_user(request: Request, db: Session = Depends(get_db)):
     """Get current user from session"""
     try:
-        # Check if session exists and has required data
-        if not hasattr(request, 'session'):
-            print("Request has no session attribute")
+        if not hasattr(request, 'session') or not request.session:
             return None
-            
-        if not request.session:
-            print("Session is empty")
-            return None
-            
+
         user_id = request.session.get("user_id")
         authenticated = request.session.get("authenticated", False)
-        
-        print(f"Session data - user_id: {user_id}, authenticated: {authenticated}")
-        
+
         if not user_id or not authenticated:
-            print("No user_id or not authenticated in session")
             return None
-            
-        # Query user from database with better error handling
-        try:
-            user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
-            if user:
-                print(f"User found: {user.username}")
-                return user
-            else:
-                print(f"User with ID {user_id} not found or inactive")
-                # Clear invalid session
-                request.session.clear()
-                return None
-        except Exception as db_error:
-            print(f"Database query error: {db_error}")
+
+        user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
+        if user:
+            return user
+        else:
+            request.session.clear()
             return None
-            
+
     except Exception as e:
         print(f"Authentication error: {e}")
-        import traceback
-        traceback.print_exc()
         return None
 
 def require_auth(request: Request, db: Session = Depends(get_db)):
@@ -162,11 +142,11 @@ def validate_file(file: UploadFile) -> tuple[bool, str, str]:
 async def startup_event():
     """Initialize application on startup"""
     print("🔧 Running startup tasks...")
-    
+
     # Create uploads directory if it doesn't exist
     print("📁 Creating uploads directory...")
     os.makedirs("uploads", exist_ok=True)
-    
+
     # Initialize database and create tables
     try:
         print("🗃️ Initializing database...")
@@ -174,13 +154,12 @@ async def startup_event():
         print("✅ Database initialized successfully")
     except Exception as e:
         print(f"❌ Database initialization error: {e}")
-    
+
     # Create default admin user if it doesn't exist
     try:
         print("👤 Setting up admin user...")
         db = next(get_db())
-        
-        # Check if admin user exists
+
         admin_user = db.query(User).filter(User.username == "admin").first()
         if not admin_user:
             print("🆕 Creating default admin user...")
@@ -196,17 +175,15 @@ async def startup_event():
             print("✅ Admin user created successfully")
         else:
             print("✅ Admin user already exists")
-        
+
     except Exception as e:
         print(f"❌ Admin user setup error: {e}")
-        import traceback
-        traceback.print_exc()
     finally:
         try:
             db.close()
         except:
             pass
-    
+
     print("🎉 Application startup completed!")
 
 @app.get("/", response_class=HTMLResponse)
@@ -225,23 +202,21 @@ async def root(request: Request, db: Session = Depends(get_db)):
 async def login_page(request: Request):
     """Login page"""
     try:
-        # Clear any existing session data on login page
         try:
             request.session.clear()
         except:
             pass
-            
-        # Check if there's an error parameter
+
         error_param = request.query_params.get("error")
         error_message = None
-        
+
         if error_param == "dashboard_error":
             error_message = "Dashboard access error. Please try logging in again."
         elif error_param == "authentication_required":
             error_message = "Please log in to access the dashboard."
         elif error_param == "session_expired":
             error_message = "Your session has expired. Please log in again."
-        
+
         return templates.TemplateResponse("login.html", {
             "request": request,
             "error": error_message
@@ -260,12 +235,10 @@ async def login(
     """Handle login"""
     try:
         print(f"Login attempt for username: {username}")
-        
-        # Find user by username
+
         user = db.query(User).filter(User.username == username, User.is_active == True).first()
-        
+
         if not user:
-            print(f"User {username} not found")
             return templates.TemplateResponse(
                 "login.html", 
                 {
@@ -273,10 +246,8 @@ async def login(
                     "error": "Invalid username or password"
                 }
             )
-        
-        # Verify password
+
         if not verify_password(password, str(user.hashed_password)):
-            print(f"Invalid password for user {username}")
             return templates.TemplateResponse(
                 "login.html", 
                 {
@@ -284,37 +255,30 @@ async def login(
                     "error": "Invalid username or password"
                 }
             )
-        
-        print(f"Successful login for user: {username}")
-        
-        # Clear any existing session data
+
         try:
             request.session.clear()
-        except Exception as session_error:
-            print(f"Session clear error: {session_error}")
-        
-        # Set session data with error handling
+        except:
+            pass
+
         try:
             request.session["user_id"] = user.id
             request.session["username"] = user.username
             request.session["authenticated"] = True
-            print(f"Session successfully set for user {username} with ID {user.id}")
         except Exception as session_error:
             print(f"Session setting error: {session_error}")
             return templates.TemplateResponse(
                 "login.html", 
                 {
                     "request": request, 
-                    "error": "Session error. Please try again or contact support."
+                    "error": "Session error. Please try again."
                 }
             )
-        
+
         return RedirectResponse(url="/dashboard", status_code=302)
-        
+
     except Exception as e:
         print(f"Login error: {e}")
-        import traceback
-        traceback.print_exc()
         return templates.TemplateResponse(
             "login.html", 
             {
@@ -322,7 +286,6 @@ async def login(
                 "error": "Internal server error. Please try again."
             }
         )
-
 @app.post("/register")
 async def register(
     request: Request,
@@ -397,30 +360,22 @@ async def logout(request: Request):
 async def dashboard(request: Request, db: Session = Depends(get_db)):
     """Dashboard page"""
     try:
-        print("Dashboard endpoint accessed")
-        
-        # Check authentication first with enhanced debugging
         user = get_current_user(request, db)
         if not user:
-            print("No authenticated user found, redirecting to login")
-            # Clear any corrupted session data
             try:
                 request.session.clear()
             except:
                 pass
             return RedirectResponse(url="/login?error=authentication_required", status_code=302)
-        
-        print(f"Dashboard accessed by user: {user.username} (ID: {user.id})")
-        
+
         # Get recent posts with error handling
         recent_posts = []
         total_posts = 0
         successful_posts = 0
         failed_posts = 0
         pending_posts = 0
-        
+
         try:
-            print("Querying database for user posts...")
             recent_posts = db.query(PostLog).filter(PostLog.user_id == user.id).order_by(PostLog.created_at.desc()).limit(10).all()
             total_posts = db.query(PostLog).filter(PostLog.user_id == user.id).count()
             successful_posts = db.query(PostLog).filter(
@@ -435,36 +390,24 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
                 PostLog.user_id == user.id, 
                 PostLog.status == "pending"
             ).count()
-            print(f"Successfully loaded dashboard data: {total_posts} total posts")
         except Exception as db_error:
             print(f"Database query error: {db_error}")
-            # Continue with empty/zero values
-        
-        try:
-            return templates.TemplateResponse(
-                "dashboard.html", 
-                {
-                    "request": request, 
-                    "user": user,
-                    "recent_posts": recent_posts,
-                    "total_posts": total_posts,
-                    "successful_posts": successful_posts,
-                    "failed_posts": failed_posts,
-                    "pending_posts": pending_posts
-                }
-            )
-        except Exception as template_error:
-            print(f"Template rendering error: {template_error}")
-            return HTMLResponse(
-                content="<h1>Dashboard Temporarily Unavailable</h1><p>Please <a href='/logout'>logout</a> and login again.</p>",
-                status_code=500
-            )
-            
+
+        return templates.TemplateResponse(
+            "dashboard.html", 
+            {
+                "request": request, 
+                "user": user,
+                "recent_posts": recent_posts,
+                "total_posts": total_posts,
+                "successful_posts": successful_posts,
+                "failed_posts": failed_posts,
+                "pending_posts": pending_posts
+            }
+        )
+
     except Exception as e:
         print(f"Dashboard error: {e}")
-        import traceback
-        traceback.print_exc()
-        # Clear session and redirect
         try:
             request.session.clear()
         except:
@@ -922,7 +865,7 @@ async def analytics_page(
                     platform_stats[platform] = {'posts': 0, 'views': 0, 'likes': 0, 'shares': 0}
                 platform_stats[platform]['posts'] += 1
                 platform_stats[platform]['views'] += post.views or 0
-                platform_stats[platform]['likes'] += post.likes or 0
+                platform_stats[platform]['likes']+= post.likes or 0
                 platform_stats[platform]['shares'] += post.shares or 0
         
         # SEO performance
@@ -1337,6 +1280,34 @@ async def optimize_hashtags(
     except Exception as e:
         print(f"Hashtag optimization error: {e}")
         return JSONResponse({"error": "Failed to optimize hashtags"}, status_code=500)
+@app.get("/settings", response_class=HTMLResponse)
+async def settings_page(
+    request: Request,
+    user: User = Depends(require_auth),
+    db: Session = Depends(get_db)
+):
+    """Settings page"""
+    try:
+        total_posts = db.query(PostLog).filter(PostLog.user_id == user.id).count()
+        successful_posts = db.query(PostLog).filter(
+            PostLog.user_id == user.id, 
+            PostLog.status == "completed"
+        ).count()
+
+        success_rate = f"{(successful_posts / total_posts * 100):.1f}%" if total_posts > 0 else "0%"
+
+        return templates.TemplateResponse(
+            "settings.html",
+            {
+                "request": request,
+                "user": user,
+                "total_posts": total_posts,
+                "success_rate": success_rate
+            }
+        )
+    except Exception as e:
+        print(f"Settings page error: {e}")
+        return HTMLResponse(content="<h1>Settings Error</h1><p>Unable to load settings.</p>", status_code=500)
 
 if __name__ == "__main__":
     import uvicorn

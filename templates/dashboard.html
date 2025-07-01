@@ -653,6 +653,63 @@
                 </form>
             </div>
 
+            <!-- Recent Posts -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
+                <div class="p-4 md:p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white">
+                        <i class="fas fa-history mr-2 text-green-600"></i>
+                        <span data-translate="recent_posts">Recent Posts</span>
+                    </h2>
+                </div>
+
+                <div class="p-4 md:p-6">
+                    {% if recent_posts %}
+                        <div class="space-y-3 md:space-y-4">
+                            {% for post in recent_posts %}
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-3 md:p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-gray-900 dark:text-white text-sm md:text-base break-words line-clamp-2">{{ post.content }}</p>
+                                        <div class="flex flex-col sm:flex-row sm:items-center mt-2 gap-2 sm:gap-4">
+                                            <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400 flex items-center">
+                                                <i class="fas fa-calendar mr-1 flex-shrink-0"></i>
+                                                <span class="truncate">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                                            </span>
+                                            <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400 flex items-center">
+                                                <i class="fas fa-share-alt mr-1 flex-shrink-0"></i>
+                                                <span class="truncate">{{ post.platforms }}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 self-start sm:ml-4">
+                                        {% if post.status == 'completed' %}
+                                            <span class="inline-flex items-center px-2 md:px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                                <i class="fas fa-check-circle mr-1"></i><span data-translate="success">Success</span>
+                                            </span>
+                                        {% elif post.status == 'failed' %}
+                                            <span class="inline-flex items-center px-2 md:px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                                <i class="fas fa-times-circle mr-1"></i><span data-translate="failed">Failed</span>
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex items-center px-2 md:px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                                                <i class="fas fa-clock mr-1"></i><span data-translate="pending">Pending</span>
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-6 md:py-8">
+                            <i class="fas fa-inbox text-3xl md:text-4xl text-gray-400 dark:text-gray-500 mb-3 md:mb-4"></i>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm md:text-base" data-translate="no_posts">No recent posts found</p>
+                            <p class="text-xs md:text-sm text-gray-400 dark:text-gray-500 mt-1" data-translate="start_creating">Start creating content to see your posts here</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
             <!-- AI Suggest Modal -->
             <div id="aiSuggestModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="aiSuggestModalLabel" role="dialog" aria-modal="true">
                 <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
@@ -1543,9 +1600,6 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            updateLanguage();
-            updateTheme();
-
             console.log('Anonymous Creations Dashboard initialized');
 
             // Platform selection
