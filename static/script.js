@@ -97,6 +97,190 @@ const translations = {
         posting: "جاري النشر...",
         file_too_large: "حجم الملف يجب أن يكون أقل من 10 ميجابايت",
         invalid_file: "نوع الملف غير صالح"
+    },
+    es: {
+        brand_title: "Creaciones Anónimas",
+        brand_subtitle: "Panel de Redes Sociales",
+        dashboard: "Panel",
+        analytics: "Analíticas",
+        settings: "Configuraciones",
+        welcome: "Bienvenido",
+        logout: "Cerrar Sesión",
+        dark: "Oscuro",
+        light: "Claro",
+        total_posts: "Total de Publicaciones",
+        successful: "Exitoso",
+        failed: "Fallido",
+        pending: "Pendiente",
+        create_post: "Crear Publicación",
+        content: "Contenido",
+        content_placeholder: "¿Qué estás pensando? Comparte tus ideas con el mundo...",
+        select_platforms: "Seleccionar Plataformas",
+        telegram: "Telegram",
+        instagram: "Instagram",
+        youtube: "YouTube",
+        tiktok: "TikTok",
+        facebook: "Facebook",
+        twitter: "Twitter",
+        linkedin: "LinkedIn",
+        snapchat: "Snapchat",
+        pinterest: "Pinterest",
+        reddit: "Reddit",
+        discord: "Discord",
+        whatsapp: "WhatsApp",
+        threads: "Threads",
+        medium: "Medium",
+        tumblr: "Tumblr",
+        upload_media: "Subir Medios",
+        upload_file: "Subir archivo",
+        drag_drop: "o arrastra y suelta",
+        file_limit: "Imágenes o Videos hasta 10MB",
+        schedule: "Programar (Opcional)",
+        post_now: "Publicar Ahora",
+        recent_posts: "Publicaciones Recientes",
+        success: "Éxito",
+        no_posts: "No se encontraron publicaciones recientes",
+        posting: "Publicando...",
+        file_too_large: "El archivo debe ser menor a 10MB",
+        invalid_file: "Tipo de archivo inválido"
+    },
+    fr: {
+        brand_title: "Créations Anonymes",
+        brand_subtitle: "Tableau de Bord Réseaux Sociaux",
+        dashboard: "Tableau de Bord",
+        analytics: "Analyses",
+        settings: "Paramètres",
+        welcome: "Bienvenue",
+        logout: "Se Déconnecter",
+        dark: "Sombre",
+        light: "Clair",
+        total_posts: "Total des Publications",
+        successful: "Réussi",
+        failed: "Échoué",
+        pending: "En Attente",
+        create_post: "Créer Publication",
+        content: "Contenu",
+        content_placeholder: "À quoi pensez-vous? Partagez vos idées avec le monde...",
+        select_platforms: "Sélectionner Plateformes",
+        telegram: "Telegram",
+        instagram: "Instagram",
+        youtube: "YouTube",
+        tiktok: "TikTok",
+        facebook: "Facebook",
+        twitter: "Twitter",
+        linkedin: "LinkedIn",
+        snapchat: "Snapchat",
+        pinterest: "Pinterest",
+        reddit: "Reddit",
+        discord: "Discord",
+        whatsapp: "WhatsApp",
+        threads: "Threads",
+        medium: "Medium",
+        tumblr: "Tumblr",
+        upload_media: "Télécharger Médias",
+        upload_file: "Télécharger fichier",
+        drag_drop: "ou glisser-déposer",
+        file_limit: "Images ou Vidéos jusqu'à 10MB",
+        schedule: "Programmer (Optionnel)",
+        post_now: "Publier Maintenant",
+        recent_posts: "Publications Récentes",
+        success: "Succès",
+        no_posts: "Aucune publication récente trouvée",
+        posting: "Publication en cours...",
+        file_too_large: "Le fichier doit faire moins de 10MB",
+        invalid_file: "Type de fichier invalide"
+    },
+    de: {
+        brand_title: "Anonyme Kreationen",
+        brand_subtitle: "Social Media Dashboard",
+        dashboard: "Dashboard",
+        analytics: "Analytik",
+        settings: "Einstellungen",
+        welcome: "Willkommen",
+        logout: "Abmelden",
+        dark: "Dunkel",
+        light: "Hell",
+        total_posts: "Gesamte Beiträge",
+        successful: "Erfolgreich",
+        failed: "Fehlgeschlagen",
+        pending: "Ausstehend",
+        create_post: "Beitrag Erstellen",
+        content: "Inhalt",
+        content_placeholder: "Was denkst du? Teile deine Gedanken mit der Welt...",
+        select_platforms: "Plattformen Auswählen",
+        telegram: "Telegram",
+        instagram: "Instagram",
+        youtube: "YouTube",
+        tiktok: "TikTok",
+        facebook: "Facebook",
+        twitter: "Twitter",
+        linkedin: "LinkedIn",
+        snapchat: "Snapchat",
+        pinterest: "Pinterest",
+        reddit: "Reddit",
+        discord: "Discord",
+        whatsapp: "WhatsApp",
+        threads: "Threads",
+        medium: "Medium",
+        tumblr: "Tumblr",
+        upload_media: "Medien Hochladen",
+        upload_file: "Datei hochladen",
+        drag_drop: "oder ziehen und ablegen",
+        file_limit: "Bilder oder Videos bis 10MB",
+        schedule: "Planen (Optional)",
+        post_now: "Jetzt Posten",
+        recent_posts: "Neueste Beiträge",
+        success: "Erfolg",
+        no_posts: "Keine aktuellen Beiträge gefunden",
+        posting: "Wird gepostet...",
+        file_too_large: "Datei muss unter 10MB sein",
+        invalid_file: "Ungültiger Dateityp"
+    },
+    ur: {
+        brand_title: "گمنام تخلیقات",
+        brand_subtitle: "سوشل میڈیا ڈیش بورڈ",
+        dashboard: "ڈیش بورڈ",
+        analytics: "تجزیات",
+        settings: "ترتیبات",
+        welcome: "خوش آمدید",
+        logout: "لاگ آؤٹ",
+        dark: "تاریک",
+        light: "ہلکا",
+        total_posts: "کل پوسٹس",
+        successful: "کامیاب",
+        failed: "ناکام",
+        pending: "زیر التواء",
+        create_post: "پوسٹ بنائیں",
+        content: "مواد",
+        content_placeholder: "آپ کیا سوچ رہے ہیں؟ دنیا کے ساتھ اپنے خیالات شیئر کریں...",
+        select_platforms: "پلیٹ فارم منتخب کریں",
+        telegram: "ٹیلیگرام",
+        instagram: "انسٹاگرام",
+        youtube: "یوٹیوب",
+        tiktok: "ٹک ٹاک",
+        facebook: "فیس بک",
+        twitter: "ٹویٹر",
+        linkedin: "لنکڈ ان",
+        snapchat: "سنیپ چیٹ",
+        pinterest: "پنٹریسٹ",
+        reddit: "ریڈٹ",
+        discord: "ڈسکورڈ",
+        whatsapp: "واٹس ایپ",
+        threads: "تھریڈز",
+        medium: "میڈیم",
+        tumblr: "ٹمبلر",
+        upload_media: "میڈیا اپ لوڈ کریں",
+        upload_file: "فائل اپ لوڈ کریں",
+        drag_drop: "یا کھینچیں اور چھوڑیں",
+        file_limit: "تصاویر یا ویڈیوز 10MB تک",
+        schedule: "شیڈول (اختیاری)",
+        post_now: "ابھی پوسٹ کریں",
+        recent_posts: "حالیہ پوسٹس",
+        success: "کامیابی",
+        no_posts: "کوئی حالیہ پوسٹ نہیں ملی",
+        posting: "پوسٹ کیا جا رہا ہے...",
+        file_too_large: "فائل 10MB سے کم ہونی چاہیے",
+        invalid_file: "غلط فائل کی قسم"
     }
 };
 
@@ -457,22 +641,52 @@ function initDashboardFeatures() {
                         }
                     }
 
-                    showToast(successMessage, 'success');
-                    
-                    // Reset form
-                    postForm.reset();
-                    if (filePreview) filePreview.classList.add('hidden');
-                    // Uncheck all platforms
-                    platformCheckboxes.forEach(checkbox => {
-                        checkbox.checked = false;
-                        const label = checkbox.nextElementSibling;
-                        const check = label.querySelector('.platform-check');
-                        label.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
-                        label.classList.add('border-gray-200', 'dark:border-gray-600');
-                        check.classList.add('opacity-0');
+                    // Show professional success popup
+                    Swal.fire({
+                        icon: 'success',
+                        title: '🎉 Post Published Successfully!',
+                        html: `
+                            <div class="text-center">
+                                <div class="mb-4">
+                                    <i class="fas fa-check-circle text-4xl text-green-500 mb-2"></i>
+                                    <p class="text-lg font-medium text-gray-800 dark:text-gray-200">Your content is now live!</p>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-4">
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">${successMessage}</p>
+                                </div>
+                                <div class="flex justify-center space-x-2">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <i class="fas fa-rocket mr-1"></i>Published
+                                    </span>
+                                </div>
+                            </div>
+                        `,
+                        background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                        color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000',
+                        confirmButtonColor: '#10b981',
+                        confirmButtonText: 'Create Another Post',
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        }
+                    }).then(() => {
+                        // Reset form without page reload
+                        postForm.reset();
+                        if (filePreview) filePreview.classList.add('hidden');
+                        // Uncheck all platforms
+                        platformCheckboxes.forEach(checkbox => {
+                            checkbox.checked = false;
+                            const label = checkbox.nextElementSibling;
+                            const check = label.querySelector('.platform-check');
+                            label.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+                            label.classList.add('border-gray-200', 'dark:border-gray-600');
+                            check.classList.add('opacity-0');
+                        });
+                        // Update stats without full page reload
+                        updateDashboardStats();
                     });
-                    // Refresh page to update stats
-                    setTimeout(() => location.reload(), 1000);
                 } else {
                     throw new Error(result.message || 'Failed to publish post');
                 }
@@ -496,5 +710,28 @@ function initDashboardFeatures() {
                 submitSpinner.classList.add('hidden');
             }
         });
+    }
+}
+
+// Function to update dashboard stats without page reload
+async function updateDashboardStats() {
+    try {
+        const response = await fetch("/dashboard-stats");
+        if (response.ok) {
+            const stats = await response.json();
+            
+            // Update stats counters
+            const totalPostsEl = document.querySelector("[data-stat=\"total\"]");
+            const successfulPostsEl = document.querySelector("[data-stat=\"successful\"]");
+            const failedPostsEl = document.querySelector("[data-stat=\"failed\"]");
+            const pendingPostsEl = document.querySelector("[data-stat=\"pending\"]");
+            
+            if (totalPostsEl) totalPostsEl.textContent = stats.total || 0;
+            if (successfulPostsEl) successfulPostsEl.textContent = stats.successful || 0;
+            if (failedPostsEl) failedPostsEl.textContent = stats.failed || 0;
+            if (pendingPostsEl) pendingPostsEl.textContent = stats.pending || 0;
+        }
+    } catch (error) {
+        console.log("Stats update failed, will update on next page load");
     }
 }

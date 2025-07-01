@@ -436,6 +436,30 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
             pass
         return RedirectResponse(url="/login?error=dashboard_error", status_code=302)
 
+@app.get("/dashboard-stats")
+async def get_dashboard_stats(user: User = Depends(require_auth), db: Session = Depends(get_db)):
+    """Get dashboard statistics via API"""
+    try:
+        total_posts = db.query(PostLog).filter(PostLog.user_id == user.id).count()
+        successful_posts = db.query(PostLog).filter(PostLog.user_id == user.id, PostLog.status == "completed").count()
+        failed_posts = db.query(PostLog).filter(PostLog.user_id == user.id, PostLog.status == "failed").count()
+        pending_posts = db.query(PostLog).filter(PostLog.user_id == user.id, PostLog.status == "pending").count()
+        
+        return {
+            "total": total_posts,
+            "successful": successful_posts,
+            "failed": failed_posts,
+            "pending": pending_posts
+        }
+    except Exception as e:
+        print(f"Dashboard stats error: {e}")
+        return {
+            "total": 0,
+            "successful": 0,
+            "failed": 0,
+            "pending": 0
+        }
+
 @app.post("/post")
 async def create_post(
     request: Request,

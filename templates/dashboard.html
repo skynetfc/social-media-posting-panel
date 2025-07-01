@@ -324,7 +324,7 @@
                         </div>
                         <div class="ml-3 md:ml-4 min-w-0 flex-1">
                             <p class="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400 truncate" data-translate="total_posts">Total Posts</p>
-                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">{{ total_posts }}</p>
+                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white" data-stat="total">{{ total_posts }}</p>
                         </div>
                     </div>
                 </div>
@@ -336,7 +336,7 @@
                         </div>
                         <div class="ml-3 md:ml-4 min-w-0 flex-1">
                             <p class="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400 truncate" data-translate="successful">Successful</p>
-                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">{{ successful_posts }}</p>
+                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white" data-stat="successful">{{ successful_posts }}</p>
                         </div>
                     </div>
                 </div>
@@ -348,7 +348,7 @@
                         </div>
                         <div class="ml-3 md:ml-4 min-w-0 flex-1">
                             <p class="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400 truncate" data-translate="failed">Failed</p>
-                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">{{ failed_posts }}</p>
+                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white" data-stat="failed">{{ failed_posts }}</p>
                         </div>
                     </div>
                 </div>
@@ -360,7 +360,7 @@
                         </div>
                         <div class="ml-3 md:ml-4 min-w-0 flex-1">
                             <p class="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400 truncate" data-translate="pending">Pending</p>
-                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">{{ pending_posts }}</p>
+                            <p class="text-lg md:text-2xl font-bold text-gray-900 dark:text-white" data-stat="pending">{{ pending_posts }}</p>
                         </div>
                     </div>
                 </div>
@@ -645,7 +645,7 @@
                         <button 
                             type="submit" 
                             id="submitBtn"
-                            class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center"
+                            class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-2.5 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-102 transition-all duration-200 flex items-center justify-center text-sm"
                         >
                             <i class="fas fa-paper-plane mr-2"></i>
                             <span id="submitText" data-translate="post_now">Post Now</span>
@@ -842,6 +842,16 @@
 
     <!-- Dashboard JavaScript -->
     <script>
+        // Language information for dropdown
+        const languageInfo = {
+            en: { flag: '🇺🇸', name: 'EN', fullName: 'English', direction: 'ltr' },
+            ar: { flag: '🇵🇸', name: 'العربية', fullName: 'العربية', direction: 'rtl' },
+            es: { flag: '🇪🇸', name: 'ES', fullName: 'Español', direction: 'ltr' },
+            fr: { flag: '🇫🇷', name: 'FR', fullName: 'Français', direction: 'ltr' },
+            de: { flag: '🇩🇪', name: 'DE', fullName: 'Deutsch', direction: 'ltr' },
+            ur: { flag: '🇵🇰', name: 'اردو', fullName: 'اردو', direction: 'rtl' }
+        };
+
         // Wait for both DOM and static script to load
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Dashboard loading...');
