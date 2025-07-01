@@ -4,11 +4,24 @@
 let currentLang = localStorage.getItem('language') || 'en';
 let currentTheme = localStorage.getItem('theme') || 'light';
 
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing Dashboard...');
+    updateTheme();
+    updateLanguage();
+    initializeFormHandlers();
+    initializePlatformSelection();
+    initializeFileUpload();
+    loadDraft();
+    console.log('Dashboard initialized successfully');
+});
+
 // Language and theme management
 function toggleTheme() {
     currentTheme = currentTheme === 'light' ? 'dark' : 'light';
     localStorage.setItem('theme', currentTheme);
     updateTheme();
+    console.log('Theme toggled to:', currentTheme);
 }
 
 function updateTheme() {
@@ -27,104 +40,337 @@ function updateTheme() {
     }
 }
 
-function toggleLanguageDropdown() {
-    const dropdown = document.getElementById('language-dropdown');
-    if (dropdown) {
-        dropdown.classList.toggle('hidden');
-    }
-}
-
-function setLanguage(lang) {
-    currentLang = lang;
+function toggleLanguage() {
+    currentLang = currentLang === 'en' ? 'ar' : 'en';
     localStorage.setItem('language', currentLang);
     updateLanguage();
-    const dropdown = document.getElementById('language-dropdown');
-    if (dropdown) {
-        dropdown.classList.add('hidden');
-    }
+    console.log('Language toggled to:', currentLang);
 }
 
 function updateLanguage() {
-    const html = document.getElementById('html-root');
-    const body = document.getElementById('body-root');
+    const html = document.documentElement;
+    const body = document.body;
     const langIcon = document.getElementById('lang-icon');
     const langText = document.getElementById('lang-text');
 
-    const languageInfo = {
-        en: { flag: '🇺🇸', name: 'EN', direction: 'ltr' },
-        ar: { flag: '🇵🇸', name: 'العربية', direction: 'rtl' }
-    };
-
-    const langInfo = languageInfo[currentLang] || languageInfo['en'];
-
-    if (html) {
-        html.dir = langInfo.direction;
-        html.lang = currentLang;
-    }
-
     if (currentLang === 'ar') {
+        html.dir = 'rtl';
+        html.lang = 'ar';
         if (body) {
             body.classList.add('font-arabic');
             body.classList.remove('font-english');
         }
+        if (langIcon) langIcon.textContent = '🇵🇸';
+        if (langText) langText.textContent = 'العربية';
     } else {
+        html.dir = 'ltr';
+        html.lang = 'en';
         if (body) {
             body.classList.add('font-english');
             body.classList.remove('font-arabic');
         }
-    }
-
-    if (langIcon) langIcon.textContent = langInfo.flag;
-    if (langText) langText.textContent = langInfo.name;
-}
-
-function toggleMobileMenu() {
-    const mobileMenu = document.getElementById('mobile-menu');
-    if (mobileMenu) {
-        mobileMenu.classList.toggle('hidden');
+        if (langIcon) langIcon.textContent = '🇺🇸';
+        if (langText) langText.textContent = 'EN';
     }
 }
 
-// Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
-    const dropdown = document.getElementById('language-dropdown');
-    const button = document.getElementById('lang-button');
-    if (dropdown && button && !button.contains(event.target) && !dropdown.contains(event.target)) {
-        dropdown.classList.add('hidden');
-    }
-});
+// Platform selection handling
+function initializePlatformSelection() {
+    const platformCards = document.querySelectorAll('.platform-card');
 
-// Utility functions
-function showToast(message, type = 'info') {
-    const toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
+    platformCards.forEach(card => {
+        const checkbox = card.querySelector('input[type="checkbox"]');
+        const label = card.querySelector('label');
+        const checkIcon = card.querySelector('.platform-check');
+
+        if (checkbox && label) {
+            // Handle click on the entire card
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                checkbox.checked = !checkbox.checked;
+                updatePlatformCardAppearance(card, checkbox.checked);
+                console.log('Platform toggled:', checkbox.value, checkbox.checked);
+            });
+
+            // Handle direct checkbox change
+            checkbox.addEventListener('change', function() {
+                updatePlatformCardAppearance(card, this.checked);
+            });
+
+            // Initialize appearance
+            updatePlatformCardAppearance(card, checkbox.checked);
         }
     });
+}
 
-    toast.fire({
-        icon: type,
-        title: message
-    });
+function updatePlatformCardAppearance(card, isSelected) {
+    const label = card.querySelector('label');
+    const checkIcon = card.querySelector('.platform-check');
+
+    if (isSelected) {
+        label.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/30');
+        label.classList.remove('border-gray-200', 'dark:border-gray-600');
+        if (checkIcon) {
+            checkIcon.classList.remove('opacity-0');
+            checkIcon.classList.add('opacity-100');
+        }
+    } else {
+        label.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/30');
+        label.classList.add('border-gray-200', 'dark:border-gray-600');
+        if (checkIcon) {
+            checkIcon.classList.add('opacity-0');
+            checkIcon.classList.remove('opacity-100');
+        }
+    }
+}
+
+// File upload handling
+function initializeFileUpload() {
+    const fileInput = document.getElementById('media');
+    const filePreview = document.getElementById('filePreview');
+    const fileInfo = document.getElementById('fileInfo');
+    const removeFileBtn = document.getElementById('removeFile');
+    const dropZone = document.querySelector('.border-dashed');
+
+    if (fileInput) {
+        fileInput.addEventListener('change', handleFileSelect);
+
+        // Drag and drop functionality
+        if (dropZone) {
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+            });
+
+            dropZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+            });
+
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    handleFileSelect({ target: fileInput });
+                }
+            });
+
+            dropZone.addEventListener('click', function() {
+                fileInput.click();
+            });
+        }
+    }
+
+    if (removeFileBtn) {
+        removeFileBtn.addEventListener('click', function() {
+            clearFilePreview();
+        });
+    }
+}
+
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    const filePreview = document.getElementById('filePreview');
+    const fileInfo = document.getElementById('fileInfo');
+
+    if (!file) {
+        clearFilePreview();
+        return;
+    }
+
+    // Validate file
+    const validation = validateFile(file);
+    if (!validation.valid) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid File',
+            text: validation.message,
+            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+        });
+        clearFilePreview();
+        return;
+    }
+
+    // Show preview
+    if (filePreview && fileInfo) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const fileType = file.type.startsWith('image/') ? 'image' : 'video';
+
+            if (fileType === 'image') {
+                fileInfo.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <img src="${e.target.result}" class="w-16 h-16 object-cover rounded-lg" alt="Preview">
+                        <div>
+                            <p class="font-medium text-gray-900 dark:text-white">${file.name}</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">${formatFileSize(file.size)}</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                fileInfo.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-video text-2xl text-gray-600 dark:text-gray-400"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900 dark:text-white">${file.name}</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">${formatFileSize(file.size)}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            filePreview.classList.remove('hidden');
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    console.log('File selected:', file.name, formatFileSize(file.size));
+}
+
+function clearFilePreview() {
+    const fileInput = document.getElementById('media');
+    const filePreview = document.getElementById('filePreview');
+
+    if (fileInput) fileInput.value = '';
+    if (filePreview) filePreview.classList.add('hidden');
+
+    console.log('File preview cleared');
+}
+
+// Form handling
+function initializeFormHandlers() {
+    const postForm = document.getElementById('postForm');
+
+    if (postForm) {
+        postForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const platforms = formData.getAll('platforms');
+
+            if (platforms.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Platforms Selected',
+                    text: 'Please select at least one platform to post to.',
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                });
+                return;
+            }
+
+            const content = formData.get('content');
+            if (!content || content.trim().length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Content',
+                    text: 'Please enter some content to post.',
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                });
+                return;
+            }
+
+            await submitPost(formData);
+        });
+    }
+}
+
+async function submitPost(formData) {
+    const submitBtn = document.getElementById('submitBtn');
+
+    try {
+        // Show loading state
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Publishing...';
+        }
+
+        const response = await fetch('/post', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Posted Successfully!',
+                text: result.message,
+                background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+            });
+
+            // Clear form and draft
+            document.getElementById('postForm').reset();
+            clearFilePreview();
+            clearDraft();
+
+            // Reset platform selections
+            document.querySelectorAll('.platform-card').forEach(card => {
+                const checkbox = card.querySelector('input[type="checkbox"]');
+                if (checkbox) {
+                    checkbox.checked = false;
+                    updatePlatformCardAppearance(card, false);
+                }
+            });
+
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Posting Failed',
+                text: result.message || 'An error occurred while posting.',
+                background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+            });
+        }
+
+    } catch (error) {
+        console.error('Post submission error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Network Error',
+            text: 'Failed to connect to the server. Please try again.',
+            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+        });
+    } finally {
+        // Reset button state
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Publish Post';
+        }
+    }
 }
 
 // File validation
 function validateFile(file) {
     const maxSize = 10 * 1024 * 1024; // 10MB
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/mov', 'video/avi', 'video/mkv', 'video/webm'];
+    const allowedTypes = [
+        'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+        'video/mp4', 'video/mov', 'video/avi', 'video/mkv', 'video/webm'
+    ];
 
     if (file.size > maxSize) {
-        return { valid: false, message: t('file_too_large') };
+        return { valid: false, message: 'File size exceeds 10MB limit' };
     }
 
     if (!allowedTypes.includes(file.type)) {
-        return { valid: false, message: t('invalid_file') };
+        return { valid: false, message: 'File type not supported. Use: jpg, png, gif, webp, mp4, mov, avi, mkv, webm' };
     }
 
     return { valid: true, message: '' };
@@ -141,17 +387,84 @@ function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// Format date
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(currentLang === 'ar' ? 'ar-SA' : 'en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+// Auto-save draft functionality
+let draftTimer;
+const DRAFT_KEY = 'post_draft';
+
+function saveDraft() {
+    const contentEl = document.getElementById('content');
+    if (contentEl && contentEl.value.trim() && contentEl.value.trim().length > 5) {
+        const draft = {
+            content: contentEl.value,
+            timestamp: Date.now()
+        };
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    }
+}
+
+function loadDraft() {
+    try {
+        const draftStr = localStorage.getItem(DRAFT_KEY);
+        if (draftStr) {
+            const draft = JSON.parse(draftStr);
+            if (draft && draft.content && draft.content.trim()) {
+                const contentEl = document.getElementById('content');
+                if (contentEl && !contentEl.value.trim()) {
+                    if (draft.content.trim().length > 5) {
+                        contentEl.value = draft.content;
+                        console.log('Draft loaded');
+                    }
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Error loading draft:', e);
+    }
+}
+
+function clearDraft() {
+    localStorage.removeItem(DRAFT_KEY);
+}
+
+// Initialize draft functionality
+function initializeDraftFunctionality() {
+    const contentEl = document.getElementById('content');
+    if (contentEl) {
+        contentEl.addEventListener('input', function() {
+            clearTimeout(draftTimer);
+            draftTimer = setTimeout(saveDraft, 2000);
+        });
+    }
+}
+
+// Mobile menu toggle
+function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenu) {
+        mobileMenu.classList.toggle('hidden');
+    }
+}
+
+// Utility functions
+function showToast(message, type = 'info') {
+    const toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+    });
+
+    toast.fire({
+        icon: type,
+        title: message
     });
 }
+
+// Initialize all functionality when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDraftFunctionality();
+});
 
 // Platform icons mapping
 const platformIcons = {
@@ -323,54 +636,6 @@ document.addEventListener('keydown', function(e) {
     // Escape to close modals (handled by SweetAlert2)
     if (e.key === 'Escape') {
         Swal.close();
-    }
-});
-
-// Auto-save draft functionality
-let draftTimer;
-const DRAFT_KEY = 'post_draft';
-
-function saveDraft() {
-    const contentEl = document.getElementById('content');
-    if (contentEl && contentEl.value.trim() && contentEl.value.trim().length > 5) {
-        const draft = {
-            content: contentEl.value,
-            timestamp: Date.now()
-        };
-        setStorage(DRAFT_KEY, draft);
-    }
-}
-
-function loadDraft() {
-    const draft = getStorage(DRAFT_KEY);
-    if (draft && draft.content && draft.content.trim()) {
-        const contentEl = document.getElementById('content');
-        if (contentEl && !contentEl.value.trim()) {
-            // Only load draft if it's substantial content (more than just whitespace)
-            if (draft.content.trim().length > 5) {
-                contentEl.value = draft.content;
-                showToast('Draft loaded', 'info');
-            }
-        }
-    }
-}
-
-function clearDraft() {
-    localStorage.removeItem(DRAFT_KEY);
-}
-
-// Initialize draft functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const contentEl = document.getElementById('content');
-    if (contentEl) {
-        // Load draft on page load
-        loadDraft();
-
-        // Auto-save as user types
-        contentEl.addEventListener('input', function() {
-            clearTimeout(draftTimer);
-            draftTimer = setTimeout(saveDraft, 2000); // Save after 2 seconds of inactivity
-        });
     }
 });
 
@@ -587,7 +852,7 @@ function toggleDarkMode() {
     updateDarkModeIcon();
 }
 // Platform colors for badges
-const platformColors = {
+const platformColors_badges = {
     telegram: 'text-blue-500',
     instagram: 'text-pink-500',
     youtube: 'text-red-500',
@@ -606,7 +871,7 @@ const platformColors = {
 };
 
 // Platform icons
-const platformIcons = {
+const platformIcons_all = {
     telegram: 'fab fa-telegram-plane',
     instagram: 'fab fa-instagram',
     youtube: 'fab fa-youtube',
@@ -623,11 +888,12 @@ const platformIcons = {
     medium: 'fab fa-medium',
     tumblr: 'fab fa-tumblr'
 };
+
 // Initialize app on page load
-document.addEventListener('DOMContentLoaded', function() {
-    updateLanguage();
-    updateTheme();
-    console.log('Anonymous Creations Dashboard initialized');
-});
+// document.addEventListener('DOMContentLoaded', function() {
+//     updateLanguage();
+//     updateTheme();
+//     console.log('Anonymous Creations Dashboard initialized');
+// });
 
 console.log('Anonymous Creations Dashboard initialized');

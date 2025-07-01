@@ -120,22 +120,22 @@ def validate_file(file: UploadFile) -> tuple[bool, str, str]:
     """Validate uploaded file"""
     if not file.filename:
         return False, "No file selected", ""
-    
+
     # Check file size
     if file.size and file.size > MAX_FILE_SIZE:
         return False, "File size exceeds 10MB limit", ""
-    
+
     # Check file extension
     file_ext = file.filename.split('.')[-1].lower()
     file_type = ""
-    
+
     if file_ext in ALLOWED_EXTENSIONS['image']:
         file_type = "image"
     elif file_ext in ALLOWED_EXTENSIONS['video']:
         file_type = "video"
     else:
         return False, f"File type .{file_ext} not allowed", ""
-    
+
     return True, "", file_type
 
 @app.on_event("startup")
@@ -305,7 +305,7 @@ async def register(
                     "error": "Passwords do not match"
                 }
             )
-        
+
         # Check if user already exists
         existing_user = db.query(User).filter(User.username == username).first()
         if existing_user:
@@ -316,26 +316,26 @@ async def register(
                     "error": "Username already exists"
                 }
             )
-        
+
         # Create new user
         hashed_password = get_password_hash(password)
         new_user = User(
             username=username,
             hashed_password=hashed_password
         )
-        
+
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
-        
+
         # Auto-login after registration
         request.session.clear()
         request.session["user_id"] = new_user.id
         request.session["username"] = new_user.username
         request.session["authenticated"] = True
-        
+
         return RedirectResponse(url="/dashboard", status_code=302)
-        
+
     except Exception as e:
         print(f"Registration error: {e}")
         return templates.TemplateResponse(
@@ -458,25 +458,25 @@ async def create_post(
             'discord', 'whatsapp', 'threads', 'medium', 'tumblr'
         ]
         platforms = [p for p in platforms if p in valid_platforms]
-        
+
         if not platforms:
             return JSONResponse(
                 status_code=400,
                 content={"success": False, "message": "At least one platform must be selected"}
             )
-        
+
         # Handle media upload with improved error handling
         file_path = None
         file_type = None
         full_file_path = None
-        
+
         if media and media.filename and media.filename.strip() and media.size and media.size > 0:
             try:
                 print(f"Processing media upload: {media.filename}, size: {media.size}")
-                
+
                 # Validate file type first
                 file_ext = media.filename.split('.')[-1].lower()
-                
+
                 if file_ext in ALLOWED_EXTENSIONS['image']:
                     file_type = "image"
                 elif file_ext in ALLOWED_EXTENSIONS['video']:
@@ -486,46 +486,46 @@ async def create_post(
                         status_code=400,
                         content={"success": False, "message": f"File type .{file_ext} not supported. Use: {', '.join(ALLOWED_EXTENSIONS['image'] + ALLOWED_EXTENSIONS['video'])}"}
                     )
-                
+
                 # Check file size
                 if media.size > MAX_FILE_SIZE:
                     return JSONResponse(
                         status_code=400,
                         content={"success": False, "message": f"File size ({media.size} bytes) exceeds 10MB limit"}
                     )
-                
+
                 # Read file content first to validate
                 media.file.seek(0)  # Reset file pointer
                 file_content = await media.read()
-                
+
                 if len(file_content) == 0:
                     return JSONResponse(
                         status_code=400,
                         content={"success": False, "message": "Uploaded file is empty"}
                     )
-                
+
                 # Generate unique filename and full path
                 unique_filename = f"{uuid.uuid4()}.{file_ext}"
                 file_path = f"uploads/{unique_filename}"
                 full_file_path = os.path.abspath(file_path)
-                
+
                 # Ensure uploads directory exists
                 os.makedirs("uploads", exist_ok=True)
-                
+
                 # Save file with proper binary mode
                 with open(full_file_path, "wb") as buffer:
                     buffer.write(file_content)
-                
+
                 # Verify file was saved correctly
                 if not os.path.exists(full_file_path):
                     raise Exception("File was not saved")
-                    
+
                 saved_size = os.path.getsize(full_file_path)
                 if saved_size == 0:
                     raise Exception("Saved file is empty")
-                
+
                 print(f"Media saved successfully: {full_file_path} ({saved_size} bytes, type: {file_type})")
-                
+
             except Exception as e:
                 print(f"Media upload error: {e}")
                 # Clean up any partial file
@@ -537,19 +537,19 @@ async def create_post(
                     file_path = None
                     file_type = None
                     full_file_path = None
-                
+
                 return JSONResponse(
                     status_code=500,
                     content={"success": False, "message": f"Media upload failed: {str(e)}"}
                 )
         else:
             print("No media file provided or file is empty")
-        
+
         # Calculate SEO metrics
         seo_score = calculate_seo_score(content, seo_keywords, seo_title, seo_description)
         readability_score = calculate_readability_score(content)
         hashtags = extract_hashtags(content)
-        
+
         # Create post log
         post_log = PostLog(
             content=content,
@@ -569,46 +569,46 @@ async def create_post(
         db.add(post_log)
         db.commit()
         db.refresh(post_log)
-        
+
         print(f"Starting to post to platforms: {platforms}")
         print(f"Content: {content[:50]}...")
         print(f"Media: {full_file_path} ({file_type})" if full_file_path else "No media")
-        
+
         # Post to platforms with full file path
         results = {}
         overall_success = True
-        
+
         for platform in platforms:
             try:
                 print(f"Posting to {platform}...")
-                
+
                 # Use the social manager method based on platform
                 if hasattr(social_manager, f'post_to_{platform}'):
                     method = getattr(social_manager, f'post_to_{platform}')
                     success, message = await method(content, full_file_path, file_type)
                 else:
                     success, message = False, f"Platform {platform} not implemented yet"
-                
+
                 print(f"{platform} result: {success} - {message}")
-                
+
                 results[platform] = {"success": success, "message": message}
                 if not success:
                     overall_success = False
-                    
+
             except Exception as e:
                 error_msg = f"Error posting to {platform}: {str(e)}"
                 print(error_msg)
                 results[platform] = {"success": False, "message": str(e)}
                 overall_success = False
-        
+
         # Update post log
         post_log.status = "completed" if overall_success else "failed"
         post_log.results = json.dumps(results)
         post_log.completed_at = datetime.utcnow()
         db.commit()
-        
+
         print(f"Post processing completed. Overall success: {overall_success}")
-        
+
         return JSONResponse(content={
             "success": overall_success,
             "results": results,
@@ -616,7 +616,7 @@ async def create_post(
             "post_id": post_log.id,
             "media_included": bool(full_file_path)
         })
-        
+
     except Exception as e:
         print(f"Post creation error: {e}")
         return JSONResponse(
@@ -638,7 +638,7 @@ async def logs_page(
         except Exception as db_error:
             print(f"Database error in logs: {db_error}")
             logs = []
-        
+
         return templates.TemplateResponse(
             "logs.html",
             {
@@ -669,7 +669,7 @@ async def get_logs(
     """Get logs via API"""
     try:
         logs = db.query(PostLog).order_by(PostLog.created_at.desc()).limit(50).all()
-        
+
         logs_data = []
         for log in logs:
             logs_data.append({
@@ -681,7 +681,7 @@ async def get_logs(
                 "completed_at": log.completed_at.isoformat() if log.completed_at else None,
                 "results": log.results
             })
-        
+
         return {"logs": logs_data}
     except Exception as e:
         print(f"API logs error: {e}")
@@ -696,10 +696,10 @@ async def get_log_details(
     """Get detailed log information"""
     try:
         log = db.query(PostLog).filter(PostLog.id == log_id, PostLog.user_id == user.id).first()
-        
+
         if not log:
             raise HTTPException(status_code=404, detail="Log not found")
-        
+
         return {
             "id": log.id,
             "content": log.content,
@@ -730,9 +730,9 @@ async def settings_page(
             PostLog.user_id == user.id, 
             PostLog.status == "completed"
         ).count()
-        
+
         success_rate = f"{(successful_posts / total_posts * 100):.1f}%" if total_posts > 0 else "0%"
-        
+
         return templates.TemplateResponse(
             "settings.html",
             {
@@ -750,7 +750,7 @@ async def settings_page(
 def calculate_seo_score(content: str, keywords: str = "", title: str = "", description: str = "") -> float:
     """Calculate SEO score based on content optimization"""
     score = 0.0
-    
+
     # Content length score (5-10 points)
     content_length = len(content.split())
     if 50 <= content_length <= 300:
@@ -759,7 +759,7 @@ def calculate_seo_score(content: str, keywords: str = "", title: str = "", descr
         score += 7
     else:
         score += 3
-    
+
     # Keywords usage (10-20 points)
     if keywords:
         keyword_list = [k.strip().lower() for k in keywords.split(',')]
@@ -771,7 +771,7 @@ def calculate_seo_score(content: str, keywords: str = "", title: str = "", descr
             score += 15
         else:
             score += 5
-    
+
     # Title optimization (5-15 points)
     if title:
         title_length = len(title)
@@ -781,7 +781,7 @@ def calculate_seo_score(content: str, keywords: str = "", title: str = "", descr
             score += 10
         else:
             score += 5
-    
+
     # Description optimization (5-15 points)
     if description:
         desc_length = len(description)
@@ -791,7 +791,7 @@ def calculate_seo_score(content: str, keywords: str = "", title: str = "", descr
             score += 10
         else:
             score += 5
-    
+
     # Hashtag presence (5-10 points)
     hashtag_count = len(re.findall(r'#\w+', content))
     if 3 <= hashtag_count <= 8:
@@ -800,7 +800,7 @@ def calculate_seo_score(content: str, keywords: str = "", title: str = "", descr
         score += 7
     else:
         score += 3
-    
+
     # Readability (5-10 points)
     readability = calculate_readability_score(content)
     if readability >= 70:
@@ -809,20 +809,20 @@ def calculate_seo_score(content: str, keywords: str = "", title: str = "", descr
         score += 7
     else:
         score += 5
-    
+
     return min(score, 100)
 
 def calculate_readability_score(content: str) -> float:
     """Calculate readability score using simplified Flesch Reading Ease"""
     sentences = len(re.split(r'[.!?]+', content))
     words = len(content.split())
-    
+
     if sentences == 0 or words == 0:
         return 0
-    
+
     # Simplified calculation
     avg_sentence_length = words / sentences
-    
+
     # Simple readability score (higher is better)
     if avg_sentence_length <= 15:
         return 90  # Very easy
@@ -832,7 +832,7 @@ def calculate_readability_score(content: str) -> float:
         return 60  # Fairly easy
     else:
         return 40  # Difficult
-    
+
 def extract_hashtags(content: str) -> str:
     """Extract hashtags from content"""
     hashtags = re.findall(r'#\w+', content)
@@ -842,21 +842,21 @@ def suggest_keywords(content: str) -> str:
     """Suggest keywords based on content analysis"""
     # Remove common stop words and get meaningful words
     stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those'}
-    
+
     words = re.findall(r'\b[a-zA-Z]{3,}\b', content.lower())
     meaningful_words = [word for word in words if word not in stop_words]
-    
+
     # Get most common words
     word_counts = Counter(meaningful_words)
     top_keywords = [word for word, count in word_counts.most_common(5)]
-    
+
     return ', '.join(top_keywords[:5])
 
 def simulate_analytics_data(post_id: int) -> dict:
     """Simulate analytics data for demonstration"""
     # In a real application, this would fetch data from social media APIs
     base_engagement = random.randint(10, 1000)
-    
+
     return {
         'views': base_engagement * random.randint(5, 20),
         'likes': base_engagement + random.randint(0, base_engagement // 2),
@@ -882,7 +882,7 @@ async def analytics_page(
         except Exception as db_error:
             print(f"Database error in analytics: {db_error}")
             posts = []
-        
+
         # Calculate overall analytics with safe defaults
         total_views = sum(getattr(post, 'views', 0) or 0 for post in posts)
         total_likes = sum(getattr(post, 'likes', 0) or 0 for post in posts)
@@ -890,14 +890,15 @@ async def analytics_page(
         total_comments = sum(getattr(post, 'comments', 0) or 0 for post in posts)
         total_clicks = sum(getattr(post, 'clicks', 0) or 0 for post in posts)
         total_reach = sum(getattr(post, 'reach', 0) or 0 for post in posts)
-        total_impressions = sum(getattr(post, 'impressions', 0) or 0 for post in posts)
-        
+        total_impressions = sum(```python
+getattr(post, 'impressions', 0) or 0 for post in posts)
+
         # Calculate engagement rate
         avg_engagement_rate = sum(getattr(post, 'engagement_rate', 0) or 0 for post in posts) / len(posts) if posts else 0
-        
+
         # Get top performing posts
         top_posts = sorted(posts, key=lambda x: (getattr(x, 'views', 0) or 0) + (getattr(x, 'likes', 0) or 0) + (getattr(x, 'shares', 0) or 0), reverse=True)[:5]
-        
+
         # Platform performance
         platform_stats = {}
         for post in posts:
@@ -914,11 +915,11 @@ async def analytics_page(
             except Exception as platform_error:
                 print(f"Platform stats error: {platform_error}")
                 continue
-        
+
         # SEO performance
         avg_seo_score = sum(getattr(post, 'seo_score', 0) or 0 for post in posts) / len(posts) if posts else 0
         avg_readability = sum(getattr(post, 'readability_score', 0) or 0 for post in posts) / len(posts) if posts else 0
-        
+
         return templates.TemplateResponse(
             "analytics.html",
             {
@@ -980,7 +981,7 @@ async def analyze_seo(
         readability_score = calculate_readability_score(content)
         suggested_keywords = suggest_keywords(content)
         hashtags = extract_hashtags(content)
-        
+
         return JSONResponse({
             "seo_score": round(seo_score, 1),
             "readability_score": round(readability_score, 1),
@@ -1005,7 +1006,7 @@ async def generate_ai_content_suggestions(topic: str, platform: str = "general",
                 "hashtags": [f"#{topic.replace(' ', '')}", "#content", "#socialmedia"],
                 "ai_powered": False
             }
-        
+
         # Platform-specific prompts
         platform_prompts = {
             "instagram": "Create Instagram-friendly content with visual appeal",
@@ -1016,21 +1017,21 @@ async def generate_ai_content_suggestions(topic: str, platform: str = "general",
             "youtube": "Create compelling YouTube content descriptions",
             "general": "Create engaging social media content"
         }
-        
+
         prompt = f"""
         Generate 3 creative social media content suggestions about '{topic}' for {platform}.
         Tone: {tone}
-        
+
         Requirements:
         - {platform_prompts.get(platform, platform_prompts['general'])}
         - Make it engaging and shareable
         - Include call-to-action where appropriate
-        
+
         Also suggest 5-8 relevant hashtags.
-        
+
         Format your response as JSON with 'suggestions' array and 'hashtags' array.
         """
-        
+
         response = await openai.ChatCompletion.acreate(
             model="gpt-3.5-turbo",
             messages=[
@@ -1040,7 +1041,7 @@ async def generate_ai_content_suggestions(topic: str, platform: str = "general",
             max_tokens=500,
             temperature=0.8
         )
-        
+
         content = response.choices[0].message.content
         try:
             result = json.loads(content)
@@ -1055,7 +1056,7 @@ async def generate_ai_content_suggestions(topic: str, platform: str = "general",
                 "hashtags": hashtags or [f"#{topic.replace(' ', '')}", "#content"],
                 "ai_powered": True
             }
-            
+
     except Exception as e:
         print(f"AI content generation error: {e}")
         return {
@@ -1077,21 +1078,21 @@ async def generate_ai_hashtags(content: str, platform: str = "general") -> List[
             stop_words = {'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'}
             keywords = [word for word in words if word not in stop_words][:5]
             return [f"#{word}" for word in keywords] + ["#socialmedia", "#content"]
-        
+
         prompt = f"""
         Analyze this social media content and suggest 8-12 relevant hashtags for {platform}:
-        
+
         Content: "{content}"
-        
+
         Requirements:
         - Mix of popular and niche hashtags
         - Platform-appropriate hashtags
         - Include trending hashtags where relevant
         - Avoid overly generic hashtags
-        
+
         Return only the hashtags, one per line, starting with #
         """
-        
+
         response = await openai.ChatCompletion.acreate(
             model="gpt-3.5-turbo",
             messages=[
@@ -1101,10 +1102,10 @@ async def generate_ai_hashtags(content: str, platform: str = "general") -> List[
             max_tokens=200,
             temperature=0.7
         )
-        
+
         hashtags = re.findall(r'#\w+', response.choices[0].message.content)
         return hashtags[:12]
-        
+
     except Exception as e:
         print(f"AI hashtag generation error: {e}")
         # Fallback hashtag generation
@@ -1114,25 +1115,25 @@ async def generate_ai_hashtags(content: str, platform: str = "general") -> List[
 def get_seo_recommendations(score: float, content: str, keywords: str, title: str, description: str) -> list:
     """Get SEO improvement recommendations"""
     recommendations = []
-    
+
     if score < 50:
         recommendations.append("Your content needs significant SEO improvements")
     elif score < 70:
         recommendations.append("Good SEO foundation, but there's room for improvement")
     else:
         recommendations.append("Excellent SEO optimization!")
-    
+
     # Content length recommendations
     word_count = len(content.split())
     if word_count < 20:
         recommendations.append("Consider adding more content (aim for 50-300 words)")
     elif word_count > 500:
         recommendations.append("Consider shortening your content for better engagement")
-    
+
     # Keywords recommendations
     if not keywords:
         recommendations.append("Add relevant keywords to improve discoverability")
-    
+
     # Title recommendations
     if not title:
         recommendations.append("Add a compelling title (30-60 characters)")
@@ -1140,7 +1141,7 @@ def get_seo_recommendations(score: float, content: str, keywords: str, title: st
         recommendations.append("Consider making your title longer (30-60 characters)")
     elif len(title) > 80:
         recommendations.append("Consider shortening your title (30-60 characters)")
-    
+
     # Description recommendations
     if not description:
         recommendations.append("Add a meta description (120-160 characters)")
@@ -1148,14 +1149,14 @@ def get_seo_recommendations(score: float, content: str, keywords: str, title: st
         recommendations.append("Consider making your description longer (120-160 characters)")
     elif len(description) > 200:
         recommendations.append("Consider shortening your description (120-160 characters)")
-    
+
     # Hashtag recommendations
     hashtag_count = len(re.findall(r'#\w+', content))
     if hashtag_count == 0:
         recommendations.append("Add relevant hashtags to increase reach")
     elif hashtag_count > 10:
         recommendations.append("Consider reducing hashtags (3-8 is optimal)")
-    
+
     return recommendations
 
 def get_trending_hashtags(platform: str = "general") -> List[str]:
@@ -1170,7 +1171,7 @@ def get_trending_hashtags(platform: str = "general") -> List[str]:
         "pinterest": ["#diy", "#inspiration", "#home", "#fashion", "#food", "#travel", "#wedding", "#design"],
         "general": ["#content", "#social", "#digital", "#online", "#community", "#share", "#engage", "#connect"]
     }
-    
+
     return trending_by_platform.get(platform, trending_by_platform["general"])
 
 def get_optimal_hashtag_count(platform: str) -> int:
@@ -1185,7 +1186,7 @@ def get_optimal_hashtag_count(platform: str) -> int:
         "pinterest": 10,
         "general": 5
     }
-    
+
     return optimal_counts.get(platform, 5)
 
 @app.post("/api/update-analytics/{post_id}")
@@ -1199,10 +1200,10 @@ async def update_analytics(
         post = db.query(PostLog).filter(PostLog.id == post_id, PostLog.user_id == user.id).first()
         if not post:
             raise HTTPException(status_code=404, detail="Post not found")
-        
+
         # Simulate fetching analytics data
         analytics_data = simulate_analytics_data(post_id)
-        
+
         # Update post with analytics data
         post.views = analytics_data['views']
         post.likes = analytics_data['likes']
@@ -1211,13 +1212,13 @@ async def update_analytics(
         post.clicks = analytics_data['clicks']
         post.reach = analytics_data['reach']
         post.impressions = analytics_data['impressions']
-        
+
         # Calculate engagement rate
         total_engagements = post.likes + post.shares + post.comments + post.clicks
         post.engagement_rate = (total_engagements / max(post.reach, 1)) * 100 if post.reach else 0
-        
+
         db.commit()
-        
+
         return JSONResponse({
             "message": "Analytics updated successfully",
             "analytics": analytics_data,
@@ -1273,21 +1274,21 @@ async def enhance_content_with_ai(
                 "suggestions": ["Add emojis to make it more engaging", "Consider adding a call-to-action"],
                 "ai_powered": False
             })
-        
+
         prompt = f"""
         Enhance this social media content for {platform}:
-        
+
         Original: "{content}"
-        
+
         Provide:
         1. An enhanced version of the content
         2. 3 specific improvement suggestions
-        
+
         Keep the core message but make it more engaging and platform-appropriate.
-        
+
         Format as JSON with 'enhanced_content' and 'suggestions' array.
         """
-        
+
         response = await openai.ChatCompletion.acreate(
             model="gpt-3.5-turbo",
             messages=[
@@ -1297,7 +1298,7 @@ async def enhance_content_with_ai(
             max_tokens=400,
             temperature=0.7
         )
-        
+
         try:
             result = json.loads(response.choices[0].message.content)
             result["ai_powered"] = True
@@ -1308,7 +1309,7 @@ async def enhance_content_with_ai(
                 "suggestions": ["Consider adding emojis", "Add a call-to-action", "Make it more conversational"],
                 "ai_powered": True
             })
-            
+
     except Exception as e:
         print(f"Content enhancement error: {e}")
         return JSONResponse({"error": "Failed to enhance content"}, status_code=500)
@@ -1340,7 +1341,7 @@ async def optimize_hashtags(
     try:
         hashtags = await generate_ai_hashtags(content, platform)
         trending_hashtags = get_trending_hashtags(platform)
-        
+
         return JSONResponse({
             "ai_hashtags": hashtags,
             "trending_hashtags": trending_hashtags,
@@ -1359,7 +1360,7 @@ async def settings_page(
     try:
         total_posts = 0
         successful_posts = 0
-        
+
         try:
             total_posts = db.query(PostLog).filter(PostLog.user_id == user.id).count()
             successful_posts = db.query(PostLog).filter(
@@ -1397,13 +1398,88 @@ async def settings_page(
             }
         )
 
+def migrate_existing_db():
+    """Migrate existing database to add missing columns"""
+    import sqlite3
+    import os
+
+    db_path = "dashboard.db"
+
+    if not os.path.exists(db_path):
+        return
+
+    conn = None
+    try:
+        conn = sqlite3.connect(db_path, timeout=30)
+        cursor = conn.cursor()
+
+        # Check if post_logs table exists
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='post_logs'")
+        if not cursor.fetchone():
+            print("post_logs table does not exist, will be created")
+            return
+
+        # Check if analytics columns exist
+        cursor.execute("PRAGMA table_info(post_logs)")
+        columns = [column[1] for column in cursor.fetchall()]
+
+        # Analytics columns to add
+        analytics_columns = [
+            ("views", "INTEGER DEFAULT 0"),
+            ("likes", "INTEGER DEFAULT 0"), 
+            ("shares", "INTEGER DEFAULT 0"),
+            ("comments", "INTEGER DEFAULT 0"),
+            ("clicks", "INTEGER DEFAULT 0"),
+            ("engagement_rate", "REAL DEFAULT 0.0"),
+            ("reach", "INTEGER DEFAULT 0"),
+            ("impressions", "INTEGER DEFAULT 0")
+        ]
+
+        # SEO columns to add
+        seo_columns = [
+            ("seo_keywords", "TEXT"),
+            ("seo_title", "TEXT"),
+            ("seo_description", "TEXT"),
+            ("hashtags", "TEXT"),
+            ("seo_score", "REAL DEFAULT 0.0"),
+            ("readability_score", "REAL DEFAULT 0.0")
+        ]
+
+        all_new_columns = analytics_columns + seo_columns
+
+        # Add missing columns
+        for column_name, column_type in all_new_columns:
+            if column_name not in columns:
+                try:
+                    cursor.execute(f"ALTER TABLE post_logs ADD COLUMN {column_name} {column_type}")
+                    print(f"✅ Added missing column: {column_name}")
+                except sqlite3.OperationalError as e:
+                    if "duplicate column name" not in str(e):
+                        print(f"❌ Error adding column {column_name}: {e}")
+
+        conn.commit()
+        print("Database migration completed successfully")
+
+    except Exception as e:
+        print(f"Migration error: {e}")
+        if conn:
+            conn.rollback()
+    finally:
+        if conn:
+            conn.close()
+
 if __name__ == "__main__":
     import uvicorn
     print("🚀 Starting Anonymous Creations Dashboard...")
     print("📱 Server will be available at http://0.0.0.0:5000")
     print("🔧 Initializing application...")
-    
+
     try:
+        # Run database migration on startup
+        print("Attempting database migration...")
+        migrate_existing_db()
+        print("Database migration check completed.")
+
         uvicorn.run(
             app, 
             host="0.0.0.0", 
