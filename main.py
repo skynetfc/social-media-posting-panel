@@ -87,14 +87,31 @@ MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 def get_current_user(request: Request, db: Session = Depends(get_db)):
     """Get current user from session"""
     try:
+        # Check if session exists and has required data
+        if not hasattr(request, 'session') or not request.session:
+            print("No session found")
+            return None
+            
         user_id = request.session.get("user_id")
-        if user_id:
-            user = db.query(User).filter(User.id == user_id).first()
-            if user:
-                return user
-        return None
+        authenticated = request.session.get("authenticated", False)
+        
+        if not user_id or not authenticated:
+            print("No user_id or not authenticated in session")
+            return None
+            
+        # Query user from database
+        user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
+        if user:
+            print(f"User found: {user.username}")
+            return user
+        else:
+            print(f"User with ID {user_id} not found or inactive")
+            return None
+            
     except Exception as e:
         print(f"Authentication error: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 def require_auth(request: Request, db: Session = Depends(get_db)):
@@ -138,10 +155,20 @@ async def startup_event():
     print("📁 Creating uploads directory...")
     os.makedirs("uploads", exist_ok=True)
     
+    # Initialize database and create tables
+    try:
+        print("🗃️ Initializing database...")
+        init_db()
+        print("✅ Database initialized successfully")
+    except Exception as e:
+        print(f"❌ Database initialization error: {e}")
+    
     # Create default admin user if it doesn't exist
     try:
         print("👤 Setting up admin user...")
         db = next(get_db())
+        
+        # Check if admin user exists
         admin_user = db.query(User).filter(User.username == "admin").first()
         if not admin_user:
             print("🆕 Creating default admin user...")
@@ -153,14 +180,20 @@ async def startup_event():
             )
             db.add(admin_user)
             db.commit()
+            db.refresh(admin_user)
             print("✅ Admin user created successfully")
         else:
             print("✅ Admin user already exists")
-        db.close()
+        
     except Exception as e:
-        print(f"❌ Startup error: {e}")
+        print(f"❌ Admin user setup error: {e}")
         import traceback
         traceback.print_exc()
+    finally:
+        try:
+            db.close()
+        except:
+            pass
     
     print("🎉 Application startup completed!")
 
@@ -180,7 +213,17 @@ async def root(request: Request, db: Session = Depends(get_db)):
 async def login_page(request: Request):
     """Login page"""
     try:
-        return templates.TemplateResponse("login.html", {"request": request})
+        # Check if there's an error parameter
+        error_param = request.query_params.get("error")
+        error_message = None
+        
+        if error_param == "dashboard_error":
+            error_message = "Dashboard access error. Please try logging in again."
+        
+        return templates.TemplateResponse("login.html", {
+            "request": request,
+            "error": error_message
+        })
     except Exception as e:
         print(f"Login page error: {e}")
         return HTMLResponse(content="<h1>Error loading login page</h1>", status_code=500)
@@ -194,9 +237,13 @@ async def login(
 ):
     """Handle login"""
     try:
-        user = db.query(User).filter(User.username == username).first()
+        print(f"Login attempt for username: {username}")
         
-        if not user or not verify_password(password, str(user.hashed_password)):
+        # Find user by username
+        user = db.query(User).filter(User.username == username, User.is_active == True).first()
+        
+        if not user:
+            print(f"User {username} not found")
             return templates.TemplateResponse(
                 "login.html", 
                 {
@@ -204,6 +251,19 @@ async def login(
                     "error": "Invalid username or password"
                 }
             )
+        
+        # Verify password
+        if not verify_password(password, str(user.hashed_password)):
+            print(f"Invalid password for user {username}")
+            return templates.TemplateResponse(
+                "login.html", 
+                {
+                    "request": request, 
+                    "error": "Invalid username or password"
+                }
+            )
+        
+        print(f"Successful login for user: {username}")
         
         # Clear any existing session data
         request.session.clear()
@@ -213,10 +273,14 @@ async def login(
         request.session["username"] = user.username
         request.session["authenticated"] = True
         
+        print(f"Session set for user {username} with ID {user.id}")
+        
         return RedirectResponse(url="/dashboard", status_code=302)
         
     except Exception as e:
         print(f"Login error: {e}")
+        import traceback
+        traceback.print_exc()
         return templates.TemplateResponse(
             "login.html", 
             {
@@ -296,30 +360,42 @@ async def logout(request: Request):
         return RedirectResponse(url="/login", status_code=302)
 
 @app.get("/dashboard", response_class=HTMLResponse)
-async def dashboard(
-    request: Request, 
-    user: User = Depends(require_auth),
-    db: Session = Depends(get_db)
-):
+async def dashboard(request: Request, db: Session = Depends(get_db)):
     """Dashboard page"""
     try:
-        # Get recent posts
-        recent_posts = db.query(PostLog).filter(PostLog.user_id == user.id).order_by(PostLog.created_at.desc()).limit(10).all()
+        # Check authentication first
+        user = get_current_user(request, db)
+        if not user:
+            print("No authenticated user found, redirecting to login")
+            return RedirectResponse(url="/login", status_code=302)
         
-        # Calculate statistics
-        total_posts = db.query(PostLog).filter(PostLog.user_id == user.id).count()
-        successful_posts = db.query(PostLog).filter(
-            PostLog.user_id == user.id, 
-            PostLog.status == "completed"
-        ).count()
-        failed_posts = db.query(PostLog).filter(
-            PostLog.user_id == user.id, 
-            PostLog.status == "failed"
-        ).count()
-        pending_posts = db.query(PostLog).filter(
-            PostLog.user_id == user.id, 
-            PostLog.status == "pending"
-        ).count()
+        print(f"Dashboard accessed by user: {user.username}")
+        
+        # Get recent posts with error handling
+        recent_posts = []
+        total_posts = 0
+        successful_posts = 0
+        failed_posts = 0
+        pending_posts = 0
+        
+        try:
+            recent_posts = db.query(PostLog).filter(PostLog.user_id == user.id).order_by(PostLog.created_at.desc()).limit(10).all()
+            total_posts = db.query(PostLog).filter(PostLog.user_id == user.id).count()
+            successful_posts = db.query(PostLog).filter(
+                PostLog.user_id == user.id, 
+                PostLog.status == "completed"
+            ).count()
+            failed_posts = db.query(PostLog).filter(
+                PostLog.user_id == user.id, 
+                PostLog.status == "failed"
+            ).count()
+            pending_posts = db.query(PostLog).filter(
+                PostLog.user_id == user.id, 
+                PostLog.status == "pending"
+            ).count()
+        except Exception as db_error:
+            print(f"Database query error: {db_error}")
+            # Continue with empty/zero values
         
         return templates.TemplateResponse(
             "dashboard.html", 
@@ -335,7 +411,9 @@ async def dashboard(
         )
     except Exception as e:
         print(f"Dashboard error: {e}")
-        return HTMLResponse(content="<h1>Dashboard Error</h1><p>Please try refreshing the page or logging in again.</p>", status_code=500)
+        import traceback
+        traceback.print_exc()
+        return RedirectResponse(url="/login?error=dashboard_error", status_code=302)
 
 @app.post("/post")
 async def create_post(
