@@ -641,49 +641,42 @@ function initDashboardFeatures() {
                         }
                     }
 
-                    // Show professional success popup
+                    // Show professional success popup with auto-close
                     Swal.fire({
                         icon: 'success',
-                        title: '🎉 Post Published Successfully!',
+                        title: 'Post Published Successfully!',
                         html: `
                             <div class="text-center">
-                                <div class="mb-4">
-                                    <i class="fas fa-check-circle text-4xl text-green-500 mb-2"></i>
-                                    <p class="text-lg font-medium text-gray-800 dark:text-gray-200">Your content is now live!</p>
+                                <div class="mb-3">
+                                    <i class="fas fa-check-circle text-3xl text-green-500 mb-2"></i>
+                                    <p class="text-base font-medium">Your content is now live!</p>
                                 </div>
-                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-4">
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">${successMessage}</p>
-                                </div>
-                                <div class="flex justify-center space-x-2">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        <i class="fas fa-rocket mr-1"></i>Published
-                                    </span>
+                                <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 mb-3">
+                                    <p class="text-sm text-green-700 dark:text-green-300">${successMessage}</p>
                                 </div>
                             </div>
                         `,
                         background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
                         color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000',
                         confirmButtonColor: '#10b981',
-                        confirmButtonText: 'Create Another Post',
+                        confirmButtonText: 'Continue',
+                        timer: 4000,
+                        timerProgressBar: true,
+                        allowOutsideClick: true,
+                        allowEscapeKey: true,
                         showClass: {
-                            popup: 'animate__animated animate__fadeInDown'
+                            popup: 'swal2-show',
+                            backdrop: 'swal2-backdrop-show',
+                            icon: 'swal2-icon-show'
                         },
                         hideClass: {
-                            popup: 'animate__animated animate__fadeOutUp'
+                            popup: 'swal2-hide',
+                            backdrop: 'swal2-backdrop-hide',
+                            icon: 'swal2-icon-hide'
                         }
                     }).then(() => {
                         // Reset form without page reload
-                        postForm.reset();
-                        if (filePreview) filePreview.classList.add('hidden');
-                        // Uncheck all platforms
-                        platformCheckboxes.forEach(checkbox => {
-                            checkbox.checked = false;
-                            const label = checkbox.nextElementSibling;
-                            const check = label.querySelector('.platform-check');
-                            label.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
-                            label.classList.add('border-gray-200', 'dark:border-gray-600');
-                            check.classList.add('opacity-0');
-                        });
+                        resetFormAfterSuccess();
                         // Update stats without full page reload
                         updateDashboardStats();
                     });
@@ -734,4 +727,36 @@ async function updateDashboardStats() {
     } catch (error) {
         console.log("Stats update failed, will update on next page load");
     }
+}
+
+// Reset form after successful post
+function resetFormAfterSuccess() {
+    const postForm = document.getElementById('post-form');
+    const filePreview = document.getElementById('file-preview');
+    const platformCheckboxes = document.querySelectorAll('input[name="platforms"]');
+    
+    if (postForm) {
+        postForm.reset();
+    }
+    
+    if (filePreview) {
+        filePreview.classList.add('hidden');
+    }
+    
+    // Uncheck all platforms and reset their visual state
+    platformCheckboxes.forEach(checkbox => {
+        checkbox.checked = false;
+        const label = checkbox.nextElementSibling;
+        if (label) {
+            const check = label.querySelector('.platform-check');
+            label.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+            label.classList.add('border-gray-200', 'dark:border-gray-600');
+            if (check) {
+                check.classList.add('opacity-0');
+            }
+        }
+    });
+    
+    // Clear draft
+    clearDraft();
 }

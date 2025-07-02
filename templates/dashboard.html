@@ -375,7 +375,7 @@
                     </h2>
                 </div>
 
-                <form id="postForm" class="p-6 space-y-6" enctype="multipart/form-data">
+                <form id="postForm" class="p-4 md:p-6 space-y-4 md:space-y-6" enctype="multipart/form-data">
                     <!-- Content -->
                     <div>
                         <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="content">Content</label>
@@ -406,10 +406,10 @@
                     <!-- Platform Selection -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3" data-translate="select_platforms">Select Platforms</label>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
                             <div class="platform-card relative">
                                 <input type="checkbox" id="telegram" name="platforms" value="telegram" class="sr-only">
-                                <label for="telegram" class="flex items-center p-3 md:p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800 min-h-[60px]">
+                                <label for="telegram" class="flex items-center p-3 md:p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800 min-h-[64px] touch-manipulation">
                                     <i class="fab fa-telegram text-blue-500 text-lg md:text-xl mr-2 md:mr-3 flex-shrink-0"></i>
                                     <span class="text-gray-900 dark:text-white font-medium text-sm md:text-base truncate" data-translate="telegram">Telegram</span>
                                     <i class="fas fa-check absolute top-2 right-2 text-green-500 opacity-0 platform-check text-sm"></i>
@@ -418,7 +418,7 @@
 
                             <div class="platform-card relative">
                                 <input type="checkbox" id="instagram" name="platforms" value="instagram" class="sr-only">
-                                <label for="instagram" class="flex items-center p-3 md:p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-pink-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800 min-h-[60px] touch-manipulation">
+                                <label for="instagram" class="flex items-center p-3 md:p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-pink-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-gray-800 min-h-[64px] touch-manipulation">
                                     <i class="fab fa-instagram text-pink-500 text-lg md:text-xl mr-2 md:mr-3 flex-shrink-0"></i>
                                     <span class="text-gray-900 dark:text-white font-medium text-sm md:text-base truncate" data-translate="instagram">Instagram</span>
                                     <i class="fas fa-check absolute top-2 right-2 text-green-500 opacity-0 platform-check text-sm"></i>
@@ -645,7 +645,7 @@
                         <button 
                             type="submit" 
                             id="submitBtn"
-                            class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-2.5 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-102 transition-all duration-200 flex items-center justify-center text-sm"
+                            class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center text-sm md:text-base min-w-[140px] w-auto"
                         >
                             <i class="fas fa-paper-plane mr-2"></i>
                             <span id="submitText" data-translate="post_now">Post Now</span>
