@@ -390,13 +390,13 @@
                                 placeholder="What's on your mind? Share your thoughts with the world..."
                             ></textarea>
                             <div class="absolute top-2 right-2 flex gap-2">
-                                <button type="button" id="aiSuggestBtn" class="px-3 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors duration-200" title="AI Suggestions">
+                                <button type="button" id="aiSuggestBtn" onclick="showAIModal(event)" class="px-3 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors duration-200" title="AI Suggestions">
                                     <i class="fas fa-magic"></i>
                                 </button>
-                                <button type="button" id="enhanceBtn" class="px-3 py-2 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 rounded-lg hover:bg-green-200 dark:hover:bg-green-800 transition-colors duration-200" title="Enhance Content">
+                                <button type="button" id="enhanceBtn" onclick="enhanceContentFromButton(event)" class="px-3 py-2 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 rounded-lg hover:bg-green-200 dark:hover:bg-green-800 transition-colors duration-200" title="Enhance Content">
                                     <i class="fas fa-sparkles"></i>
                                 </button>
-                                <button type="button" id="hashtagBtn" class="px-3 py-2 bg-pink-100 dark:bg-pink-900 text-pink-800 dark:text-pink-300 rounded-lg hover:bg-pink-200 dark:hover:bg-pink-800 transition-colors duration-200" title="Generate Hashtags">
+                                <button type="button" id="hashtagBtn" onclick="generateHashtagsFromButton(event)" class="px-3 py-2 bg-pink-100 dark:bg-pink-900 text-pink-800 dark:text-pink-300 rounded-lg hover:bg-pink-200 dark:hover:bg-pink-800 transition-colors duration-200" title="Generate Hashtags">
                                     <i class="fas fa-hashtag"></i>
                                 </button>
                             </div>
@@ -599,7 +599,7 @@
                                     </h4>
                                     <input type="text" id="topic-input" placeholder="Enter topic..." 
                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm mb-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                                    <button onclick="generateContentIdeas()" 
+                                    <button type="button" onclick="generateContentIdeas(event)" 
                                             class="w-full bg-purple-600 hover:bg-purple-700 text-white text-sm py-2 px-3 rounded-md transition-colors duration-200">
                                         <i class="fas fa-magic mr-1"></i>
                                         <span data-translate="generate_ideas">Generate Ideas</span>
@@ -612,7 +612,7 @@
                                         <i class="fas fa-hashtag mr-1 text-blue-500"></i>
                                         <span data-translate="hashtag_optimizer">Hashtag Optimizer</span>
                                     </h4>
-                                    <button onclick="optimizeHashtags()" 
+                                    <button type="button" onclick="optimizeHashtags(event)" 
                                             class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-3 rounded-md transition-colors duration-200">
                                         <i class="fas fa-tags mr-1"></i>
                                         <span data-translate="optimize_hashtags">Optimize Hashtags</span>
@@ -625,7 +625,7 @@
                                         <i class="fas fa-wand-magic-sparkles mr-1 text-green-500"></i>
                                         <span data-translate="content_enhancer">Content Enhancer</span>
                                     </h4>
-                                    <button onclick="enhanceContent()" 
+                                    <button type="button" onclick="enhanceContent(event)" 
                                             class="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2 px-3 rounded-md transition-colors duration-200">
                                         <i class="fas fa-sparkles mr-1"></i>
                                         <span data-translate="enhance_content">Enhance Content</span>

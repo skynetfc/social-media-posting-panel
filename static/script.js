@@ -533,8 +533,76 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Initialize AI modal handlers
+    initializeAIModalHandlers();
+    
     console.log('Dashboard script initialization complete');
 });
+
+function initializeAIModalHandlers() {
+    const closeModalBtn = document.getElementById('closeAiModal');
+    const generateBtn = document.getElementById('generateSuggestions');
+    const modal = document.getElementById('aiSuggestModal');
+    
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    }
+    
+    if (generateBtn) {
+        generateBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const topic = document.getElementById('aiTopic')?.value?.trim();
+            const platform = document.getElementById('aiPlatform')?.value || 'general';
+            const tone = document.getElementById('aiTone')?.value || 'neutral';
+            
+            if (!topic) {
+                showToast('Please enter a topic', 'warning');
+                return;
+            }
+            
+            showToast('Generating AI suggestions...', 'info');
+            
+            // Simulate AI generation
+            setTimeout(() => {
+                const suggestions = [
+                    `Discover the fascinating world of ${topic}! Here's what you need to know...`,
+                    `${topic} is revolutionizing our industry. Here are the key insights...`,
+                    `5 surprising facts about ${topic} that will change your perspective...`,
+                    `The future of ${topic}: trends and predictions for 2024...`
+                ];
+                
+                const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+                const contentTextarea = document.getElementById('content');
+                
+                if (contentTextarea) {
+                    contentTextarea.value = randomSuggestion;
+                    contentTextarea.focus();
+                }
+                
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
+                
+                showToast('AI suggestion applied!', 'success');
+            }, 1500);
+        });
+    }
+    
+    // Close modal when clicking outside
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    }
+}
 
 // Dashboard specific functionality
 function initDashboardFeatures() {
@@ -759,4 +827,137 @@ function resetFormAfterSuccess() {
     
     // Clear draft
     clearDraft();
+}
+
+// AI Assistant Functions
+function generateContentIdeas(event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    
+    const topicInput = document.getElementById('topic-input');
+    const topic = topicInput ? topicInput.value.trim() : '';
+    
+    if (!topic) {
+        showToast('Please enter a topic to generate ideas', 'warning');
+        return;
+    }
+    
+    showToast('Generating content ideas...', 'info');
+    
+    // Simulate AI content generation
+    setTimeout(() => {
+        const ideas = [
+            `5 amazing facts about ${topic} that will surprise you`,
+            `How ${topic} is changing the world in 2024`,
+            `The ultimate guide to understanding ${topic}`,
+            `Why everyone is talking about ${topic} right now`
+        ];
+        
+        const randomIdea = ideas[Math.floor(Math.random() * ideas.length)];
+        const contentTextarea = document.getElementById('content');
+        
+        if (contentTextarea) {
+            contentTextarea.value = randomIdea;
+            contentTextarea.focus();
+        }
+        
+        showToast('Content idea generated!', 'success');
+    }, 1000);
+}
+
+function optimizeHashtags(event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    
+    const contentTextarea = document.getElementById('content');
+    const content = contentTextarea ? contentTextarea.value.trim() : '';
+    
+    if (!content) {
+        showToast('Please write some content first to optimize hashtags', 'warning');
+        return;
+    }
+    
+    showToast('Optimizing hashtags...', 'info');
+    
+    // Generate hashtags based on content
+    setTimeout(() => {
+        const words = content.toLowerCase().split(/\s+/);
+        const keywords = words.filter(word => word.length > 4 && !['that', 'with', 'this', 'have', 'will', 'from', 'they', 'been', 'their'].includes(word));
+        
+        const hashtags = keywords.slice(0, 5).map(word => `#${word.replace(/[^a-zA-Z0-9]/g, '')}`);
+        hashtags.push('#trending', '#content', '#social');
+        
+        const hashtagString = '\n\n' + hashtags.join(' ');
+        
+        if (contentTextarea && !contentTextarea.value.includes('#')) {
+            contentTextarea.value += hashtagString;
+        }
+        
+        showToast('Hashtags optimized!', 'success');
+    }, 1000);
+}
+
+function enhanceContent(event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    
+    const contentTextarea = document.getElementById('content');
+    const content = contentTextarea ? contentTextarea.value.trim() : '';
+    
+    if (!content) {
+        showToast('Please write some content first to enhance', 'warning');
+        return;
+    }
+    
+    showToast('Enhancing content...', 'info');
+    
+    // Enhance content
+    setTimeout(() => {
+        const emojis = ['✨', '🚀', '💡', '🔥', '⭐', '🎯', '💪', '🌟'];
+        const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+        
+        let enhancedContent = content;
+        
+        // Add emoji if not present
+        if (!content.includes('✨') && !content.includes('🚀') && !content.includes('💡')) {
+            enhancedContent = `${randomEmoji} ${enhancedContent}`;
+        }
+        
+        // Add call to action if not present
+        if (!content.toLowerCase().includes('what do you think') && !content.toLowerCase().includes('comment') && !content.toLowerCase().includes('share')) {
+            enhancedContent += '\n\nWhat do you think? Share your thoughts below! 👇';
+        }
+        
+        if (contentTextarea) {
+            contentTextarea.value = enhancedContent;
+        }
+        
+        showToast('Content enhanced!', 'success');
+    }, 1000);
+}
+
+function showAIModal(event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    
+    const modal = document.getElementById('aiSuggestModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+}
+
+function enhanceContentFromButton(event) {
+    enhanceContent(event);
+}
+
+function generateHashtagsFromButton(event) {
+    optimizeHashtags(event);
 }
