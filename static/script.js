@@ -296,6 +296,12 @@ function updateTheme() {
     const themeIcon = document.getElementById('theme-icon');
     const themeText = document.getElementById('theme-text');
 
+    // Add transition class for smooth switching
+    if (!html.classList.contains('theme-transitioning')) {
+        html.classList.add('theme-transitioning');
+        setTimeout(() => html.classList.remove('theme-transitioning'), 300);
+    }
+
     if (currentTheme === 'dark') {
         html.classList.add('dark');
         if (themeIcon) themeIcon.className = 'fas fa-sun text-sm';

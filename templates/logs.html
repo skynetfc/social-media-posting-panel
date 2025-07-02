@@ -42,7 +42,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -56,7 +56,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -70,7 +70,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -98,7 +98,7 @@
                         <option value="pending">Pending</option>
                     </select>
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Platform</label>
                     <select id="platformFilter" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white">
@@ -109,12 +109,12 @@
                         <option value="tiktok">TikTok</option>
                     </select>
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Range</label>
                     <input type="date" id="dateFilter" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white">
                 </div>
-                
+
                 <div class="flex items-end">
                     <button onclick="clearFilters()" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md transition-colors duration-300">
                         Clear Filters
@@ -128,7 +128,7 @@
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Post History</h3>
             </div>
-            
+
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-900">
@@ -215,7 +215,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                
+
                 {% if not logs %}
                 <div class="text-center py-12">
                     <i class="fas fa-inbox text-gray-400 text-6xl mb-4"></i>
@@ -254,22 +254,22 @@ function filterLogs() {
     const platformFilter = document.getElementById('platformFilter').value;
     const dateFilter = document.getElementById('dateFilter').value;
     const rows = document.querySelectorAll('.log-row');
-    
+
     rows.forEach(row => {
         let show = true;
-        
+
         if (statusFilter && row.dataset.status !== statusFilter) {
             show = false;
         }
-        
+
         if (platformFilter && !row.dataset.platforms.includes(platformFilter)) {
             show = false;
         }
-        
+
         if (dateFilter && row.dataset.date !== dateFilter) {
             show = false;
         }
-        
+
         row.style.display = show ? '' : 'none';
     });
 }
@@ -297,7 +297,7 @@ function viewDetails(logId) {
                         <h4 class="font-semibold mb-2">Content:</h4>
                         <p class="bg-gray-100 dark:bg-gray-700 p-3 rounded">${data.content}</p>
                     </div>
-                    
+
                     <div>
                         <h4 class="font-semibold mb-2">Platforms:</h4>
                         <div class="flex flex-wrap gap-2">
@@ -308,18 +308,18 @@ function viewDetails(logId) {
                             `).join('')}
                         </div>
                     </div>
-                    
+
                     <div>
                         <h4 class="font-semibold mb-2">Results:</h4>
                         <pre class="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm overflow-x-auto">${data.results || 'No results available'}</pre>
                     </div>
-                    
+
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <h4 class="font-semibold mb-1">Created:</h4>
                             <p>${new Date(data.created_at).toLocaleString()}</p>
                         </div>
-                        
+
                         <div>
                             <h4 class="font-semibold mb-1">Completed:</h4>
                             <p>${data.completed_at ? new Date(data.completed_at).toLocaleString() : 'Not completed'}</p>
@@ -359,6 +359,20 @@ document.getElementById('logModal').addEventListener('click', function(e) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
     <script>
+        // Immediate theme application to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+
+        // Theme and Language Management
+        let currentLang = localStorage.getItem('language') || 'en';
+        let currentTheme = localStorage.getItem('theme') || 'light';
         tailwind.config = {
             darkMode: 'class',
             theme: {

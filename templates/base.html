@@ -60,7 +60,25 @@
             direction: ltr;
             text-align: left;
         }
+        
+        /* Prevent theme flashing */
+        .theme-transitioning * {
+            transition: none !important;
+        }
     </style>
+    
+    <!-- Immediate Theme Application Script -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors font-english preload" id="body-root">
     <!-- Enhanced Header with Logo and Controls -->
@@ -278,19 +296,11 @@
             }
         }
 
-        // Initialize theme immediately to prevent flash
+        // Initialize theme state from what was already applied
         function initTheme() {
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
-            
-            // Apply theme immediately without transition
-            const html = document.documentElement;
-            if (currentTheme === 'dark') {
-                html.classList.add('dark');
-            } else {
-                html.classList.remove('dark');
-            }
         }
 
         // Call initTheme immediately

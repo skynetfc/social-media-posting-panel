@@ -8,8 +8,22 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
+    <!-- Immediate Theme Application -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- Custom JavaScript -->
     <script src="/static/script.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -855,7 +869,7 @@
         // Wait for both DOM and static script to load
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Dashboard loading...');
-            
+
             // Wait a moment for static script to fully load
             setTimeout(function() {
                 // Initialize theme and language from static script
@@ -871,7 +885,7 @@
                 if (typeof initDashboardFeatures === 'function') {
                     initDashboardFeatures();
                 }
-                
+
                 console.log('Dashboard initialized successfully');
             }, 100);
         });

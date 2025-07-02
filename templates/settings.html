@@ -776,6 +776,17 @@
             });
         }
 
+        // Immediate theme application to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+
         // Theme and Language Management
         let currentLang = localStorage.getItem('language') || 'en';
         let currentTheme = localStorage.getItem('theme') || 'light';
